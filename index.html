@@ -400,6 +400,41 @@
     </div>
   </div>
 
+  <!-- ストーリー選択画面 -->
+  <div id="story-screen" class="hidden">
+    <div class="story-screen-panel">
+      <div class="story-screen-header">
+        <h2>📖 ストーリー</h2>
+        <button id="story-screen-close-btn">✕ 閉じる</button>
+      </div>
+      <!-- 第一章 -->
+      <div id="story-ch1-block" class="story-chapter-block">
+        <div class="story-chapter-heading">第一章</div>
+        <div id="story-ch1-next-wrap">
+          <button id="story-ch1-next-btn" class="story-read-btn" disabled>次のストーリーを読む</button>
+          <div id="story-ch1-cost-label" class="story-cost-label">💰 2,000</div>
+        </div>
+        <div id="story-ch1-complete" class="story-complete-label hidden">✅ 第一章クリア！</div>
+        <div id="story-ch1-replay-wrap" class="hidden">
+          <details class="story-replay-details">
+            <summary>過去のストーリーを見返す</summary>
+            <ul id="story-ch1-replay-list" class="story-replay-list"></ul>
+          </details>
+        </div>
+      </div>
+      <!-- 第二章（fireGenUnlocked後に表示） -->
+      <div id="story-ch2-block" class="story-chapter-block hidden">
+        <div class="story-chapter-heading">第二章</div>
+        <div id="story-ch2-next-wrap">
+          <button id="story-ch2-next-btn" class="story-read-btn" disabled>次のストーリーを読む</button>
+          <div id="story-ch2-cost-label" class="story-cost-label">💰 2,000</div>
+        </div>
+        <div id="story-ch2-complete" class="story-complete-label hidden">✅ 第二章クリア！</div>
+        <div id="story-ch2-locked" class="story-locked-label hidden">🔒 第一章クリア後に開放</div>
+      </div>
+    </div>
+  </div>
+
   <!-- タイトル画面 -->
   <div id="title-screen">
     <img id="title-main-img" src="img/UI/image_merge_title_main_01.png" alt="Mystery Merge Puzzle">

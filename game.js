@@ -198,6 +198,7 @@ let state = {
   requestCompletedTotal: 0, // 累計依頼完了数（10回ごとに体力+25）
   totalCoinEarned: 0,       // 依頼報酬の累計獲得コイン
   storyGuideShown: false,   // ストーリー誘導ガイド表示済みフラグ
+  seenScenes: [],           // 閲覧済みシーンID一覧（第一章見返し用）
   shop: {
     lastFreeEnergy:    0, // 無料体力の最終取得時刻（ms）
     lastCoinEnergy:    0, // コイン購入の最終時刻
@@ -243,6 +244,7 @@ function initGame() {
   state.requestCompletedTotal = 0;
   state.totalCoinEarned  = 0;
   state.storyGuideShown  = false;
+  state.seenScenes       = [];
   state.shop = { lastFreeEnergy: 0, lastCoinEnergy: 0, lastDiamondEnergy: 0 };
   state.chainInitialStages = {};
   state.recentlyCompletedStages = new Set();
@@ -434,7 +436,15 @@ function onDragEnd(e) {
 function onDragEndTouch(e) {
   const t = e.changedTouches?.[0];
   if (t) endDrag(t.clientX, t.clientY);
-  else { if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; } drag.active = false; drag.fromIdx = null; }
+  else {
+    // touchcancel 等でタッチ座標が取れない場合の強制クリーンアップ
+    if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
+    document.getElementById('drag-ghost')?.remove();
+    drag.active = false;
+    drag.fromIdx = null;
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('drop-over'));
+    renderBoard(); // 残像を消す
+  }
   document.removeEventListener('touchmove', onDragMoveTouch);
   document.removeEventListener('touchend', onDragEndTouch);
   document.removeEventListener('touchcancel', onDragEndTouch);
@@ -864,9 +874,9 @@ function rollLucky(powerLv) {
 function rollPower(powerLv, chainMaxStage) {
   const bonus = GEN_POWER_BONUS[powerLv];
   if (!bonus) return null;
-  if (Math.random() < 0.05) {  // Power確率 5% 固定
-    return bonus.outStage !== null ? Math.min(bonus.outStage, chainMaxStage) : chainMaxStage;
-  }
+  const stage = bonus.outStage !== null ? Math.min(bonus.outStage, chainMaxStage) : chainMaxStage;
+  if (stage >= chainMaxStage) return null; // 最大レベルアイテムはパワーアップでは出力しない
+  if (Math.random() < 0.05) return stage;  // Power確率 5% 固定
   return null;
 }
 
@@ -3112,6 +3122,19 @@ document.getElementById('adventure-screen').addEventListener('click', () => {
   showAdvMessage(advMsgIdx);
 });
 
+// ストーリー選択画面のボタン
+document.getElementById('story-screen-close-btn').addEventListener('click', () => {
+  closeStoryScreen();
+});
+document.getElementById('story-ch1-next-btn').addEventListener('click', () => {
+  closeStoryScreen();
+  progressStory();
+});
+document.getElementById('story-ch2-next-btn').addEventListener('click', () => {
+  closeStoryScreen();
+  progressStory();
+});
+
 document.getElementById('debug-adv-test').addEventListener('click', () => {
   document.getElementById('debug-screen').classList.add('hidden');
   openAdventureScene('test');
@@ -3196,7 +3219,7 @@ document.getElementById('debug-adv-scene17').addEventListener('click', () => {
 
 document.getElementById('story-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
-  progressStory();
+  openStoryScreen();
 });
 
 document.getElementById('settings-close').addEventListener('click', () => {
@@ -3600,6 +3623,8 @@ function advanceTutorial() {
   if (eventState.tutorialStep === 3) {
     document.getElementById('tutorial-panel')?.classList.add('hidden');
     document.getElementById('tutorial-overlay')?.classList.add('hidden');
+    if (!state.seenScenes) state.seenScenes = [];
+    if (!state.seenScenes.includes('scene01')) state.seenScenes.push('scene01');
     openAdventureScene('scene01', () => {
       renderTutorialPanel();
       renderEventBoard();
@@ -3694,6 +3719,7 @@ function isGuideInProgress() { return guideState !== null; }
 
 function startGuide(messages, attentionSelector, onDone) {
   guideState = { messages, idx: 0, attentionSelector, onDone };
+  hideNaviHint(); // ガイド開始時はナビヒントを非表示
   _applyGuideAttention(true);
   _renderGuidePanel();
 }
@@ -3744,6 +3770,123 @@ function checkStoryGuide() {
   ], '#story-btn', null);
 }
 
+// ========================================
+// ストーリー選択画面
+// ========================================
+// 第一章シーン一覧（プロローグ＋Ep.01〜16）
+const CH1_SCENE_LIST = [
+  { id: 'scene01', label: 'プロローグ' },
+  { id: 'scene02', label: 'Ep.01' },
+  { id: 'scene03', label: 'Ep.02' },
+  { id: 'scene04', label: 'Ep.03' },
+  { id: 'scene05', label: 'Ep.04' },
+  { id: 'scene06', label: 'Ep.05' },
+  { id: 'scene07', label: 'Ep.06' },
+  { id: 'scene08', label: 'Ep.07' },
+  { id: 'scene09', label: 'Ep.08' },
+  { id: 'scene10', label: 'Ep.09' },
+  { id: 'scene11', label: 'Ep.10' },
+  { id: 'scene12', label: 'Ep.11' },
+  { id: 'scene13', label: 'Ep.12' },
+  { id: 'scene14', label: 'Ep.13' },
+  { id: 'scene15', label: 'Ep.14' },
+  { id: 'scene16', label: 'Ep.15' },
+  { id: 'scene17', label: 'Ep.16（完結）' },
+];
+
+function openStoryScreen() {
+  renderStoryScreen();
+  document.getElementById('story-screen').classList.remove('hidden');
+}
+
+function closeStoryScreen() {
+  document.getElementById('story-screen').classList.add('hidden');
+}
+
+function renderStoryScreen() {
+  // 第一章：storyCount 1-16 で scene02〜scene17 を消費。16話すべて読んだら完了
+  const ch1Complete   = state.storyCount >= 16;
+  const ch2Unlocked   = eventState.fireGenUnlocked;
+  const ch2Complete   = state.storyCount >= 37;
+  const cost          = getStoryCost(state.playerLevel);
+  const canAfford     = state.coin >= cost;
+
+  // ── 第一章 ──
+  const ch1NextWrap  = document.getElementById('story-ch1-next-wrap');
+  const ch1NextBtn   = document.getElementById('story-ch1-next-btn');
+  const ch1CostLabel = document.getElementById('story-ch1-cost-label');
+  const ch1Complete_ = document.getElementById('story-ch1-complete');
+  const ch1ReplayWrap = document.getElementById('story-ch1-replay-wrap');
+
+  if (ch1Complete) {
+    ch1NextWrap.classList.add('hidden');
+    ch1Complete_.classList.remove('hidden');
+    ch1ReplayWrap.classList.remove('hidden');
+    renderCh1ReplayList();
+  } else {
+    ch1NextWrap.classList.remove('hidden');
+    ch1Complete_.classList.add('hidden');
+    ch1ReplayWrap.classList.add('hidden');
+    ch1NextBtn.disabled = !canAfford;
+    ch1CostLabel.textContent = `💰 ${cost.toLocaleString()}`;
+  }
+
+  // ── 第二章 ──
+  const ch2Block    = document.getElementById('story-ch2-block');
+  const ch2NextWrap = document.getElementById('story-ch2-next-wrap');
+  const ch2NextBtn  = document.getElementById('story-ch2-next-btn');
+  const ch2CostLbl  = document.getElementById('story-ch2-cost-label');
+  const ch2Complete_ = document.getElementById('story-ch2-complete');
+  const ch2LockedLbl = document.getElementById('story-ch2-locked');
+
+  if (ch2Unlocked) {
+    ch2Block.classList.remove('hidden');
+    if (ch2Complete) {
+      ch2NextWrap.classList.add('hidden');
+      ch2LockedLbl?.classList.add('hidden');
+      ch2Complete_.classList.remove('hidden');
+    } else if (!ch1Complete) {
+      // 第二章は解放済みだが第一章未完了 → グレーアウト表示
+      ch2NextWrap.classList.remove('hidden');
+      ch2Complete_.classList.add('hidden');
+      ch2LockedLbl?.classList.remove('hidden');
+      ch2NextBtn.disabled = true;
+      ch2CostLbl.textContent = '第一章クリア後に開放';
+    } else {
+      ch2NextWrap.classList.remove('hidden');
+      ch2Complete_.classList.add('hidden');
+      ch2LockedLbl?.classList.add('hidden');
+      ch2NextBtn.disabled = !canAfford;
+      ch2CostLbl.textContent = `💰 ${cost.toLocaleString()}`;
+    }
+  } else {
+    ch2Block.classList.add('hidden');
+  }
+}
+
+function renderCh1ReplayList() {
+  const list = document.getElementById('story-ch1-replay-list');
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH1_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第一章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
+  }
+}
 
 // ========================================
 // ジェネレーターマージ誘導チュートリアル制御
@@ -4214,6 +4357,7 @@ function renderEventBoard() {
         // しゃぼん玉オーバーレイ
         if (item.isBubble) {
           cell.classList.add('has-bubble');
+          if (item.isNewBubble) cell.classList.add('bubble-appear'); // 出現アニメ
           const overlay = document.createElement('div');
           overlay.className = 'bubble-overlay';
           cell.appendChild(overlay);
@@ -4273,6 +4417,13 @@ function renderEventBoard() {
   }
   // ガイド進行中はアテンション再適用（DOM再生成後も維持）
   if (isGuideInProgress()) _applyGuideAttention(true);
+
+  // しゃぼん玉出現アニメ用フラグを500ms後にクリア（以降のre-renderで再アニメしない）
+  if (eventState.board.some(it => it?.isNewBubble)) {
+    setTimeout(() => {
+      eventState.board.forEach(it => { if (it?.isNewBubble) delete it.isNewBubble; });
+    }, 500);
+  }
 }
 
 // ========================================
@@ -4306,7 +4457,8 @@ function renderPlayerLevel() {
   if (storyBtn) {
     const cost       = getStoryCost(state.playerLevel);
     const canProgress = state.coin >= cost;
-    storyBtn.disabled = !canProgress;
+    // ストーリー画面はいつでも開ける（コイン不足でも章選択・見返しは可能）
+    storyBtn.disabled = false;
     storyBtn.classList.toggle('story-btn-active', canProgress);
   }
 }
@@ -4379,6 +4531,10 @@ function progressStory() {
   else if (state.storyCount === 36) sceneId = 'c2s19';
   else if (state.storyCount === 37) sceneId = 'c2s20';
   else sceneId = 'c2s01'; // 未実装分はフォールバック
+
+  // 閲覧済みシーン記録
+  if (!state.seenScenes) state.seenScenes = [];
+  if (!state.seenScenes.includes(sceneId)) state.seenScenes.push(sceneId);
 
   // storyCount === 8（scene09）: シーン終了後に第二章ジェネレーター解放＋誘導ガイド
   if (state.storyCount === 8) {
@@ -4519,6 +4675,10 @@ function fillEventRequests() {
   );
   const usedCharIds = new Set(eventState.requests.map(r => r.characterId));
 
+  // 章完了フラグ（完了した章のアイテムは新規依頼に出さない）
+  const ch1StoryDone = state.storyCount >= 16; // 第一章全16話完了
+  const ch2StoryDone = state.storyCount >= 37; // 第二章全20話完了
+
   // ランダムなステージキーを1つ選ぶ内部ヘルパー
   // 除外条件: usedKeys, completedLowStages, recentlySolvedKeys（Lv6+のみ）
   function pickRandomItem(excludeKeys) {
@@ -4527,10 +4687,12 @@ function fillEventRequests() {
       // 製造機ジェネレーター解放済みかつLv3以上なら製造機アイテム依頼も混ぜる（30%）
       const seizoAvailable = eventState.fireGenUnlocked && eventState.seizoGenLevel >= 2;
       if (seizoAvailable && Math.random() < 0.3) {
+        if (ch2StoryDone) continue; // 第二章完了後は製造機アイテム依頼を生成しない
         const maxSeizoStage = Math.min(CHAINS[SEIZO_CHAIN_ID].stages.length, (eventState.seizoGenLevel + 1) * 2);
         const seizoStage = Math.floor(Math.random() * maxSeizoStage) + 1;
         item = { chainId: SEIZO_CHAIN_ID, stage: seizoStage };
       } else {
+        if (ch1StoryDone) continue; // 第一章完了後はEVENT_CHAINアイテム依頼を生成しない
         if (stageMin > stageMax) continue;
         const stage = Math.floor(Math.random() * (stageMax - stageMin + 1)) + stageMin;
         item = { stage };
@@ -5153,14 +5315,14 @@ function doEventMerge(fromIdx, toIdx) {
     discoverSeizoItem(finalStage); // 内部で checkSeizoGenLevelUp も呼ぶ
   }
 
-  // 5%〜10%の確率でしゃぼん玉アイテムを追加出現（Lv1/チュートリアル/霧マージは除外）
-  const bubbleProb = 0.05 + Math.random() * 0.05;
+  // 5%の確率でしゃぼん玉アイテムを追加出現（Lv1/チュートリアル/霧マージは除外）
+  const bubbleProb = 0.05;
   if (!tutStepNow && !isGenMergeTutActive() && !toWasFog && !isLv1Ch1 && Math.random() < bubbleProb) {
     const bubbleSlot = findNearestEmptyEventCell(toIdx);
     if (bubbleSlot !== -1) {
       eventState.board[bubbleSlot] = chainId !== undefined
-        ? { chainId, stage: finalStage, isBubble: true, bubbleTimestamp: Date.now() }
-        : { stage: finalStage, isBubble: true, bubbleTimestamp: Date.now() };
+        ? { chainId, stage: finalStage, isBubble: true, isNewBubble: true, bubbleTimestamp: Date.now() }
+        : { stage: finalStage, isBubble: true, isNewBubble: true, bubbleTimestamp: Date.now() };
     }
   }
 
@@ -5353,6 +5515,10 @@ function onEventFireGenTap(tappedCellIdx = null) {
 // ドラッグ＆ドロップ
 // ========================================
 function startEvDrag(e, fromIdx) {
+  // 前回のドラッグが残っていたら強制クリーンアップ
+  if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; }
+  document.getElementById('ev-drag-ghost')?.remove();
+
   const item = eventState.board[fromIdx];
   if (!item || item.isFog) return; // 霧アイテムはドラッグ元にならない
 
@@ -5401,6 +5567,10 @@ function startEvDrag(e, fromIdx) {
 }
 
 function startEvDragTouch(e, fromIdx) {
+  // 前回のドラッグが残っていたら強制クリーンアップ
+  if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; }
+  document.getElementById('ev-drag-ghost')?.remove();
+
   const item = eventState.board[fromIdx];
   if (!item || item.isFog) return; // 霧アイテムはドラッグ元にならない
 
@@ -5446,6 +5616,10 @@ function startEvDragTouch(e, fromIdx) {
 }
 
 function createEvGhost(x, y, fromIdx) {
+  // 前回の残像が残っていたら先に除去
+  document.getElementById('ev-drag-ghost')?.remove();
+  if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; }
+
   const item = eventState.board[fromIdx];
   const ghost = document.createElement('div');
   ghost.id = 'ev-drag-ghost';
@@ -5524,7 +5698,15 @@ function onEvDragEnd(e) {
 function onEvDragEndTouch(e) {
   const t = e.changedTouches?.[0];
   if (t) endEvDrag(t.clientX, t.clientY);
-  else { if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; } evDrag.active = false; evDrag.fromIdx = null; document.querySelectorAll('#event-board .cell').forEach(c => c.classList.remove('drop-over')); }
+  else {
+    // touchcancel 等でタッチ座標が取れない場合の強制クリーンアップ
+    if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; }
+    document.getElementById('ev-drag-ghost')?.remove();
+    evDrag.active = false;
+    evDrag.fromIdx = null;
+    document.querySelectorAll('#event-board .cell').forEach(c => c.classList.remove('drop-over'));
+    renderEventBoard(); // 選択状態などの残像を消す
+  }
   document.removeEventListener('touchmove', onEvDragMoveTouch);
   document.removeEventListener('touchend', onEvDragEndTouch);
   document.removeEventListener('touchcancel', onEvDragEndTouch);
@@ -5826,6 +6008,26 @@ function updateStickyHeights() {
   if (eh > 0) document.documentElement.style.setProperty('--event-header-h', eh + 'px');
 }
 window.addEventListener('resize', updateStickyHeights);
+
+// ドラッグ中にウィンドウがフォーカスを失った場合（アプリ切り替え等）にゴーストを強制削除
+window.addEventListener('blur', () => {
+  if (evDrag.ghost || evDrag.active) {
+    if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; }
+    document.getElementById('ev-drag-ghost')?.remove();
+    evDrag.active = false;
+    evDrag.fromIdx = null;
+    document.querySelectorAll('#event-board .cell').forEach(c => c.classList.remove('drop-over'));
+    renderEventBoard();
+  }
+  if (drag.ghost || drag.active) {
+    if (drag.ghost) { drag.ghost.remove(); drag.ghost = null; }
+    document.getElementById('drag-ghost')?.remove();
+    drag.active = false;
+    drag.fromIdx = null;
+    document.querySelectorAll('.cell').forEach(c => c.classList.remove('drop-over'));
+    renderBoard();
+  }
+});
 
 // ========================================
 // 起動
