@@ -1154,6 +1154,17 @@ body {
   50%       { box-shadow: 0 0 0 5px rgba(249,200,70,0); }
 }
 
+/* ガイドアテンション（ストーリーボタン・第二章ジェネレーター） */
+.guide-attention {
+  position: relative;
+  z-index: 32;
+  animation: guide-attention-pulse 0.7s ease-in-out infinite alternate !important;
+}
+@keyframes guide-attention-pulse {
+  from { box-shadow: 0 0 8px 3px rgba(249,200,70,0.7);  transform: scale(1);    }
+  to   { box-shadow: 0 0 26px 12px rgba(249,200,70,1);  transform: scale(1.12); }
+}
+
 /* 依頼パネル（イベント） */
 #event-req-panel {
   position: sticky;

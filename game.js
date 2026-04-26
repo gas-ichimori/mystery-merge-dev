@@ -1026,11 +1026,14 @@ function getStageTierConfig(gen) {
   return STAGE_TIER_CONFIG[2];
 }
 
-// コイン報酬計算（ステージ範囲に応じて100〜20,000）、1の位は四捨五入
+// コイン報酬計算（ステージ範囲に応じて100〜20,000）、10の位は四捨五入
+// Lv4以降は2/3に設定
 function calcCoinReward(stage) {
   const ratio = (stage - 1) / 19; // stage 1〜20 を 0〜1 に正規化
   const raw = 100 + (20000 - 100) * Math.pow(ratio, 1.5);
-  return Math.round(raw / 10) * 10;
+  const base = Math.round(raw / 10) * 10;
+  if (stage >= 4) return Math.round((base * 2 / 3) / 10) * 10;
+  return base;
 }
 
 // ランダムに1つのアイテムを生成（チェーン・ステージ）
@@ -3575,9 +3578,9 @@ function isTutorialComplete() {
   return eventState.tutorialStep >= TUTORIAL_STEPS.length;
 }
 
-// メインチュートリアルまたはジェネレーターマージ誘導チュートリアルが進行中か
+// メインチュートリアル・ジェネレーターマージ誘導・ガイドが進行中か
 function isTutorialInProgress() {
-  return !isTutorialComplete() || isGenMergeTutActive();
+  return !isTutorialComplete() || isGenMergeTutActive() || isGuideInProgress();
 }
 
 function currentTutStep() {
@@ -3663,6 +3666,8 @@ function renderTutorialPanel() {
 }
 
 function onTutorialTap() {
+  // ガイドシステムが進行中はガイドを進める
+  if (isGuideInProgress()) { advanceGuide(); return; }
   // ジェネレーターマージ誘導チュートリアルのメッセージステップはタップで進める
   if (isGenMergeTutActive()) {
     const gmStep = currentGenMergeTutStep();
@@ -3673,6 +3678,53 @@ function onTutorialTap() {
   if (!step || step.type !== 'blocking_msg') return;
   advanceTutorial();
 }
+
+// ========================================
+// ガイドシステム（チュートリアル後の誘導メッセージ）
+// ========================================
+let guideState = null; // null=非アクティブ
+
+function isGuideInProgress() { return guideState !== null; }
+
+function startGuide(messages, attentionSelector, onDone) {
+  guideState = { messages, idx: 0, attentionSelector, onDone };
+  _applyGuideAttention(true);
+  _renderGuidePanel();
+}
+
+function _applyGuideAttention(on) {
+  if (!guideState?.attentionSelector) return;
+  const el = document.querySelector(guideState.attentionSelector);
+  if (el) el.classList.toggle('guide-attention', on);
+}
+
+function _renderGuidePanel() {
+  if (!guideState) return;
+  const overlay = document.getElementById('tutorial-overlay');
+  const panel   = document.getElementById('tutorial-panel');
+  const msgEl   = document.getElementById('tutorial-msg-text');
+  const hintEl  = document.getElementById('tutorial-tap-hint');
+  overlay.classList.remove('hidden');
+  panel.classList.remove('hidden');
+  msgEl.textContent = guideState.messages[guideState.idx];
+  hintEl.style.display = '';
+}
+
+function advanceGuide() {
+  if (!guideState) return;
+  guideState.idx++;
+  if (guideState.idx >= guideState.messages.length) {
+    _applyGuideAttention(false);
+    document.getElementById('tutorial-overlay').classList.add('hidden');
+    document.getElementById('tutorial-panel').classList.add('hidden');
+    const cb = guideState.onDone;
+    guideState = null;
+    if (cb) cb();
+    return;
+  }
+  _renderGuidePanel();
+}
+
 
 // ========================================
 // ジェネレーターマージ誘導チュートリアル制御
@@ -4066,6 +4118,7 @@ function renderEventBoard() {
 
         if (item.isFireGen) {
           // 製造機ジェネレーター（per-tile seizoLevel）
+          cell.id = 'fire-gen-tile'; // ガイドアテンション用の安定ID
           const sLv  = item.seizoLevel ?? eventState.seizoGenLevel ?? 0;
           const sImg = SEIZO_GEN_IMAGES[Math.min(sLv, SEIZO_GEN_IMAGES.length - 1)];
           cell.innerHTML = `
@@ -4199,6 +4252,8 @@ function renderEventBoard() {
     cell.addEventListener('click', () => onEventCellClick(i));
     board.appendChild(cell);
   }
+  // ガイド進行中はアテンション再適用（DOM再生成後も維持）
+  if (isGuideInProgress()) _applyGuideAttention(true);
 }
 
 // ========================================
@@ -4305,6 +4360,34 @@ function progressStory() {
   else if (state.storyCount === 36) sceneId = 'c2s19';
   else if (state.storyCount === 37) sceneId = 'c2s20';
   else sceneId = 'c2s01'; // 未実装分はフォールバック
+
+  // storyCount === 1（scene02）: シーン終了後にストーリーボタン誘導ガイドを表示
+  if (state.storyCount === 1) {
+    openAdventureScene(sceneId, () => {
+      startGuide([
+        '依頼解決で得た報酬で、ストーリーを読むことができます。',
+        'ストーリーを一定回数読んでいくとプレイヤーLvがあがります。',
+        'プレイヤーLvが上がる際に報酬をもらうことができます。',
+      ], '#story-btn', null);
+    });
+    return;
+  }
+
+  // storyCount === 8（scene09）: シーン終了後に第二章ジェネレーター解放＋誘導ガイド
+  if (state.storyCount === 8) {
+    openAdventureScene(sceneId, () => {
+      unlockFireGenerator();
+      // DOM再描画後にガイド開始（fire-gen-tile IDが付与されてから）
+      requestAnimationFrame(() => {
+        startGuide([
+          '新たな章が出現しました。',
+          '別の章のストーリーも見ることができます。',
+        ], '#fire-gen-tile', null);
+      });
+    });
+    return;
+  }
+
   openAdventureScene(sceneId);
 }
 
@@ -5053,10 +5136,7 @@ function doEventMerge(fromIdx, toIdx) {
       }
     }
 
-    // Lv8 到達で製造機ジェネレーター解放（ベースnextStageで判定）
-    if (nextStage === 8 && !eventState.fireGenUnlocked) {
-      unlockFireGenerator();
-    }
+    // ※ 第二章ジェネレーター解放は第一章 scene09 到達時に行う（progressStory 参照）
   }
 
   // 製造機アイテム（第二章）の発見トラッキングとLvアップ判定
