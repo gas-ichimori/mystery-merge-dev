@@ -2139,7 +2139,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_07.png',
-    bg:           'img/bg/image_merge_bg_hiruma.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentexterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -2158,7 +2158,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_10.png',
-    bg:           'img/bg/image_merge_bg_road_light.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentexterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'slide', autoClose: false,
     script: [
@@ -2176,7 +2176,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_07.png',
-    bg:           'img/bg/image_merge_bg_light.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentinterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -2196,7 +2196,7 @@ const ADV_SCENES = {
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_07.png',
     right2Img:    'img/Chapter2/Chara/image_merge_order_chara_08.png',
-    bg:           'img/bg/image_merge_bg_light.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentinterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade',
     right2Entrance:'none', autoClose: false,
@@ -2216,7 +2216,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_10.png',
-    bg:           'img/bg/image_merge_bg_road_light.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentexterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -2236,7 +2236,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_09a.png',
-    bg:           'img/bg/image_merge_bg_road_light.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentexterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'slide', autoClose: false,
     script: [
