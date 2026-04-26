@@ -2139,7 +2139,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter2/Chara/image_merge_order_chara_07.png',
-    bg:           'img/Chapter2/bg/image_merge_bg_Apartmentexterior.png',
+    bg:           'img/Chapter2/bg/image_merge_bg_sunrisehills.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -2147,7 +2147,7 @@ const ADV_SCENES = {
       { hideAll: true, changeBg: 'img/bg/image_merge_bg_road_light.png', autoAdvance: true },
       { speaker: 'リナ',  text: 'ここです...「サンライズ ヒルズ」というマンションです。', side: 'right', showRight: true, slideRight: true },
       { speaker: 'ヤス',  text: '管理会社はどちらですか？', side: 'left', showLeft: true, slideLeft: true, flipLeft: true },
-      { speaker: 'リナ',  text: '「エバーグリーン不動産」さんです...担当の方は、ジンさんという方で...', side: 'right' },
+      { speaker: 'リナ',  text: '「青葉不動産」さんです...担当の方は、ジンさんという方で...', side: 'right' },
       { speaker: 'ヤス',  text: '最近、管理会社の方と何か話しましたか？', side: 'left' },
       { speaker: 'リナ',  text: '先月、「老朽化のため建て替えを検討している」と言われました...でも、まだ何も決まっていないと...', side: 'right' },
       { speaker: 'ヤス',  text: '...なるほど。', side: 'left' },
