@@ -2413,10 +2413,10 @@ const ADV_SCENES = {
       { speaker: 'ヤス', text: '...いましたね。', side: 'left' },
       { speaker: 'ヤス', text: '（スマートフォンを向ける）', side: 'left' },
       { sound: 'カシャッ...', autoAdvance: true, advanceDelay: 800 },
-      { speaker: 'ヤス', text: 'これで...証拠になりますね。', side: 'left' },
+      { speaker: 'ヤス', text: 'これで...証拠が揃いましたね...', side: 'left' },
     ],
   },
-  // 第二章 Scene16（33回目）ジンに問い詰める①
+  // 第二章 Scene16（33回目）ジンに証拠を突きつける
   c2s16: {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
@@ -2430,8 +2430,16 @@ const ADV_SCENES = {
       { speaker: 'ヤス',  text: 'はい、調査が進みました。実は...犯人が、わかりました。', side: 'left' },
       { speaker: 'ジン',  text: '...それは、誰ですか。', side: 'right' },
       { speaker: 'ヤス',  text: '嫌がらせをしていたのは...あなたではないですか、ジンさん。', side: 'left' },
-      { speaker: 'ジン',  text: '...っ。私が...何を言って...', side: 'right' },
-      { speaker: 'ヤス',  text: '今日はここまでにしましょう。', side: 'left' },
+      { speaker: 'ジン',  text: '...っ。私が...何を根拠に。', side: 'right' },
+      { speaker: 'ヤス',  text: 'タツオさんが証言してくださいました。深夜にドア付近にいたのを、ずっと見ていたと。', side: 'left' },
+      { speaker: 'ジン',  text: '...それは、たまたま見回りをしていただけで...', side: 'right' },
+      { speaker: 'ヤス',  text: 'ハルトさんも話してくれました。301号室と501号室に封筒を置くよう、指示されたと。', side: 'left' },
+      { speaker: 'ジン',  text: '...あいつが...', side: 'right' },
+      { speaker: 'ヤス',  text: '10歳の子どもも、あなたの顔を覚えていました。写真を見せたら、すぐに。', side: 'left' },
+      { speaker: 'ジン',  text: '...', side: 'right' },
+      { speaker: 'ヤス',  text: 'そして...これが、先日の夜に撮影したものです。', side: 'left' },
+      { speaker: 'ジン',  text: '...（長い沈黙）', side: 'right' },
+      { speaker: 'ヤス',  text: '...いかがですか。', side: 'left' },
     ],
   },
   // 第二章 Scene17（34回目）ジンが吐露
@@ -2443,6 +2451,9 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
+      { sound: '...' },
+      { sound: '...' },
+      { sound: '...' },
       { speaker: 'ジン',  text: '...わかりました。話します。', side: 'right' },
       { speaker: 'ヤス',  text: '聞かせてください。', side: 'left' },
       { speaker: 'ジン',  text: 'マンションを建て替えれば...会社の損失を取り戻せる。住人さえいなくなれば、話は早い。', side: 'right' },
