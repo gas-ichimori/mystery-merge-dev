@@ -196,6 +196,8 @@ let state = {
   // 発見済みアイテム管理: discovered[chainId][stage] = true
   discovered: {},
   requestCompletedTotal: 0, // 累計依頼完了数（10回ごとに体力+25）
+  totalCoinEarned: 0,       // 依頼報酬の累計獲得コイン
+  storyGuideShown: false,   // ストーリー誘導ガイド表示済みフラグ
   shop: {
     lastFreeEnergy:    0, // 無料体力の最終取得時刻（ms）
     lastCoinEnergy:    0, // コイン購入の最終時刻
@@ -239,6 +241,8 @@ function initGame() {
 
   // 累計依頼・ショップリセット
   state.requestCompletedTotal = 0;
+  state.totalCoinEarned  = 0;
+  state.storyGuideShown  = false;
   state.shop = { lastFreeEnergy: 0, lastCoinEnergy: 0, lastDiamondEnergy: 0 };
   state.chainInitialStages = {};
   state.recentlyCompletedStages = new Set();
@@ -1229,7 +1233,9 @@ function completeRequest(index) {
   }
 
   state.coin += req.coin;
+  state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
+  checkStoryGuide();
   showToast(`依頼完了！ 💰+${req.coin.toLocaleString()}`);
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
@@ -3725,6 +3731,19 @@ function advanceGuide() {
   _renderGuidePanel();
 }
 
+// 累計獲得コインが2,000以上になったら一度だけストーリー誘導ガイドを表示
+function checkStoryGuide() {
+  if (state.storyGuideShown) return;
+  if (state.totalCoinEarned < 2000) return;
+  if (isTutorialInProgress()) return; // チュートリアル・ガイド中は後回し
+  state.storyGuideShown = true;
+  startGuide([
+    '依頼解決で得た報酬で、ストーリーを読むことができます。',
+    'ストーリーを一定回数読んでいくとプレイヤーLvがあがります。',
+    'プレイヤーLvが上がる際に報酬をもらうことができます。',
+  ], '#story-btn', null);
+}
+
 
 // ========================================
 // ジェネレーターマージ誘導チュートリアル制御
@@ -4361,18 +4380,6 @@ function progressStory() {
   else if (state.storyCount === 37) sceneId = 'c2s20';
   else sceneId = 'c2s01'; // 未実装分はフォールバック
 
-  // storyCount === 1（scene02）: シーン終了後にストーリーボタン誘導ガイドを表示
-  if (state.storyCount === 1) {
-    openAdventureScene(sceneId, () => {
-      startGuide([
-        '依頼解決で得た報酬で、ストーリーを読むことができます。',
-        'ストーリーを一定回数読んでいくとプレイヤーLvがあがります。',
-        'プレイヤーLvが上がる際に報酬をもらうことができます。',
-      ], '#story-btn', null);
-    });
-    return;
-  }
-
   // storyCount === 8（scene09）: シーン終了後に第二章ジェネレーター解放＋誘導ガイド
   if (state.storyCount === 8) {
     openAdventureScene(sceneId, () => {
@@ -4461,7 +4468,9 @@ function completeEventRequest(index) {
   }
 
   state.coin += req.coin;
+  state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
+  checkStoryGuide();
   showRewardInPanel(`依頼完了！ 💰+${req.coin.toLocaleString()}`, document.getElementById('event-req-panel'));
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
