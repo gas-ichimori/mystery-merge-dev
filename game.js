@@ -1039,6 +1039,14 @@ const REQUESTERS = [
   { id: 8,  name: 'ユウ',   img: 'img/Chapter2/Chara/image_merge_order_chara_08.png' },
   { id: 9,  name: 'ハルト', img: 'img/Chapter2/Chara/image_merge_order_chara_09a.png' },
   { id: 10, name: 'タツオ', img: 'img/Chapter2/Chara/image_merge_order_chara_10.png' },
+  // 第三章（id: 11-17）
+  { id: 11, name: 'フミコ',   img: 'img/Chapter3/chara/image_merge_order_chara_15.png' },
+  { id: 12, name: 'コウジ',   img: 'img/Chapter3/chara/image_merge_order_chara_16.png' },
+  { id: 13, name: 'サチコ',   img: 'img/Chapter3/chara/image_merge_order_chara_17.png' },
+  { id: 14, name: 'ノブオ',   img: 'img/Chapter3/chara/image_merge_order_chara_18.png' },
+  { id: 15, name: 'ミドリ',   img: 'img/Chapter3/chara/image_merge_order_chara_19.png' },
+  { id: 16, name: 'リョウタ', img: 'img/Chapter3/chara/image_merge_order_chara_20.png' },
+  { id: 17, name: 'アキラ',   img: 'img/Chapter3/chara/image_merge_order_chara_21.png' },
 ];
 
 const STAGE_RANGE = [
@@ -5473,20 +5481,34 @@ function completeEventRequest(index) {
 }
 
 // イベントマップ専用の依頼を補充
-// ・最初の1件（Lv2固定）は transitionToMainGame で事前設定
-// ・ここでは Lv3+ かつ同ステージ重複なしで補充
-// ・Lv1-5は一度解決したら永久に再出現しない
+// ・最低 MIN_SLOTS 枠、最大 MAX_SLOTS 枠
+// ・各章のジェネレーター解放状況に応じてアイテム種別を均等抽選
+// ・Lv1-5は一度解決したら永久に再出現しない（Ch1のみLv1-2は初回から除外）
 // ・Lv6以降は1個か2個かランダム（同Lv2個は不可、直前完了キーは1回スキップ）
 function fillEventRequests() {
+  const MIN_SLOTS = 3;
   const MAX_SLOTS = 5;
 
   // メモ帳ジェネレーターの現在Lv（最も高いものを使う）
   const genItem = eventState.board.find(c => c && c.isEventGen && !c.isFireGen);
   const genLv   = genItem ? (genItem.genLevel ?? 0) : 0;
 
-  // ステージ範囲: 最低 Lv3、最高はジェネレーターLvに応じて伸びる
-  const stageMin = Math.max(3, genLv * 2 + 3);
-  const stageMax = Math.min(EVENT_CHAIN.stages.length, genLv * 3 + 5);
+  // Ch1ステージ範囲（ジェネレーターLvに応じて伸びる）
+  const ch1StageMin = Math.max(3, genLv * 2 + 3);
+  const ch1StageMax = Math.min(EVENT_CHAIN.stages.length, genLv * 3 + 5);
+
+  // 章解放・完了フラグ
+  const ch1StoryDone = state.ch1Count >= CH1_SCENE_IDS.length;
+  const ch2StoryDone = state.ch2Count >= CH2_SCENE_IDS.length;
+  const ch3StoryDone = state.ch3Count >= CH3_SCENE_IDS.length;
+  const seizoAvailable = eventState.fireGenUnlocked  && !ch2StoryDone;
+  const kanteAvailable = eventState.kanteGenUnlocked && !ch3StoryDone;
+
+  // Ch2・Ch3のステージ上限（ジェネレーターLvに応じて拡大）
+  const ch2StageMax = Math.min(CHAINS[SEIZO_CHAIN_ID].stages.length,
+    Math.max(3, (eventState.seizoGenLevel + 1) * 2 + 2));
+  const ch3StageMax = Math.min(CHAINS[KANTEITA_CHAIN_ID].stages.length,
+    Math.max(3, (eventState.kanteGenLevel + 1) * 2 + 2));
 
   // 既存依頼で使用済みのステージキー（重複防止）
   const usedStageKeys = new Set(
@@ -5496,59 +5518,61 @@ function fillEventRequests() {
   );
   const usedCharIds = new Set(eventState.requests.map(r => r.characterId));
 
-  // 章完了フラグ（完了した章のアイテムは新規依頼に出さない）
-  const ch1StoryDone = state.ch1Count >= CH1_SCENE_IDS.length;
-  const ch2StoryDone = state.ch2Count >= CH2_SCENE_IDS.length;
-  const ch3StoryDone = state.ch3Count >= CH3_SCENE_IDS.length;
+  const tutDone = eventState.tutorialStep >= TUTORIAL_STEPS.length;
+
+  // 依頼人プール：解放済み章のキャラのみ
+  function getAvailableChars() {
+    let maxCharId = 5;
+    if (eventState.fireGenUnlocked)  maxCharId = 10;
+    if (eventState.kanteGenUnlocked) maxCharId = 17;
+    return REQUESTERS.filter(r =>
+      r.id <= maxCharId &&
+      !usedCharIds.has(r.id) &&
+      !(tutDone && r.id === 1)
+    );
+  }
 
   // ランダムなステージキーを1つ選ぶ内部ヘルパー
-  // 除外条件: usedKeys, completedLowStages, recentlySolvedKeys（Lv6+のみ）
-  function pickRandomItem(excludeKeys) {
-    for (let t = 0; t < 30; t++) {
+  // relaxed=true のとき recentlySolvedKeys / completedLowStages を無視（最低枠保証用）
+  function pickRandomItem(excludeKeys, relaxed = false) {
+    for (let t = 0; t < 50; t++) {
       let item;
-      // 章ジェネレーター解放状況に応じてアイテム種別を抽選
-      const seizoAvailable = eventState.fireGenUnlocked && eventState.seizoGenLevel >= 2;
-      const kanteAvailable = eventState.kanteGenUnlocked && eventState.kanteGenLevel >= 0;
-      const rand = Math.random();
-      const useSeizo = seizoAvailable && !ch2StoryDone && rand < 0.3;
-      const useKante = kanteAvailable && !ch3StoryDone && !useSeizo && rand < 0.5;
-      if (useKante) {
-        // 第三章アイテム依頼（30%）
-        const maxKanteStage = Math.min(CHAINS[KANTEITA_CHAIN_ID].stages.length, (eventState.kanteGenLevel + 1) * 2 + 1);
-        const kanteStage = Math.floor(Math.random() * maxKanteStage) + 1;
-        item = { chainId: KANTEITA_CHAIN_ID, stage: kanteStage };
-      } else if (useSeizo) {
-        // 第二章アイテム依頼（30%）
-        const maxSeizoStage = Math.min(CHAINS[SEIZO_CHAIN_ID].stages.length, (eventState.seizoGenLevel + 1) * 2);
-        const seizoStage = Math.floor(Math.random() * maxSeizoStage) + 1;
-        item = { chainId: SEIZO_CHAIN_ID, stage: seizoStage };
+
+      // 解放済みプールを均等抽選
+      const pools = [];
+      if (!ch1StoryDone) pools.push('ch1');
+      if (seizoAvailable) pools.push('ch2');
+      if (kanteAvailable) pools.push('ch3');
+      if (pools.length === 0) return null;
+      const pool = pools[Math.floor(Math.random() * pools.length)];
+
+      if (pool === 'ch2') {
+        const stage = Math.floor(Math.random() * ch2StageMax) + 1;
+        item = { chainId: SEIZO_CHAIN_ID, stage };
+      } else if (pool === 'ch3') {
+        const stage = Math.floor(Math.random() * ch3StageMax) + 1;
+        item = { chainId: KANTEITA_CHAIN_ID, stage };
       } else {
-        if (ch1StoryDone) continue; // 第一章完了後はEVENT_CHAINアイテム依頼を生成しない
-        if (stageMin > stageMax) continue;
-        const stage = Math.floor(Math.random() * (stageMax - stageMin + 1)) + stageMin;
+        // Ch1
+        if (ch1StageMin > ch1StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch1StageMax - ch1StageMin + 1)) + ch1StageMin;
         item = { stage };
       }
+
       const key = item.chainId !== undefined ? `${item.chainId}-${item.stage}` : `ev-${item.stage}`;
       if (excludeKeys.has(key)) continue;
-      if (item.stage <= 2 && tutDone) continue; // チュートリアル後はLv1-2を依頼から除外
-      if (eventState.completedLowStages.has(key)) continue; // Lv1-5完了済みはスキップ
-      if (item.stage >= 6 && eventState.recentlySolvedKeys.has(key)) continue; // Lv6+連続スキップ
+      // Ch1のみLv1-2をチュートリアル後は除外（Ch2・Ch3は序盤Lvも許可）
+      if (!item.chainId && item.stage <= 2 && tutDone) continue;
+      if (!relaxed && eventState.completedLowStages.has(key)) continue;
+      if (!relaxed && item.stage >= 6 && eventState.recentlySolvedKeys.has(key)) continue;
       return { item, key };
     }
     return null;
   }
 
-  const tutDone = eventState.tutorialStep >= TUTORIAL_STEPS.length;
   let retry = 0;
   while (eventState.requests.length < MAX_SLOTS && retry < 40) {
-    // 製造機Lv3以上になったら第二章依頼人（id:6-10）も解放
-    const maxCharId = (eventState.seizoGenLevel >= 2) ? 10 : 5;
-    // チュートリアル後はミユ（id:1）を依頼人から除外
-    const available = REQUESTERS.filter(r =>
-      r.id <= maxCharId &&
-      !usedCharIds.has(r.id) &&
-      !(tutDone && r.id === 1)
-    );
+    const available = getAvailableChars();
     if (available.length === 0) break;
 
     const result1 = pickRandomItem(usedStageKeys);
@@ -5558,30 +5582,43 @@ function fillEventRequests() {
     const items = [reqItem1];
     let totalCoin = calcCoinReward(reqItem1.stage);
 
-    // Lv6以上かつ50%で2個依頼
-    if (reqItem1.stage >= 6 && Math.random() < 0.5) {
+    // Lv4以上かつ50%で2個依頼
+    if (reqItem1.stage >= 4 && Math.random() < 0.5) {
       const exclude2 = new Set([...usedStageKeys, key1]);
       const result2 = pickRandomItem(exclude2);
-      if (result2) {
-        const { item: reqItem2, key: key2 } = result2;
-        // 同Lvは不可
-        if (reqItem2.stage !== reqItem1.stage) {
-          items.push(reqItem2);
-          totalCoin += calcCoinReward(reqItem2.stage);
-          usedStageKeys.add(key2);
-        }
+      if (result2 && result2.item.stage !== reqItem1.stage) {
+        items.push(result2.item);
+        totalCoin += calcCoinReward(result2.item.stage);
+        usedStageKeys.add(result2.key);
       }
     }
 
     const char = available[Math.floor(Math.random() * available.length)];
-    eventState.requests.push({
-      characterId: char.id,
-      items,
-      coin: totalCoin,
-    });
+    eventState.requests.push({ characterId: char.id, items, coin: totalCoin });
     usedStageKeys.add(key1);
     usedCharIds.add(char.id);
     retry = 0;
+  }
+
+  // 最低 MIN_SLOTS 枠を保証（制約を緩和して再試行）
+  if (eventState.requests.length < MIN_SLOTS) {
+    let fallbackRetry = 0;
+    while (eventState.requests.length < MIN_SLOTS && fallbackRetry < 30) {
+      const available = getAvailableChars();
+      if (available.length === 0) break;
+      const result1 = pickRandomItem(usedStageKeys, true);
+      if (!result1) { fallbackRetry++; continue; }
+      const { item: reqItem1, key: key1 } = result1;
+      const char = available[Math.floor(Math.random() * available.length)];
+      eventState.requests.push({
+        characterId: char.id,
+        items: [reqItem1],
+        coin: calcCoinReward(reqItem1.stage),
+      });
+      usedStageKeys.add(key1);
+      usedCharIds.add(char.id);
+      fallbackRetry = 0;
+    }
   }
 }
 
@@ -6514,8 +6551,9 @@ function startEvDrag(e, fromIdx) {
 
   // ドラッグ開始時にナビヒントを表示（選択状態は変更しない）
   if (item.isEventGen) {
-    if (item.isFireGen) showNaviHintForFireGen(item, true);
-    else showNaviHintForGen(item.genLevel ?? 0, true);
+    if (item.isFireGen)          showNaviHintForFireGen(item, true);
+    else if (item.isKanteGen)    showNaviHintForKanteGen(item, true);
+    else                         showNaviHintForGen(item.genLevel ?? 0, true);
   } else if (item.isBubble) {
     showNaviHintForBubble(item);
   } else if (item.isCoin) {
@@ -6561,8 +6599,9 @@ function startEvDragTouch(e, fromIdx) {
 
   // ドラッグ開始時にナビヒントを表示（選択状態は変更しない）
   if (item.isEventGen) {
-    if (item.isFireGen) showNaviHintForFireGen(item, true);
-    else showNaviHintForGen(item.genLevel ?? 0, true);
+    if (item.isFireGen)       showNaviHintForFireGen(item, true);
+    else if (item.isKanteGen) showNaviHintForKanteGen(item, true);
+    else                      showNaviHintForGen(item.genLevel ?? 0, true);
   } else if (item.isBubble) {
     showNaviHintForBubble(item);
   } else if (item.isCoin) {
@@ -6610,6 +6649,9 @@ function createEvGhost(x, y, fromIdx) {
   } else if (item.isEventGen && item.isFireGen) {
     const sLv = item.seizoLevel ?? 0;
     imgSrc = SEIZO_GEN_IMAGES[Math.min(sLv, SEIZO_GEN_IMAGES.length - 1)];
+  } else if (item.isEventGen && item.isKanteGen) {
+    const kLv = item.kanteLevel ?? 0;
+    imgSrc = KANTEITA_GEN_IMAGES[Math.min(kLv, KANTEITA_GEN_IMAGES.length - 1)];
   } else if (item.isEventGen) {
     imgSrc = EVENT_GEN_IMAGES[Math.min(item.genLevel ?? 0, EVENT_GEN_IMAGES.length - 1)];
   } else if (item.chainId !== undefined) {
