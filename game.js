@@ -1445,6 +1445,11 @@ function discoverSeizoItem(stage) {
   if (eventState.seizoDiscovered[stage]) return;
   eventState.seizoDiscovered[stage] = true;
   updateCatalogBadge();
+  // 第二章マージアイテムが初めて出現したときに赤いメッセージを表示
+  if (!eventState.seizoFirstItemShown) {
+    eventState.seizoFirstItemShown = true;
+    setTimeout(() => showToastRed('第二章のマージアイテムが出現しました！依頼に活用しましょう！'), 600);
+  }
 }
 
 // 第三章マージアイテムを発見（初回のみ）
@@ -1675,6 +1680,21 @@ function showToast(msg) {
 
 // ジェネレータータイルの直上にトーストを表示（ボード満杯などの通知用）
 // パネル要素のすぐ下にトーストを表示（依頼完了など）
+function showToastRed(msg) {
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = `
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: rgba(180,0,0,0.92); color: #fff; padding: 8px 18px;
+    border-radius: 16px; font-size: 13px; font-weight: bold; z-index: 500;
+    pointer-events: none; max-width: 80vw; text-align: center;
+    white-space: normal; word-break: break-all;
+    animation: toast-pop 3s ease-out forwards;
+  `;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
 function showToastNearPanel(msg, panelEl) {
   if (!panelEl) { showToast(msg); return; }
   const rect = panelEl.getBoundingClientRect();
@@ -1881,7 +1901,7 @@ const CHARACTERS = [
   { img: 'img/Chapter3/chara/image_merge_order_chara_18.png', name: 'ノブオ',   age: '67歳', desc: '弁護士' },
   { img: 'img/Chapter3/chara/image_merge_order_chara_19.png', name: 'ミドリ',   age: '52歳', desc: '旅館の番頭' },
   { img: 'img/Chapter3/chara/image_merge_order_chara_20.png', name: 'リョウタ', age: '24歳', desc: '故人の孫' },
-  { img: 'img/Chapter3/chara/image_merge_order_chara_21.png', name: 'アキラ',   age: '27歳', desc: '故人の隠し子' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_21.png', name: 'アキラ',   age: '40歳', desc: '故人の隠し子' },
 ];
 
 function renderCharacters() {
@@ -4157,7 +4177,8 @@ let eventState = {
   genLevelUpReady: false, // （旧フラグ、互換のため残存）
   fireGenUnlocked: false,  // 製造機ジェネレーター解放済み
   seizoGenLevel: 0,        // 製造機ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
-  seizoDiscovered: {},     // 発見済み製造機アイテム { stage: true }
+  seizoDiscovered: {},      // 発見済み製造機アイテム { stage: true }
+  seizoFirstItemShown: false, // 第二章マージアイテム初出現メッセージ表示済み
   kanteGenUnlocked: false, // 鑑定台ジェネレーター解放済み（第三章）
   kanteGenLevel: 0,        // 鑑定台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
   kanteDiscovered: {},     // 発見済み鑑定台アイテム { stage: true }
@@ -4202,8 +4223,9 @@ function initEventMap() {
   eventState.genLevelUpReady   = false;
   eventState.fireGenUnlocked   = false;
   eventState.seizoGenLevel     = 0;
-  eventState.seizoDiscovered   = {};
-  eventState.kanteGenUnlocked  = false;
+  eventState.seizoDiscovered      = {};
+  eventState.seizoFirstItemShown  = false;
+  eventState.kanteGenUnlocked     = false;
   eventState.kanteGenLevel     = 0;
   eventState.kanteDiscovered   = {};
   eventState.seizoLvTriggered  = new Set();
@@ -5520,7 +5542,42 @@ function fillEventRequests() {
 
   const tutDone = eventState.tutorialStep >= TUTORIAL_STEPS.length;
 
-  // 依頼人プール：解放済み章のキャラのみ
+  // アイテムの章番号を返す（1=Ch1, 2=Ch2, 3=Ch3）
+  function getItemChapter(item) {
+    if (item.chainId === SEIZO_CHAIN_ID)    return 2;
+    if (item.chainId === KANTEITA_CHAIN_ID) return 3;
+    return 1;
+  }
+
+  // アイテムリストに合った依頼人候補を返す
+  // ・単一章アイテム → その章のキャラ優先
+  // ・混在 / 同章キャラ枯渇 → 未完了章の全キャラ
+  function getCharsForItems(items) {
+    const chapters = [...new Set(items.map(getItemChapter))];
+
+    if (chapters.length === 1) {
+      const ch = chapters[0];
+      const [minId, maxId] = ch === 1 ? [0, 5] : ch === 2 ? [6, 10] : [11, 17];
+      const singleCh = REQUESTERS.filter(r =>
+        r.id >= minId && r.id <= maxId &&
+        !usedCharIds.has(r.id) &&
+        !(tutDone && r.id === 1)
+      );
+      if (singleCh.length > 0) return singleCh;
+    }
+
+    // 混在 or 同章キャラ枯渇 → 解放済み章・未完了章の全キャラ
+    return REQUESTERS.filter(r => {
+      if (r.id <= 5)  return true; // Ch1
+      if (r.id <= 10) return !!eventState.fireGenUnlocked;
+      return !!eventState.kanteGenUnlocked;
+    }).filter(r =>
+      !usedCharIds.has(r.id) &&
+      !(tutDone && r.id === 1)
+    );
+  }
+
+  // フォールバック用：全解放済みキャラ
   function getAvailableChars() {
     let maxCharId = 5;
     if (eventState.fireGenUnlocked)  maxCharId = 10;
@@ -5572,9 +5629,6 @@ function fillEventRequests() {
 
   let retry = 0;
   while (eventState.requests.length < MAX_SLOTS && retry < 40) {
-    const available = getAvailableChars();
-    if (available.length === 0) break;
-
     const result1 = pickRandomItem(usedStageKeys);
     if (!result1) { retry++; continue; }
     const { item: reqItem1, key: key1 } = result1;
@@ -5593,7 +5647,10 @@ function fillEventRequests() {
       }
     }
 
-    const char = available[Math.floor(Math.random() * available.length)];
+    // アイテムの章に合った依頼人を選択
+    const chars = getCharsForItems(items);
+    if (chars.length === 0) { retry++; continue; }
+    const char = chars[Math.floor(Math.random() * chars.length)];
     eventState.requests.push({ characterId: char.id, items, coin: totalCoin });
     usedStageKeys.add(key1);
     usedCharIds.add(char.id);
@@ -5604,12 +5661,12 @@ function fillEventRequests() {
   if (eventState.requests.length < MIN_SLOTS) {
     let fallbackRetry = 0;
     while (eventState.requests.length < MIN_SLOTS && fallbackRetry < 30) {
-      const available = getAvailableChars();
-      if (available.length === 0) break;
       const result1 = pickRandomItem(usedStageKeys, true);
       if (!result1) { fallbackRetry++; continue; }
       const { item: reqItem1, key: key1 } = result1;
-      const char = available[Math.floor(Math.random() * available.length)];
+      const chars = getCharsForItems([reqItem1]);
+      if (chars.length === 0) { fallbackRetry++; continue; }
+      const char = chars[Math.floor(Math.random() * chars.length)];
       eventState.requests.push({
         characterId: char.id,
         items: [reqItem1],
