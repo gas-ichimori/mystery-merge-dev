@@ -3016,7 +3016,7 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
-      { speaker: 'ヤス',   text: 'DNA鑑定の結果が出ました。', side: 'left' },
+      { speaker: 'ヤス',   text: 'DNA鑑定の結果が出ました。', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_09.png' },
       { speaker: 'アキラ', text: '...本当に？', side: 'right' },
       { speaker: 'ヤス',   text: '間違いありません。あなたは、オジロ ケイスケさんの血縁です。', side: 'left' },
       { speaker: 'アキラ', text: '...（しばらく黙って）...そうか。本当に、俺の父さんだったんだ。', side: 'right' },
@@ -3035,8 +3035,8 @@ const ADV_SCENES = {
     script: [
       { speaker: 'ヤス',   text: '筆跡鑑定の結果、遺言書の一部が書き換えられていることが確認されました。', side: 'left' },
       { speaker: 'ノブオ', text: '...それは。何かの、手違いでは...。', side: 'right' },
-      { speaker: 'ヤス',   text: 'あなたが貸金庫に保管している書類。それが、本来の遺言書ではないですか？', side: 'left' },
-      { speaker: 'ノブオ', text: '...何を、言っているんですか。そんなものは——', side: 'right' },
+      { speaker: 'ヤス',   text: 'あなたが貸金庫に保管している書類。それが、本来の遺言書ではないですか？', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_13.png' },
+      { speaker: 'ノブオ', text: '...何を、言っているんですか。そんなものは——', side: 'right', setRightImg: 'img/Chapter3/chara/image_merge_order_chara_18a.png' },
       { speaker: 'ヤス',   text: 'ミドリさんから聞きました。リョウタさんからも。ノブオさん、あなたが脅していたと。', side: 'left' },
       { speaker: 'ノブオ', text: '...っ。', side: 'right' },
     ],
@@ -3050,7 +3050,7 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
-      { speaker: 'ノブオ', text: '...わかりました。私が...コウジさんのために、遺言書を書き直した。', side: 'right' },
+      { speaker: 'ノブオ', text: '...わかりました。私が...コウジさんのために、遺言書を書き直した。', side: 'right', showCenter: 'img/Chapter3/icon/image_merge_icon3_08.png' },
       { speaker: 'ヤス',   text: 'コウジさんに頼まれたんですか？', side: 'left' },
       { speaker: 'ノブオ', text: 'いや...コウジさんは知らない。私が...勝手に。でも、私一人で思いついたことじゃない。ある人から...言われなければ、私は動かなかった。', side: 'right' },
       // 伏線②：ヤスへの間接的な言及
@@ -3068,7 +3068,7 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
-      { speaker: 'コウジ', text: '（書類を掴もうとする）全部、なかったことにすれば——', side: 'left' },
+      { speaker: 'コウジ', text: '（書類を掴もうとする）全部、なかったことにすれば——', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_05.png' },
       { speaker: 'サチコ', text: 'やめて、お兄さん。', side: 'right' },
       { speaker: 'コウジ', text: 'サチコ...。', side: 'left' },
       { speaker: 'リョウタ', text: '（廊下から）父さん。おじいちゃんは...こんなことを望んでいなかったよ。', side: 'right' },
@@ -3088,7 +3088,7 @@ const ADV_SCENES = {
       { speaker: 'ミドリ', text: '...実は。旦那様から、預かっていたものがあります。', side: 'right' },
       { speaker: 'ヤス',   text: '...それは。', side: 'left' },
       { speaker: 'ミドリ', text: '「何かあった時には、これを。お前だけは信用できる」と、おっしゃって。', side: 'right' },
-      { speaker: 'ヤス',   text: '...（封筒を受け取る。開くと——本来の遺言書が）', side: 'left' },
+      { speaker: 'ヤス',   text: '...（封筒を受け取る。開くと——本来の遺言書が）', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_16.png' },
       { speaker: 'ミドリ', text: '旦那様は...最後まで、家族全員のことを考えていらっしゃいました。', side: 'right' },
       { speaker: 'ヤス',   text: '...ありがとうございます、ミドリさん。ご主人の気持ちは、必ず届けます。', side: 'left' },
     ],
@@ -3538,6 +3538,11 @@ function showAdvMessage(idx) {
   // ─── ケンイチ（right）を左にずらす（shiftRight）───
   if (msg.shiftRight && charaRight) {
     charaRight.classList.add('adv-shifted');
+  }
+
+  // ─── 右キャラ画像の差し替え（setRightImg）───
+  if (msg.setRightImg && charaRight) {
+    charaRight.querySelector('img').src = msg.setRightImg;
   }
 
   // ─── 第3キャラ（right2）の登場（初回のみ）───
