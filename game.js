@@ -4129,6 +4129,7 @@ let eventState = {
   kanteGenLevel: 0,        // 鑑定台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
   kanteDiscovered: {},     // 発見済み鑑定台アイテム { stage: true }
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
+  kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
   recentlySolvedKeys: new Set(), // 直前に解決したLv6+キー（次の補充で1回スキップ）
@@ -4172,6 +4173,7 @@ function initEventMap() {
   eventState.kanteGenLevel     = 0;
   eventState.kanteDiscovered   = {};
   eventState.seizoLvTriggered  = new Set();
+  eventState.kanteLvTriggered  = new Set();
   eventState.genUpTriggered    = new Set();
   eventState.completedLowStages = new Set();
   eventState.recentlySolvedKeys = new Set();
@@ -5196,6 +5198,7 @@ function progressStory() {
     // 第二章ジェネレーターLvアップ（プレイヤーLvトリガー）
     for (let lv = prevPlayerLevel + 1; lv <= state.playerLevel; lv++) {
       checkSeizoGenLevelUpByPlayerLevel(lv);
+      checkKanteGenLevelUpByPlayerLevel(lv);
     }
   }
 
@@ -5654,6 +5657,12 @@ function handleAnyGenTap(i) {
       if (isFireGen && selItem.isFireGen &&
           (selItem.seizoLevel ?? 0) === (item.seizoLevel ?? 0)) {
         mergeFireGenerators(eventState.selectedCell, i);
+        eventState.selectedCell = null;
+        return;
+      }
+      if (item.isKanteGen && selItem.isKanteGen &&
+          (selItem.kanteLevel ?? 0) === (item.kanteLevel ?? 0)) {
+        mergeKanteGenerators(eventState.selectedCell, i);
         eventState.selectedCell = null;
         return;
       }
@@ -6185,6 +6194,24 @@ function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
   renderEventBoard();
 }
 
+// 鑑定台ジェネレーターLvアップ判定：プレイヤーLvベース
+// playerLevel 8/10/12/14/16/18 到達時にマージ用タイルを追加配置
+const KANTE_GEN_PLAYERLV_TRIGGERS = new Set([8, 10, 12, 14, 16, 18]);
+function checkKanteGenLevelUpByPlayerLevel(playerLevel) {
+  if (!KANTE_GEN_PLAYERLV_TRIGGERS.has(playerLevel)) return;
+  if (!eventState.kanteGenUnlocked) return;
+  if (eventState.kanteLvTriggered.has(playerLevel)) return;
+  const existingIdx = eventState.board.findIndex(c => c && c.isKanteGen);
+  if (existingIdx === -1) return;
+  const currentLv = eventState.board[existingIdx].kanteLevel ?? 0;
+  const emptyIdx = findNearestEmptyEventCell(existingIdx);
+  if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); return; }
+  eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: currentLv };
+  eventState.kanteLvTriggered.add(playerLevel);
+  showToast('第三章ジェネレータータイルが増えた！マージしてLvアップ！');
+  renderEventBoard();
+}
+
 // 製造機ジェネレーターLvアップ判定（旧：アイテムStageベース・現在は未使用）
 function checkSeizoGenLevelUp(discoveredStage) {
   for (const trig of SEIZO_GEN_LEVELUP_TRIGGERS) {
@@ -6226,6 +6253,33 @@ function mergeFireGenerators(fromIdx, toIdx) {
   addEnergy(25, '第二章ジェネレーターLvアップボーナス！');
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
   eventState.firePowerLevel = getFireGenMaxAvailablePowerLv(newLevel);
+
+  setTimeout(() => {
+    const cells = document.querySelectorAll('#event-board .cell');
+    cells[toIdx]?.classList.add('merge-pop');
+    setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
+  }, 10);
+
+  fillEventRequests();
+  renderEventBoard();
+  renderEventRequest();
+  renderEventHeader();
+}
+
+// 鑑定台ジェネレータータイル同士のマージ（Lvアップ）
+function mergeKanteGenerators(fromIdx, toIdx) {
+  const toItem   = eventState.board[toIdx];
+  const newLevel = (toItem.kanteLevel ?? 0) + 1;
+  const maxLevel = KANTEITA_GEN_IMAGES.length - 1;
+  if (newLevel > maxLevel) { showToast('第三章ジェネレーターは最大レベルです'); return; }
+  eventState.board[toIdx]   = { isEventGen: true, isKanteGen: true, kanteLevel: newLevel };
+  eventState.board[fromIdx] = null;
+  eventState.selectedCell   = null;
+  eventState.kanteGenLevel  = Math.max(eventState.kanteGenLevel, newLevel);
+  discoverGen('ch3', newLevel);
+  const name = KANTEITA_GEN_NAMES[Math.min(newLevel, KANTEITA_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  addEnergy(25, '第三章ジェネレーターLvアップボーナス！');
 
   setTimeout(() => {
     const cells = document.querySelectorAll('#event-board .cell');
@@ -6643,6 +6697,11 @@ function endEvDrag(x, y) {
              (fromItem.seizoLevel ?? 0) === (toItem.seizoLevel ?? 0)) {
     // 製造機ジェネレータータイル同士のマージ → Lvアップ
     mergeFireGenerators(fromIdx, toIdx);
+    return;
+  } else if (fromItem.isKanteGen && toItem.isKanteGen &&
+             (fromItem.kanteLevel ?? 0) === (toItem.kanteLevel ?? 0)) {
+    // 鑑定台ジェネレータータイル同士のマージ → Lvアップ
+    mergeKanteGenerators(fromIdx, toIdx);
     return;
   } else if (!fromItem.isEventGen && evItemCanMerge(fromItem, toItem)) {
     // 通常/霧アイテムのマージ（ロック済み霧はターゲット不可）
