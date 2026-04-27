@@ -4133,6 +4133,7 @@ let eventState = {
   kanteDiscovered: {},     // 発見済み鑑定台アイテム { stage: true }
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
+  pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
   recentlySolvedKeys: new Set(), // 直前に解決したLv6+キー（次の補充で1回スキップ）
@@ -4176,8 +4177,9 @@ function initEventMap() {
   eventState.kanteGenLevel     = 0;
   eventState.kanteDiscovered   = {};
   eventState.seizoLvTriggered  = new Set();
-  eventState.kanteLvTriggered  = new Set();
-  eventState.genUpTriggered    = new Set();
+  eventState.kanteLvTriggered      = new Set();
+  eventState.pendingGenLvUpNotice  = [];
+  eventState.genUpTriggered        = new Set();
   eventState.completedLowStages = new Set();
   eventState.recentlySolvedKeys = new Set();
   eventState.unlockedFogCells   = new Set(INITIAL_UNLOCKED_FOG);
@@ -4428,12 +4430,53 @@ const CH3_SCENE_LIST = [
 ];
 
 function openStoryScreen() {
+  hideNaviHint();
   renderStoryScreen();
   document.getElementById('story-screen').classList.remove('hidden');
 }
 
 function closeStoryScreen() {
   document.getElementById('story-screen').classList.add('hidden');
+  // ストーリー中に追加されたジェネレータータイルを赤字ポップアップで通知
+  _showPendingGenLvUpNotices();
+}
+
+// ストーリー閲覧中に追加されたジェネレータータイルの通知を赤字ポップアップで表示
+function _showPendingGenLvUpNotices() {
+  const notices = eventState.pendingGenLvUpNotice ?? [];
+  if (notices.length === 0) return;
+  eventState.pendingGenLvUpNotice = [];
+  notices.forEach(({ idx, msg }, i) => {
+    setTimeout(() => {
+      const cells = document.querySelectorAll('#event-board .cell');
+      const cell = cells[idx];
+      if (!cell) return;
+      const rect = cell.getBoundingClientRect();
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.cssText = `
+        position: fixed;
+        left: ${rect.left + rect.width / 2}px;
+        top: ${rect.top - 8}px;
+        transform: translate(-50%, -100%);
+        background: rgba(180,0,0,0.92);
+        color: #fff;
+        padding: 7px 14px;
+        border-radius: 14px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 2000;
+        pointer-events: none;
+        max-width: 80vw;
+        text-align: center;
+        white-space: pre-line;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        animation: toast-pop 3s ease-out forwards;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }, 400 + i * 600);
+  });
 }
 
 function renderStoryScreen() {
@@ -6137,6 +6180,7 @@ function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
   if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: currentLv };
   eventState.seizoLvTriggered.add(playerLevel);
+  eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第二章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
   showToast('第二章ジェネレータータイルが増えた！マージしてLvアップ！');
   renderEventBoard();
 }
@@ -6155,6 +6199,7 @@ function checkKanteGenLevelUpByPlayerLevel(playerLevel) {
   if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: currentLv };
   eventState.kanteLvTriggered.add(playerLevel);
+  eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第三章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
   showToast('第三章ジェネレータータイルが増えた！マージしてLvアップ！');
   renderEventBoard();
 }
