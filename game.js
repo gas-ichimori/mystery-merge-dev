@@ -2804,7 +2804,7 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
-      { speaker: 'ヤス',   text: 'こちらが、遺言書の原本ですね。', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_07.png' },
+      { speaker: 'ヤス',   text: 'こちらが、遺言書の原本ですね。', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_05.png' },
       { speaker: 'フミコ', text: 'はい。ノブオさん...主人の長年の友人で弁護士の方が持ってきてくださいました。', side: 'right' },
       { speaker: 'ヤス',   text: '...日付と、インクの色が。少し、気になります。', side: 'left' },
       { speaker: 'フミコ', text: '？', side: 'right' },
