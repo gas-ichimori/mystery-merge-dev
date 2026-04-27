@@ -2817,7 +2817,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_18.png',
-    bg:           'img/bg/image_merge_bg_hiruma.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_lawyer_office_rain.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'slide', autoClose: false,
     script: [
@@ -2916,7 +2916,7 @@ const ADV_SCENES = {
   c3s14: {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
-    bg:           'img/bg/image_merge_bg_light.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_lawyer_office.png',
     leftEntrance: 'fade', flipLeft: true,
     autoClose:    false,
     script: [
@@ -3029,7 +3029,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_18.png',
-    bg:           'img/bg/image_merge_bg_hiruma.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_lawyer_office_messy.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -3046,7 +3046,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_18a.png',
-    bg:           'img/bg/image_merge_bg_hiruma.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_lawyer_office_night.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
