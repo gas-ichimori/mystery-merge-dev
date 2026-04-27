@@ -2719,9 +2719,9 @@ const ADV_SCENES = {
     rightEntrance:'fade', autoClose: false,
     script: [
       { hideAll: true, changeBg: 'img/Chapter3/bg/image_merge_bg_inn_exterior.png', autoAdvance: true },
-      { speaker: 'フミコ', text: 'こちらです。「白鷺亭」...主人が四十年かけて建てた旅館なんです。', side: 'right', showRight: true, slideRight: true },
+      { speaker: 'フミコ', text: 'こちらです。「白鷺亭」...主人が五十年以上、営んできた旅館です。', side: 'right', showRight: true, slideRight: true },
       // 伏線①：どこか含みのある一言
-      { speaker: 'ヤス',   text: '...立派な旅館ですね。', side: 'left', showLeft: true, slideLeft: true, flipLeft: true },
+      { speaker: 'ヤス',   text: '...これは...立派な旅館ですね。', side: 'left', showLeft: true, slideLeft: true, flipLeft: true },
       { speaker: 'フミコ', text: '？...何か、おっしゃいましたか？', side: 'right' },
       { speaker: 'ヤス',   text: 'いえ...早速、中を拝見させてください。', side: 'left' },
     ],
