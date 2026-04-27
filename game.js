@@ -1433,7 +1433,6 @@ function discoverEventItem(stage) {
 function discoverSeizoItem(stage) {
   if (eventState.seizoDiscovered[stage]) return;
   eventState.seizoDiscovered[stage] = true;
-  checkSeizoGenLevelUp(stage);
   updateCatalogBadge();
 }
 
@@ -5181,6 +5180,7 @@ function progressStory() {
 
   // レベルアップ判定（複数回上がる場合も対応）
   let leveledUp = false;
+  const prevPlayerLevel = state.playerLevel;
   while (state.playerXP >= getLevelUpXP(state.playerLevel)) {
     state.playerXP -= getLevelUpXP(state.playerLevel);
     state.playerLevel++;
@@ -5192,6 +5192,10 @@ function progressStory() {
     if (ringEl) {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+    }
+    // 第二章ジェネレーターLvアップ（プレイヤーLvトリガー）
+    for (let lv = prevPlayerLevel + 1; lv <= state.playerLevel; lv++) {
+      checkSeizoGenLevelUpByPlayerLevel(lv);
     }
   }
 
@@ -5270,9 +5274,12 @@ function progressStory() {
   if (!state.seenScenes) state.seenScenes = [];
   if (!state.seenScenes.includes(sceneId)) state.seenScenes.push(sceneId);
 
-  // storyCount === 8（scene09）: シーン終了後に第二章ジェネレーター解放＋誘導ガイド
-  if (state.storyCount === 8) {
-    openAdventureScene(sceneId, () => {
+  // シーン終了後コールバックを構築（複数条件を順次実行）
+  let postSceneCallback = null;
+
+  // 第二章ジェネレーター解放：プレイヤーLv3以上かつ未解放のシーン終了後
+  if (!eventState.fireGenUnlocked && state.playerLevel >= 3) {
+    postSceneCallback = () => {
       unlockFireGenerator();
       requestAnimationFrame(() => {
         startGuide([
@@ -5280,13 +5287,14 @@ function progressStory() {
           '別の章のストーリーも見ることができます。',
         ], '#fire-gen-tile', null);
       });
-    });
-    return;
+    };
   }
 
-  // storyCount === 37（c2s20）: シーン終了後に第三章ジェネレーター解放
-  if (state.storyCount === 37) {
-    openAdventureScene(sceneId, () => {
+  // 第三章ジェネレーター解放：storyCount === 24（c2s08後）
+  if (state.storyCount === 24) {
+    const prev = postSceneCallback;
+    postSceneCallback = () => {
+      if (prev) prev();
       unlockKanteGenerator();
       requestAnimationFrame(() => {
         startGuide([
@@ -5294,11 +5302,10 @@ function progressStory() {
           '新たな事件の幕が上がります。',
         ], '#kante-gen-tile', null);
       });
-    });
-    return;
+    };
   }
 
-  openAdventureScene(sceneId);
+  openAdventureScene(sceneId, postSceneCallback || undefined);
 }
 
 // ========================================
@@ -6160,7 +6167,25 @@ function unlockKanteGenerator() {
   renderEventRequest();
 }
 
-// 製造機ジェネレーターLvアップ判定（マージ用タイルを追加配置）
+// 製造機ジェネレーターLvアップ判定：プレイヤーLvベース
+// playerLevel 4/6/8/10/12/14 到達時にマージ用タイルを追加配置
+const SEIZO_GEN_PLAYERLV_TRIGGERS = new Set([4, 6, 8, 10, 12, 14]);
+function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
+  if (!SEIZO_GEN_PLAYERLV_TRIGGERS.has(playerLevel)) return;
+  if (!eventState.fireGenUnlocked) return;
+  if (eventState.seizoLvTriggered.has(playerLevel)) return;
+  const existingIdx = eventState.board.findIndex(c => c && c.isFireGen);
+  if (existingIdx === -1) return;
+  const currentLv = eventState.board[existingIdx].seizoLevel ?? 0;
+  const emptyIdx = findNearestEmptyEventCell(existingIdx);
+  if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); return; }
+  eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: currentLv };
+  eventState.seizoLvTriggered.add(playerLevel);
+  showToast('第二章ジェネレータータイルが増えた！マージしてLvアップ！');
+  renderEventBoard();
+}
+
+// 製造機ジェネレーターLvアップ判定（旧：アイテムStageベース・現在は未使用）
 function checkSeizoGenLevelUp(discoveredStage) {
   for (const trig of SEIZO_GEN_LEVELUP_TRIGGERS) {
     if (discoveredStage === trig.triggerStage &&
