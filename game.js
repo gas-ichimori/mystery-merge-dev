@@ -2718,7 +2718,7 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
-      { hideAll: true, changeBg: 'img/bg/image_merge_bg_road_light.png', autoAdvance: true },
+      { hideAll: true, changeBg: 'img/Chapter3/bg/image_merge_bg_inn_exterior.png', autoAdvance: true },
       { speaker: 'フミコ', text: 'こちらです。「白鷺亭」...主人が四十年かけて建てた旅館なんです。', side: 'right', showRight: true, slideRight: true },
       // 伏線①：どこか含みのある一言
       { speaker: 'ヤス',   text: '...立派な旅館ですね。', side: 'left', showLeft: true, slideLeft: true, flipLeft: true },
@@ -2782,7 +2782,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_20.png',
-    bg:           'img/bg/image_merge_bg_light.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_inn_interior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'slide', autoClose: false,
     script: [
@@ -2803,7 +2803,7 @@ const ADV_SCENES = {
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
-      { speaker: 'ヤス',   text: 'こちらが、遺言書の原本ですね。', side: 'left' },
+      { speaker: 'ヤス',   text: 'こちらが、遺言書の原本ですね。', side: 'left', showCenter: 'img/Chapter3/icon/image_merge_icon3_07.png' },
       { speaker: 'フミコ', text: 'はい。ノブオさん...主人の長年の友人で弁護士の方が持ってきてくださいました。', side: 'right' },
       { speaker: 'ヤス',   text: '...日付と、インクの色が。少し、気になります。', side: 'left' },
       { speaker: 'フミコ', text: '？', side: 'right' },
@@ -2833,7 +2833,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_21.png',
-    bg:           'img/bg/image_merge_bg_road_light.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_inn_exterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'slide', autoClose: false,
     script: [
@@ -2850,7 +2850,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_16.png',
-    bg:           'img/bg/image_merge_bg_road_light.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_inn_exterior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -2947,7 +2947,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter3/chara/image_merge_order_chara_16.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_17.png',
-    bg:           'img/bg/image_merge_bg_light.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_inn_interior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
@@ -3063,7 +3063,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter3/chara/image_merge_order_chara_16.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_17.png',
-    bg:           'img/bg/image_merge_bg_light.png',
+    bg:           'img/Chapter3/bg/image_merge_bg_inn_interior.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'fade', autoClose: false,
     script: [
