@@ -2318,7 +2318,7 @@ const ADV_SCENES = {
     rightEntrance:'fade', autoClose: false,
     script: [
       // 背景チェンジ→マンション外（仮: road_light）
-      { hideAll: true, changeBg: 'img/bg/image_merge_bg_road_light.png', autoAdvance: true },
+      { hideAll: true, changeBg: 'img/Chapter2/bg/image_merge_bg_sunrisehills.png', autoAdvance: true },
       { speaker: 'リナ',  text: 'ここです...「サンライズ ヒルズ」というマンションです。', side: 'right', showRight: true, slideRight: true },
       { speaker: 'ヤス',  text: '管理会社はどちらですか？', side: 'left', showLeft: true, slideLeft: true, flipLeft: true },
       { speaker: 'リナ',  text: '「青葉不動産」さんです...担当の方は、ジンさんという方で...', side: 'right' },
