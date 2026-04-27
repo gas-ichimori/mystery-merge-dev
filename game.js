@@ -2690,6 +2690,440 @@ const ADV_SCENES = {
       { speaker: 'ヤス', text: '...次は、どんな依頼が来るでしょうか。', side: 'left' },
     ],
   },
+  // ===== 第三章 =====
+  // 第三章 Scene01（38回目）フミコ来訪
+  c3s01: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_15.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'フミコ', text: '突然すみません...。こちら、探偵事務所ですよね...？', side: 'right' },
+      { speaker: 'ヤス',   text: 'ええ。どうぞ、お座りください。', side: 'left' },
+      { speaker: 'フミコ', text: '...実は、主人の遺言書のことで...どうしても腑に落ちないことがありまして。', side: 'right' },
+      { speaker: 'ヤス',   text: '遺言書、ですか。', side: 'left' },
+      { speaker: 'フミコ', text: 'あの人は「旅館は家族全員で守るもの」と...ずっとそう言っていたんです。でも遺言書には、長男だけに旅館を渡すと...', side: 'right' },
+      { speaker: 'ヤス',   text: '...それは、ご主人のお気持ちと違う、と。', side: 'left' },
+      { speaker: 'フミコ', text: 'はい。あの人が、そんな遺言を書くはずがないんです。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene02（39回目）白鷺亭へ・ヤスの伏線①
+  c3s02: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_15.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { hideAll: true, changeBg: 'img/bg/image_merge_bg_road_light.png', autoAdvance: true },
+      { speaker: 'フミコ', text: 'こちらです。「白鷺亭」...主人が四十年かけて建てた旅館なんです。', side: 'right', showRight: true, slideRight: true },
+      // 伏線①：どこか含みのある一言
+      { speaker: 'ヤス',   text: '...立派な旅館ですね。', side: 'left', showLeft: true, slideLeft: true, flipLeft: true },
+      { speaker: 'フミコ', text: '？...何か、おっしゃいましたか？', side: 'right' },
+      { speaker: 'ヤス',   text: 'いえ...早速、中を拝見させてください。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene03（40回目）コウジと初接触
+  c3s03: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_16.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'コウジ', text: '...あんたが探偵か。母が頼んだとか言ってたが。', side: 'right' },
+      { speaker: 'ヤス',   text: 'はい。少し、お話を聞かせていただけますか？', side: 'left' },
+      { speaker: 'コウジ', text: '断る。遺言書は正式なものだ。部外者が口を出すことは何もない。', side: 'right' },
+      { speaker: 'ヤス',   text: '...そうですか。では、なぜそこまで急いで話を終わらせようとするのでしょう？', side: 'left' },
+      { speaker: 'コウジ', text: '...っ。余計なことを考えるな。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene04（41回目）サチコと遭遇
+  c3s04: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_17.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'サチコ', text: '...探偵さんですか？母から聞いています。', side: 'right' },
+      { speaker: 'ヤス',   text: 'サチコさんですね。遠いところをわざわざ。', side: 'left' },
+      { speaker: 'サチコ', text: 'お父さんが亡くなって...そんなすぐに遺言書の話が出て。正直、私もおかしいとは思っていたんです。', side: 'right' },
+      { speaker: 'ヤス',   text: 'おかしい、とは？', side: 'left' },
+      { speaker: 'サチコ', text: 'お父さんは...私のことも、アキラのことも...ちゃんと考えていたはずなんです。あんな遺言、書くはずがない。', side: 'right' },
+      { speaker: 'ヤス',   text: '...アキラ、というのは？', side: 'left' },
+      { speaker: 'サチコ', text: '...今は、まだ言えません。でも、調べていただければわかります。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene05（42回目）ミドリへの聞き込み
+  c3s05: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_19.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'ミドリ', text: '...旦那様は、穏やかな方でございました。お客様にも、従業員にも、分け隔てなく。', side: 'right' },
+      { speaker: 'ヤス',   text: '亡くなられる前、何か変わったことはありませんでしたか？', side: 'left' },
+      { speaker: 'ミドリ', text: 'それは...。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ミドリさん？', side: 'left' },
+      { speaker: 'ミドリ', text: '...旦那様は、いつも通りでございました。変わったことなど、特には...。', side: 'right' },
+      { speaker: 'ヤス',   text: '...わかりました。何かあれば、いつでも話してください。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene06（43回目）リョウタと廊下で偶然
+  c3s06: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_20.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'リョウタ', text: 'あ...探偵さんですか？おばあちゃんから聞いてました。', side: 'right' },
+      { speaker: 'ヤス',     text: 'リョウタさん。おじい様のこと、聞いてもいいですか？', side: 'left' },
+      { speaker: 'リョウタ', text: 'はい。おじいちゃん、いつもフミコおばあちゃんのことが一番大事って言ってましたから。', side: 'right' },
+      { speaker: 'ヤス',     text: '...お父さんとは、旅館の話はされていましたか？', side: 'left' },
+      { speaker: 'リョウタ', text: 'うーん...おじいちゃん、旅館を父さんに任せることは考えてなかったみたいで...父さんも、それは知ってたみたいで...。', side: 'right' },
+      { speaker: 'ヤス',     text: '...大事なことを教えてくれてありがとう。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene07（44回目）遺言書を確認
+  c3s07: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_15.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: 'こちらが、遺言書の原本ですね。', side: 'left' },
+      { speaker: 'フミコ', text: 'はい。ノブオさん...主人の長年の友人で弁護士の方が持ってきてくださいました。', side: 'right' },
+      { speaker: 'ヤス',   text: '...日付と、インクの色が。少し、気になります。', side: 'left' },
+      { speaker: 'フミコ', text: '？', side: 'right' },
+      { speaker: 'ヤス',   text: '専門家に鑑定をお願いした方がよさそうです。筆跡の分析も含めて。', side: 'left' },
+      { speaker: 'フミコ', text: '...もし、書き換えられていたとしたら...一体、誰が...。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene08（45回目）ノブオ弁護士と面会
+  c3s08: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_18.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'ノブオ', text: '探偵さん...ですか。フミコさんに頼まれた？', side: 'right' },
+      { speaker: 'ヤス',   text: 'はい。遺言書の件で、少々お話を。', side: 'left' },
+      { speaker: 'ノブオ', text: '遺言書は、正式な手続きを経て作成されたものです。ケイスケ君が...ご本人が直接、私に依頼してきたものですよ。', side: 'right' },
+      { speaker: 'ヤス',   text: '作成されたのは、いつ頃でしたか？', side: 'left' },
+      { speaker: 'ノブオ', text: '...亡くなる、三週間ほど前でしたか。ただ...遺言書は正式なものです。正式に作成された、ものです。', side: 'right' },
+      { speaker: 'ヤス',   text: '...そうですか。ありがとうございました。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene09（46回目）アキラ登場
+  c3s09: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_21.png',
+    bg:           'img/bg/image_merge_bg_road_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'アキラ', text: '...ここが、白鷺亭か。', side: 'right' },
+      { speaker: 'ヤス',   text: 'どちら様ですか？', side: 'left' },
+      { speaker: 'アキラ', text: '俺は...オジロ ケイスケの子です。遺産の権利があるはずなんです。', side: 'right' },
+      { speaker: 'ヤス',   text: '...ケイスケさんの、お子さん。', side: 'left' },
+      { speaker: 'アキラ', text: '信じてもらえないのはわかってます。でも...俺は本当のことを言ってる。', side: 'right' },
+      { speaker: 'ヤス',   text: '...少し、話を聞かせてください。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene10（47回目）コウジがアキラを追い出す
+  c3s10: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_16.png',
+    bg:           'img/bg/image_merge_bg_road_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'コウジ', text: '出て行け！証拠もないのに乗り込んできやがって！', side: 'right' },
+      { speaker: 'ヤス',   text: 'コウジさん、少し落ち着いて——', side: 'left' },
+      { speaker: 'コウジ', text: 'あんたも黙ってろ！そいつは詐欺師だ！親父に隠し子なんているわけがない！', side: 'right' },
+      { speaker: 'ヤス',   text: '...（コウジさんの目に、怒りだけでなく焦りが見える）', side: 'left' },
+      { speaker: 'コウジ', text: 'とにかく、関係ない奴はここに来るな。遺産は決まっている。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene11（48回目）アキラの身元調査
+  c3s11: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_21.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'アキラ', text: '母は...父のことを名前しか教えてくれなかった。「オジロさんという立派な人だった」って。', side: 'right' },
+      { speaker: 'ヤス',   text: 'DNA鑑定の結果が出るまでには、少し時間がかかります。', side: 'left' },
+      { speaker: 'アキラ', text: '金が目当てだと思ってるでしょう。...正直、遺産なんてどうでもいい。ただ、父親がどんな人だったのか、それだけが知りたかった。', side: 'right' },
+      { speaker: 'ヤス',   text: '...その気持ちは、本物に見えます。', side: 'left' },
+      { speaker: 'アキラ', text: '...ありがとう。信じてくれる人が、一人でもいれば。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene12（49回目）ミドリが夜こっそり接触
+  c3s12: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_19.png',
+    bg:           'img/bg/image_merge_bg.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'ミドリ', text: '...探偵さん。夜分に申し訳ありません。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ミドリさん...何かあったんですか？', side: 'left' },
+      { speaker: 'ミドリ', text: 'はっきりとは言えないのですが...旦那様が亡くなる少し前。ノブオさんが旅館に来られて、旦那様とふたりで長い時間、お話しされていました。', side: 'right' },
+      { speaker: 'ヤス',   text: 'その後、何か変化はありましたか？', side: 'left' },
+      { speaker: 'ミドリ', text: '旦那様が...どこか、ふっきれたような顔をされていて...。それが少し、気になって。', side: 'right' },
+      { speaker: 'ヤス',   text: '...大事な話をありがとうございます。また何か思い出したら、話してください。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene13（50回目）フミコが書斎で手紙発見
+  c3s13: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_15.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'フミコ', text: '主人の書斎を整理していたら...古い手紙が出てきたんです。', side: 'right' },
+      { speaker: 'ヤス',   text: '内容は？', side: 'left' },
+      { speaker: 'フミコ', text: '...コウジのことが書いてありました。「旅館を継がせるつもりはない。あの子には、別の道を見つけてほしい」と...。', side: 'right' },
+      { speaker: 'ヤス',   text: '遺言書の内容と、真逆ですね。', side: 'left' },
+      { speaker: 'フミコ', text: 'ええ...。やっぱり、おかしいんです。あの遺言書は、主人が本当に望んだものじゃない。', side: 'right' },
+      { speaker: 'ヤス',   text: '...この手紙、お借りできますか。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene14（51回目）ノブオの事務所を調査
+  c3s14: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose:    false,
+    script: [
+      { speaker: 'ヤス', text: '...ノブオ弁護士の事務所。記録を辿れれば。', side: 'left' },
+      { speaker: 'ヤス', text: '...（古い決算書、依頼人との契約書...）', side: 'left' },
+      { speaker: 'ヤス', text: '...これは。十五年前の横領に関する記録...いくつかの書類に、不自然な修正が入っている。', side: 'left' },
+      { speaker: 'ヤス', text: '...ノブオさんには、何か隠していることがある。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene15（52回目）リョウタの重要証言
+  c3s15: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_20.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'リョウタ', text: 'あの...探偵さん。一つ、気になることがあって。', side: 'right' },
+      { speaker: 'ヤス',     text: 'なんでしょう？', side: 'left' },
+      { speaker: 'リョウタ', text: 'ノブオさんが来た翌日...おじいちゃんの様子がすごくおかしかったんです。', side: 'right' },
+      { speaker: 'ヤス',     text: 'おかしい、とは？', side: 'left' },
+      { speaker: 'リョウタ', text: '笑顔がなくて、部屋にこもって...俺が話しかけても、上の空で。それまでと全然違って...。', side: 'right' },
+      { speaker: 'ヤス',     text: '...そのことを、覚えていてくれてありがとう。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene16（53回目）コウジとサチコの口論
+  c3s16: {
+    title:        '',
+    leftImg:      'img/Chapter3/chara/image_merge_order_chara_16.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_17.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'サチコ', text: 'お兄さん、何か知ってるんじゃないの？あの遺言書、本当にお父さんが書いたの？', side: 'right' },
+      { speaker: 'コウジ', text: '...うるさい。父さんが書いたものだ。それだけだ。', side: 'left' },
+      { speaker: 'サチコ', text: '違う。お父さんはそんな人じゃなかった。私たちみんなのことを考えてた。アキラさんのことも——', side: 'right' },
+      { speaker: 'コウジ', text: 'あいつの名前を出すな！', side: 'left' },
+      { speaker: 'サチコ', text: '（静かに）...お兄さん、もう止めて。お父さんが悲しむよ。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene17（54回目）ミドリが遂に口を開く
+  c3s17: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_19.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'ミドリ', text: '...もう、黙っていられません。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ミドリさん。', side: 'left' },
+      { speaker: 'ミドリ', text: 'ノブオさんに言われたんです。「旦那様の遺言のことは誰にも言うな。言えば旅館を辞めさせる」と...。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ノブオさんが、直接？', side: 'left' },
+      { speaker: 'ミドリ', text: 'はい。でも...旦那様が遺してくれたものを、このまま黙って見過ごすことなんて、私にはできません。', side: 'right' },
+      { speaker: 'ヤス',   text: '...話してくれてありがとうございます。必ず、守ります。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene18（55回目）ノブオを尾行
+  c3s18: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg:           'img/bg/image_merge_bg_road_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose:    false,
+    script: [
+      { speaker: 'ヤス', text: '...ノブオさん。夜に一人で、どちらへ。', side: 'left' },
+      { speaker: 'ヤス', text: '...（尾行を続ける。路地を折れ、銀行の方向へ）', side: 'left' },
+      { speaker: 'ヤス', text: '...（貸金庫のある支店。書類らしきものを抱えている）', side: 'left' },
+      { speaker: 'ヤス', text: '...隠したいものがある。だから、ここに。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene19（56回目）筆跡鑑定の結果
+  c3s19: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_15.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '筆跡鑑定の結果が出ました。', side: 'left' },
+      { speaker: 'フミコ', text: '...どうでしたか？', side: 'right' },
+      { speaker: 'ヤス',   text: '遺言書の後半部分——コウジさんに旅館を渡す、という箇所が。明らかに後から書き加えられています。インクの成分と日付のズレが証拠です。', side: 'left' },
+      { speaker: 'フミコ', text: '...やっぱり。あの人は、そんなことしない。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ご主人は、本来の遺志を書いていた。誰かが、それを書き換えた。', side: 'left' },
+      { speaker: 'フミコ', text: '...許せない。でも...誰が...。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene20（57回目）アキラのDNA結果
+  c3s20: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_21.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: 'DNA鑑定の結果が出ました。', side: 'left' },
+      { speaker: 'アキラ', text: '...本当に？', side: 'right' },
+      { speaker: 'ヤス',   text: '間違いありません。あなたは、オジロ ケイスケさんの血縁です。', side: 'left' },
+      { speaker: 'アキラ', text: '...（しばらく黙って）...そうか。本当に、俺の父さんだったんだ。', side: 'right' },
+      { speaker: 'ヤス',   text: 'あなたには、相続の権利があります。', side: 'left' },
+      { speaker: 'アキラ', text: '...金はいらない。ただ...父さんのことを、もう少し知りたい。それだけです。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene21（58回目）ノブオに証拠を突きつける
+  c3s21: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_18.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '筆跡鑑定の結果、遺言書の一部が書き換えられていることが確認されました。', side: 'left' },
+      { speaker: 'ノブオ', text: '...それは。何かの、手違いでは...。', side: 'right' },
+      { speaker: 'ヤス',   text: 'あなたが貸金庫に保管している書類。それが、本来の遺言書ではないですか？', side: 'left' },
+      { speaker: 'ノブオ', text: '...何を、言っているんですか。そんなものは——', side: 'right' },
+      { speaker: 'ヤス',   text: 'ミドリさんから聞きました。リョウタさんからも。ノブオさん、あなたが脅していたと。', side: 'left' },
+      { speaker: 'ノブオ', text: '...っ。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene22（59回目）ノブオ一部自白・伏線②
+  c3s22: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_18a.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'ノブオ', text: '...わかりました。私が...コウジさんのために、遺言書を書き直した。', side: 'right' },
+      { speaker: 'ヤス',   text: 'コウジさんに頼まれたんですか？', side: 'left' },
+      { speaker: 'ノブオ', text: 'いや...コウジさんは知らない。私が...勝手に。でも、私一人で思いついたことじゃない。ある人から...言われなければ、私は動かなかった。', side: 'right' },
+      // 伏線②：ヤスへの間接的な言及
+      { speaker: 'ヤス',   text: 'ある人、とは？', side: 'left' },
+      { speaker: 'ノブオ', text: '...それだけは。それだけは、言えない。', side: 'right' },
+      { speaker: 'ヤス',   text: '...（言えない、ではなく——言いたくない。か）', side: 'left' },
+    ],
+  },
+  // 第三章 Scene23（60回目）コウジが証拠隠滅を図る
+  c3s23: {
+    title:        '',
+    leftImg:      'img/Chapter3/chara/image_merge_order_chara_16.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_17.png',
+    bg:           'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'コウジ', text: '（書類を掴もうとする）全部、なかったことにすれば——', side: 'left' },
+      { speaker: 'サチコ', text: 'やめて、お兄さん。', side: 'right' },
+      { speaker: 'コウジ', text: 'サチコ...。', side: 'left' },
+      { speaker: 'リョウタ', text: '（廊下から）父さん。おじいちゃんは...こんなことを望んでいなかったよ。', side: 'right' },
+      { speaker: 'コウジ', text: '...（手を止める）...俺は...旅館を守りたかっただけだ。', side: 'left' },
+      { speaker: 'サチコ', text: '守りたいなら、お父さんの気持ちを守って。旅館じゃなくて。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene24（61回目）真の遺言書
+  c3s24: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_19.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'slide', autoClose: false,
+    script: [
+      { speaker: 'ミドリ', text: '...実は。旦那様から、預かっていたものがあります。', side: 'right' },
+      { speaker: 'ヤス',   text: '...それは。', side: 'left' },
+      { speaker: 'ミドリ', text: '「何かあった時には、これを。お前だけは信用できる」と、おっしゃって。', side: 'right' },
+      { speaker: 'ヤス',   text: '...（封筒を受け取る。開くと——本来の遺言書が）', side: 'left' },
+      { speaker: 'ミドリ', text: '旦那様は...最後まで、家族全員のことを考えていらっしゃいました。', side: 'right' },
+      { speaker: 'ヤス',   text: '...ありがとうございます、ミドリさん。ご主人の気持ちは、必ず届けます。', side: 'left' },
+    ],
+  },
+  // 第三章 Scene25（62回目）フミコへの報告・依頼完了
+  c3s25: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg:     'img/Chapter3/chara/image_merge_order_chara_15.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance:'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '...本来の遺言書が見つかりました。ご主人は、旅館を家族全員で守ってほしいと、書いていました。', side: 'left' },
+      { speaker: 'フミコ', text: '...（しばらく黙って）。', side: 'right' },
+      { speaker: 'フミコ', text: 'あの人の...気持ちが、伝わりました。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ご主人は、ずっとあなたのことを思っていました。', side: 'left' },
+      { speaker: 'フミコ', text: '...ありがとうございます。本当に、ありがとう。', side: 'right' },
+    ],
+  },
+  // 第三章 Scene26（63回目）後日談・ヤスの伏線③
+  c3s26: {
+    title:        '',
+    leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose:    false,
+    script: [
+      { speaker: 'ヤス', text: 'フミコさんも、ようやく安心されましたね。', side: 'left' },
+      { speaker: 'ヤス', text: '...白鷺亭は、これからも残っていくでしょう。あの場所に。', side: 'left' },
+      // 伏線③：「あの場所に」——何かを知りすぎているような口ぶり
+      { speaker: 'ヤス', text: '...うまくいきましたね。', side: 'left' },
+      { sound: '...', autoAdvance: true, advanceDelay: 1500 },
+      { speaker: 'ヤス', text: '...さて。次は、どんな依頼が来るでしょうか。', side: 'left' },
+    ],
+  },
   // ===== 第一章スライド01（2,000コインで解放）=====
   scene02: {
     title:         '',
@@ -3289,6 +3723,10 @@ document.getElementById('story-ch2-next-btn').addEventListener('click', () => {
   closeStoryScreen();
   progressStory();
 });
+document.getElementById('story-ch3-next-btn').addEventListener('click', () => {
+  closeStoryScreen();
+  progressStory();
+});
 
 // デバッグ：ジェネレーター出現
 document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
@@ -3338,6 +3776,14 @@ document.getElementById('debug-adv-ch1-play').addEventListener('click', () => {
 // デバッグ：アドベンチャーシーン（第二章）
 document.getElementById('debug-adv-ch2-play').addEventListener('click', () => {
   const val = document.getElementById('debug-adv-ch2-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
+  document.getElementById('debug-screen').classList.add('hidden');
+  openAdventureScene(val);
+});
+
+// デバッグ：アドベンチャーシーン（第三章）
+document.getElementById('debug-adv-ch3-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch3-select').value;
   if (!val) { showToast('シーンを選択してください'); return; }
   document.getElementById('debug-screen').classList.add('hidden');
   openAdventureScene(val);
@@ -3671,9 +4117,12 @@ let eventState = {
   discovered: {},        // 発見済みイベントアイテム { stage: true }
   requests: [],          // イベントマップ用依頼リスト
   genLevelUpReady: false, // （旧フラグ、互換のため残存）
-  fireGenUnlocked: false, // 製造機ジェネレーター解放済み
-  seizoGenLevel: 0,       // 製造機ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
-  seizoDiscovered: {},    // 発見済み製造機アイテム { stage: true }
+  fireGenUnlocked: false,  // 製造機ジェネレーター解放済み
+  seizoGenLevel: 0,        // 製造機ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
+  seizoDiscovered: {},     // 発見済み製造機アイテム { stage: true }
+  kanteGenUnlocked: false, // 鑑定台ジェネレーター解放済み（第三章）
+  kanteGenLevel: 0,        // 鑑定台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
+  kanteDiscovered: {},     // 発見済み鑑定台アイテム { stage: true }
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
@@ -3714,6 +4163,9 @@ function initEventMap() {
   eventState.fireGenUnlocked   = false;
   eventState.seizoGenLevel     = 0;
   eventState.seizoDiscovered   = {};
+  eventState.kanteGenUnlocked  = false;
+  eventState.kanteGenLevel     = 0;
+  eventState.kanteDiscovered   = {};
   eventState.seizoLvTriggered  = new Set();
   eventState.genUpTriggered    = new Set();
   eventState.completedLowStages = new Set();
@@ -3935,6 +4387,36 @@ const CH1_SCENE_LIST = [
   { id: 'scene17', label: 'Ep.16（完結）' },
 ];
 
+// 第三章シーン一覧（c3s01〜c3s26）
+const CH3_SCENE_LIST = [
+  { id: 'c3s01', label: 'Ep.01' },
+  { id: 'c3s02', label: 'Ep.02' },
+  { id: 'c3s03', label: 'Ep.03' },
+  { id: 'c3s04', label: 'Ep.04' },
+  { id: 'c3s05', label: 'Ep.05' },
+  { id: 'c3s06', label: 'Ep.06' },
+  { id: 'c3s07', label: 'Ep.07' },
+  { id: 'c3s08', label: 'Ep.08' },
+  { id: 'c3s09', label: 'Ep.09' },
+  { id: 'c3s10', label: 'Ep.10' },
+  { id: 'c3s11', label: 'Ep.11' },
+  { id: 'c3s12', label: 'Ep.12' },
+  { id: 'c3s13', label: 'Ep.13' },
+  { id: 'c3s14', label: 'Ep.14' },
+  { id: 'c3s15', label: 'Ep.15' },
+  { id: 'c3s16', label: 'Ep.16' },
+  { id: 'c3s17', label: 'Ep.17' },
+  { id: 'c3s18', label: 'Ep.18' },
+  { id: 'c3s19', label: 'Ep.19' },
+  { id: 'c3s20', label: 'Ep.20' },
+  { id: 'c3s21', label: 'Ep.21' },
+  { id: 'c3s22', label: 'Ep.22' },
+  { id: 'c3s23', label: 'Ep.23' },
+  { id: 'c3s24', label: 'Ep.24' },
+  { id: 'c3s25', label: 'Ep.25（完結）' },
+  { id: 'c3s26', label: 'Ep.26（後日談）' },
+];
+
 function openStoryScreen() {
   renderStoryScreen();
   document.getElementById('story-screen').classList.remove('hidden');
@@ -3949,6 +4431,8 @@ function renderStoryScreen() {
   const ch1Complete   = state.storyCount >= 16;
   const ch2Unlocked   = eventState.fireGenUnlocked;
   const ch2Complete   = state.storyCount >= 37;
+  const ch3Unlocked   = eventState.kanteGenUnlocked;
+  const ch3Complete   = state.storyCount >= 63;
   const cost          = getStoryCost(state.playerLevel);
   const canAfford     = state.coin >= cost;
 
@@ -4002,6 +4486,64 @@ function renderStoryScreen() {
     }
   } else {
     ch2Block.classList.add('hidden');
+  }
+
+  // ── 第三章 ──
+  const ch3Block    = document.getElementById('story-ch3-block');
+  const ch3NextWrap = document.getElementById('story-ch3-next-wrap');
+  const ch3NextBtn  = document.getElementById('story-ch3-next-btn');
+  const ch3CostLbl  = document.getElementById('story-ch3-cost-label');
+  const ch3Complete_ = document.getElementById('story-ch3-complete');
+  const ch3LockedLbl = document.getElementById('story-ch3-locked');
+
+  if (ch3Unlocked) {
+    ch3Block.classList.remove('hidden');
+    if (ch3Complete) {
+      ch3NextWrap.classList.add('hidden');
+      ch3LockedLbl?.classList.add('hidden');
+      ch3Complete_.classList.remove('hidden');
+      renderCh3ReplayList();
+      document.getElementById('story-ch3-replay-wrap')?.classList.remove('hidden');
+    } else if (!ch2Complete) {
+      ch3NextWrap.classList.remove('hidden');
+      ch3Complete_.classList.add('hidden');
+      ch3LockedLbl?.classList.remove('hidden');
+      ch3NextBtn.disabled = true;
+      ch3CostLbl.textContent = '第二章クリア後に開放';
+    } else {
+      ch3NextWrap.classList.remove('hidden');
+      ch3Complete_.classList.add('hidden');
+      ch3LockedLbl?.classList.add('hidden');
+      ch3NextBtn.disabled = !canAfford;
+      ch3CostLbl.textContent = `💰 ${cost.toLocaleString()}`;
+    }
+  } else {
+    ch3Block?.classList.add('hidden');
+  }
+}
+
+function renderCh3ReplayList() {
+  const list = document.getElementById('story-ch3-replay-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH3_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第三章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
   }
 }
 
@@ -4689,7 +5231,34 @@ function progressStory() {
   else if (state.storyCount === 35) sceneId = 'c2s18';
   else if (state.storyCount === 36) sceneId = 'c2s19';
   else if (state.storyCount === 37) sceneId = 'c2s20';
-  else sceneId = 'c2s01'; // 未実装分はフォールバック
+  // ===== 第三章 =====
+  else if (state.storyCount === 38) sceneId = 'c3s01';
+  else if (state.storyCount === 39) sceneId = 'c3s02';
+  else if (state.storyCount === 40) sceneId = 'c3s03';
+  else if (state.storyCount === 41) sceneId = 'c3s04';
+  else if (state.storyCount === 42) sceneId = 'c3s05';
+  else if (state.storyCount === 43) sceneId = 'c3s06';
+  else if (state.storyCount === 44) sceneId = 'c3s07';
+  else if (state.storyCount === 45) sceneId = 'c3s08';
+  else if (state.storyCount === 46) sceneId = 'c3s09';
+  else if (state.storyCount === 47) sceneId = 'c3s10';
+  else if (state.storyCount === 48) sceneId = 'c3s11';
+  else if (state.storyCount === 49) sceneId = 'c3s12';
+  else if (state.storyCount === 50) sceneId = 'c3s13';
+  else if (state.storyCount === 51) sceneId = 'c3s14';
+  else if (state.storyCount === 52) sceneId = 'c3s15';
+  else if (state.storyCount === 53) sceneId = 'c3s16';
+  else if (state.storyCount === 54) sceneId = 'c3s17';
+  else if (state.storyCount === 55) sceneId = 'c3s18';
+  else if (state.storyCount === 56) sceneId = 'c3s19';
+  else if (state.storyCount === 57) sceneId = 'c3s20';
+  else if (state.storyCount === 58) sceneId = 'c3s21';
+  else if (state.storyCount === 59) sceneId = 'c3s22';
+  else if (state.storyCount === 60) sceneId = 'c3s23';
+  else if (state.storyCount === 61) sceneId = 'c3s24';
+  else if (state.storyCount === 62) sceneId = 'c3s25';
+  else if (state.storyCount === 63) sceneId = 'c3s26';
+  else sceneId = 'c3s01'; // 未実装分はフォールバック
 
   // 閲覧済みシーン記録
   if (!state.seenScenes) state.seenScenes = [];
@@ -4699,12 +5268,25 @@ function progressStory() {
   if (state.storyCount === 8) {
     openAdventureScene(sceneId, () => {
       unlockFireGenerator();
-      // DOM再描画後にガイド開始（fire-gen-tile IDが付与されてから）
       requestAnimationFrame(() => {
         startGuide([
           '新たな章が出現しました。',
           '別の章のストーリーも見ることができます。',
         ], '#fire-gen-tile', null);
+      });
+    });
+    return;
+  }
+
+  // storyCount === 37（c2s20）: シーン終了後に第三章ジェネレーター解放
+  if (state.storyCount === 37) {
+    openAdventureScene(sceneId, () => {
+      unlockKanteGenerator();
+      requestAnimationFrame(() => {
+        startGuide([
+          '第三章が解放されました。',
+          '新たな事件の幕が上がります。',
+        ], '#kante-gen-tile', null);
       });
     });
     return;
@@ -5555,6 +6137,19 @@ function unlockFireGenerator() {
   eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: 0 };
   discoverGen('ch2', 0); // Lv1 を発見
   showToast('第二章ジェネレーター解放！');
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// 鑑定台ジェネレーター解放（第二章ストーリー完了時）
+function unlockKanteGenerator() {
+  eventState.kanteGenUnlocked = true;
+  eventState.kanteGenLevel    = 0; // Lv1からスタート
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showToast('ボードが満杯で第三章ジェネレーターを配置できません'); return; }
+  eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: 0 };
+  discoverGen('ch3', 0); // Lv1 を発見
+  showToast('第三章ジェネレーター解放！');
   renderEventBoard();
   renderEventRequest();
 }

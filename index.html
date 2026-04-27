@@ -335,6 +335,39 @@
           </select>
           <button id="debug-adv-ch2-play" class="debug-loop-btn">▶</button>
         </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">第三章</span>
+          <select id="debug-adv-ch3-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <option value="c3s01">Ch3 Scene01（フミコ来訪）</option>
+            <option value="c3s02">Ch3 Scene02（白鷺亭へ）</option>
+            <option value="c3s03">Ch3 Scene03（コウジ初接触）</option>
+            <option value="c3s04">Ch3 Scene04（サチコと遭遇）</option>
+            <option value="c3s05">Ch3 Scene05（ミドリ聞き込み）</option>
+            <option value="c3s06">Ch3 Scene06（リョウタと廊下で）</option>
+            <option value="c3s07">Ch3 Scene07（遺言書確認）</option>
+            <option value="c3s08">Ch3 Scene08（ノブオ面会）</option>
+            <option value="c3s09">Ch3 Scene09（アキラ登場）</option>
+            <option value="c3s10">Ch3 Scene10（コウジ追い出す）</option>
+            <option value="c3s11">Ch3 Scene11（アキラ身元調査）</option>
+            <option value="c3s12">Ch3 Scene12（ミドリ夜の接触）</option>
+            <option value="c3s13">Ch3 Scene13（フミコ手紙発見）</option>
+            <option value="c3s14">Ch3 Scene14（事務所調査）</option>
+            <option value="c3s15">Ch3 Scene15（リョウタ証言）</option>
+            <option value="c3s16">Ch3 Scene16（コウジ・サチコ口論）</option>
+            <option value="c3s17">Ch3 Scene17（ミドリ告白）</option>
+            <option value="c3s18">Ch3 Scene18（ノブオ尾行）</option>
+            <option value="c3s19">Ch3 Scene19（筆跡鑑定結果）</option>
+            <option value="c3s20">Ch3 Scene20（アキラDNA結果）</option>
+            <option value="c3s21">Ch3 Scene21（ノブオ証拠突きつけ）</option>
+            <option value="c3s22">Ch3 Scene22（ノブオ自白）</option>
+            <option value="c3s23">Ch3 Scene23（証拠隠滅を止める）</option>
+            <option value="c3s24">Ch3 Scene24（真の遺言書）</option>
+            <option value="c3s25">Ch3 Scene25（フミコへ報告）</option>
+            <option value="c3s26">Ch3 Scene26（後日談）</option>
+          </select>
+          <button id="debug-adv-ch3-play" class="debug-loop-btn">▶</button>
+        </div>
       </div>
     </div>
   </div>
@@ -469,6 +502,19 @@
         </div>
         <div id="story-ch2-complete" class="story-complete-label hidden">✅ 第二章クリア！</div>
         <div id="story-ch2-locked" class="story-locked-label hidden">🔒 第一章クリア後に開放</div>
+      </div>
+      <!-- 第三章（kanteGenUnlocked後に表示） -->
+      <div id="story-ch3-block" class="story-chapter-block hidden">
+        <div class="story-chapter-heading">第三章</div>
+        <div id="story-ch3-next-wrap">
+          <button id="story-ch3-next-btn" class="story-read-btn" disabled>次のストーリーを読む</button>
+          <div id="story-ch3-cost-label" class="story-cost-label">💰 2,000</div>
+        </div>
+        <div id="story-ch3-complete" class="story-complete-label hidden">✅ 第三章クリア！</div>
+        <div id="story-ch3-locked" class="story-locked-label hidden">🔒 第二章クリア後に開放</div>
+        <div id="story-ch3-replay-wrap" class="story-replay-wrap hidden">
+          <ul id="story-ch3-replay-list" class="story-replay-list"></ul>
+        </div>
       </div>
     </div>
   </div>
