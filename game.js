@@ -134,11 +134,11 @@ const ENERGY_COST = [1, 2, 4, 8, 16];
 
 // Lucky!判定：ボタンLvごとの確率・倍率設定（確率は毎回10%〜40%でランダム）
 const LUCKY_CONFIG = [
-  { probMin: 0.10, probMax: 0.40, multMin: 2.0,  multMax: 2.0  }, // Lv1ボタン: ×2固定
-  { probMin: 0.10, probMax: 0.40, multMin: 1.5,  multMax: 2.0  }, // Lv2ボタン: ×1.5〜2.0
-  { probMin: 0.10, probMax: 0.40, multMin: 1.5,  multMax: 2.0  }, // Lv4ボタン: ×1.5〜2.0
-  { probMin: 0.10, probMax: 0.40, multMin: 1.5,  multMax: 2.0  }, // Lv8ボタン: ×1.5〜2.0
-  { probMin: 0.10, probMax: 0.40, multMin: 1.1,  multMax: 1.25 }, // Lv16ボタン: ×1.1〜1.25
+  { probMin: 0.05, probMax: 0.20, multMin: 2.0,  multMax: 2.0  }, // Lv1ボタン: ×2固定
+  { probMin: 0.05, probMax: 0.20, multMin: 1.5,  multMax: 2.0  }, // Lv2ボタン: ×1.5〜2.0
+  { probMin: 0.05, probMax: 0.20, multMin: 1.5,  multMax: 2.0  }, // Lv4ボタン: ×1.5〜2.0
+  { probMin: 0.05, probMax: 0.20, multMin: 1.5,  multMax: 2.0  }, // Lv8ボタン: ×1.5〜2.0
+  { probMin: 0.05, probMax: 0.20, multMin: 1.1,  multMax: 1.25 }, // Lv16ボタン: ×1.1〜1.25
 ];
 
 // Power: Lv4/Lv8/Lv16ボタンから確率で高Lvアイテムを出力（確率は10%〜40%ランダム）
@@ -1879,6 +1879,42 @@ document.getElementById('debug-spawn-coin5').addEventListener('click', () => {
   eventState.board[emptyIdx] = { isCoin: true, coinLv: COIN_MAX_LV };
   renderEventBoard();
   showToast(`💰 Lv5コインを出しました`);
+});
+
+// ポップアップ文字確認ボタン
+// Lucky! / Power! は event-board のセル上に表示するため、デバッグ画面を閉じてから実行
+document.getElementById('debug-popup-lucky').addEventListener('click', () => {
+  document.getElementById('debug-screen').classList.add('hidden');
+  const midIdx = Math.floor(EVENT_TOTAL / 2);
+  showLuckyOnCell(midIdx, 'event-board');
+});
+document.getElementById('debug-popup-power').addEventListener('click', () => {
+  document.getElementById('debug-screen').classList.add('hidden');
+  const midIdx = Math.floor(EVENT_TOTAL / 2);
+  showPowerOnCell(midIdx, 'event-board');
+});
+document.getElementById('debug-popup-levelup').addEventListener('click', () => {
+  showToast(`プレイヤー Lv${state.playerLevel + 1} になりました！`);
+  const ringEl = document.getElementById('player-level-ring');
+  if (ringEl) {
+    ringEl.classList.add('player-level-up-flash');
+    setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+  }
+});
+document.getElementById('debug-popup-genlvup').addEventListener('click', () => {
+  showToast(`🏭 メモ机 Lv3 にレベルアップ！`);
+});
+document.getElementById('debug-popup-request').addEventListener('click', () => {
+  showToast(`依頼完了！ 💰+1,500`);
+});
+document.getElementById('debug-popup-discover').addEventListener('click', () => {
+  showToast(`新発見！ 📝 第一章 Lv1  💎+1`);
+});
+document.getElementById('debug-popup-energy').addEventListener('click', () => {
+  showToast(`体力 +25！`);
+});
+document.getElementById('debug-popup-bonus').addEventListener('click', () => {
+  addEnergy(25, '依頼10回達成ボーナス！');
 });
 
 // ========================================
