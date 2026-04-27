@@ -136,166 +136,157 @@
           <button id="debug-spawn-coin5" class="debug-loop-btn">💰</button>
         </div>
       </div>
+      <div class="debug-section-label">ジェネレーターアイコン出現</div>
+      <div id="debug-gen-level-row">
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">ジェネレーター選択</span>
+          <select id="debug-gen-spawn-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <optgroup label="第一章（メモ机）">
+              <option value="ev-0">Lv1 メモ机</option>
+              <option value="ev-1">Lv2 観察キット</option>
+              <option value="ev-2">Lv3 調査バッグ</option>
+              <option value="ev-3">Lv4 調査バッグ+</option>
+            </optgroup>
+            <optgroup label="第二章（製造機）">
+              <option value="fire-0">Lv1 鍵製造機</option>
+              <option value="fire-1">Lv2 ICカード製造機</option>
+              <option value="fire-2">Lv3 鍛冶製造機</option>
+              <option value="fire-3">Lv4 監視室</option>
+              <option value="fire-4">Lv5 レーダー探知機</option>
+              <option value="fire-5">Lv6 マンション模型</option>
+              <option value="fire-6">Lv7 3Dプリンター</option>
+            </optgroup>
+            <optgroup label="第三章（鑑定台）">
+              <option value="kante-0">Lv1 鑑定台</option>
+              <option value="kante-1">Lv2 鑑定台+</option>
+              <option value="kante-2">Lv3 精密鑑定機</option>
+              <option value="kante-3">Lv4 解析装置</option>
+              <option value="kante-4">Lv5 真相分析機</option>
+              <option value="kante-5">Lv6 証拠鑑定室</option>
+              <option value="kante-6">Lv7 完全解析台</option>
+            </optgroup>
+          </select>
+          <button id="debug-gen-spawn-btn" class="debug-loop-btn">出現</button>
+        </div>
+      </div>
+      <div class="debug-section-label">マージアイテム出現</div>
+      <div id="debug-gen-level-row">
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">アイテム選択</span>
+          <select id="debug-item-spawn-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <optgroup label="第一章アイテム">
+              <option value="10-1">Lv1 メモ帳</option>
+              <option value="10-2">Lv2 猫</option>
+              <option value="10-3">Lv3 猫のおもちゃ</option>
+              <option value="10-4">Lv4 足跡</option>
+              <option value="10-5">Lv5 スニーカー</option>
+              <option value="10-6">Lv6 ダンボール</option>
+              <option value="10-7">Lv7 謎の石</option>
+              <option value="10-8">Lv8 カメラ</option>
+              <option value="10-9">Lv9 証拠写真</option>
+              <option value="10-10">Lv10 破られた写真</option>
+              <option value="10-11">Lv11 相関図のボード</option>
+              <option value="10-12">Lv12 何かを示すボード</option>
+            </optgroup>
+            <optgroup label="第二章アイテム">
+              <option value="11-1">Lv1 鍵</option>
+              <option value="11-2">Lv2 鍵束</option>
+              <option value="11-3">Lv3 ICカード</option>
+              <option value="11-4">Lv4 ドアノブ</option>
+              <option value="11-5">Lv5 ドアチェーン</option>
+              <option value="11-6">Lv6 監視カメラ</option>
+              <option value="11-7">Lv7 モニター</option>
+              <option value="11-8">Lv8 双眼鏡</option>
+              <option value="11-9">Lv9 スマートフォン</option>
+              <option value="11-10">Lv10 通知</option>
+              <option value="11-11">Lv11 子供用リュック</option>
+              <option value="11-12">Lv12 スケッチブック</option>
+              <option value="11-13">Lv13 色鉛筆</option>
+              <option value="11-14">Lv14 マンション模型</option>
+              <option value="11-15">Lv15 設計図</option>
+            </optgroup>
+            <optgroup label="第三章アイテム（画像未作成）">
+              <option value="12-1">Lv1 封筒</option>
+              <option value="12-2">Lv2 手紙</option>
+              <option value="12-3">Lv3 遺書</option>
+              <option value="12-4">Lv4 印鑑</option>
+              <option value="12-5">Lv5 通帳</option>
+              <option value="12-6">Lv6 金庫</option>
+              <option value="12-7">Lv7 遺言書</option>
+              <option value="12-8">Lv8 相続証明書</option>
+              <option value="12-9">Lv9 鑑定書</option>
+              <option value="12-10">Lv10 宝石</option>
+              <option value="12-11">Lv11 骨董品</option>
+              <option value="12-12">Lv12 絵画</option>
+              <option value="12-13">Lv13 時計</option>
+              <option value="12-14">Lv14 蔵</option>
+              <option value="12-15">Lv15 土地権利書</option>
+              <option value="12-16">Lv16 家系図</option>
+              <option value="12-17">Lv17 古文書</option>
+              <option value="12-18">Lv18 依頼書</option>
+              <option value="12-19">Lv19 解決の鍵</option>
+              <option value="12-20">Lv20 真相解明ボード</option>
+            </optgroup>
+          </select>
+          <button id="debug-item-spawn-btn" class="debug-loop-btn">出現</button>
+        </div>
+      </div>
       <div class="debug-section-label">アドベンチャーシーン</div>
       <div id="debug-gen-level-row">
         <div class="debug-gen-row">
-          <span class="debug-gen-label">テストシーン</span>
-          <button id="debug-adv-test" class="debug-loop-btn">▶</button>
+          <span class="debug-gen-label">第一章・テスト</span>
+          <select id="debug-adv-ch1-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <option value="test">テストシーン</option>
+            <option value="scene01">Scene01（チュートリアル後）</option>
+            <option value="scene02">Scene02（第一章スライド01）</option>
+            <option value="scene03">Scene03（第一章スライド02）</option>
+            <option value="scene04">Scene04（第一章スライド03）</option>
+            <option value="scene05">Scene05（第一章スライド04）</option>
+            <option value="scene06">Scene06（第一章スライド05）</option>
+            <option value="scene07">Scene07（第一章スライド06）</option>
+            <option value="scene08">Scene08（シンジ来訪・表の顔）</option>
+            <option value="scene09">Scene09（ミサキ来訪）</option>
+            <option value="scene10">Scene10（シンジとミサキが繋がる）</option>
+            <option value="scene11">Scene11（不倫発覚）</option>
+            <option value="scene12">Scene12（不倫現場目撃・夜）</option>
+            <option value="scene13">Scene13（ミサキに突きつける）</option>
+            <option value="scene14">Scene14（夜のシンジ尾行）</option>
+            <option value="scene15">Scene15（証拠の整理・謎の石）</option>
+            <option value="scene16">Scene16（シンジ対峙・豹変）</option>
+            <option value="scene17">Scene17（逃走・第一章完結）</option>
+          </select>
+          <button id="debug-adv-ch1-play" class="debug-loop-btn">▶</button>
         </div>
         <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene01（チュートリアル後）</span>
-          <button id="debug-adv-scene01" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene02（第一章スライド01）</span>
-          <button id="debug-adv-scene02" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene03（第一章スライド02）</span>
-          <button id="debug-adv-scene03" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene04（第一章スライド03）</span>
-          <button id="debug-adv-scene04" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene05（第一章スライド04）</span>
-          <button id="debug-adv-scene05" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene06（第一章スライド05）</span>
-          <button id="debug-adv-scene06" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene07（第一章スライド06）</span>
-          <button id="debug-adv-scene07" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene08（シンジ来訪・表の顔）</span>
-          <button id="debug-adv-scene08" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene09（ミサキ来訪）</span>
-          <button id="debug-adv-scene09" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene10（シンジとミサキが繋がる）</span>
-          <button id="debug-adv-scene10" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene11（不倫発覚）</span>
-          <button id="debug-adv-scene11" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene12（不倫現場目撃・夜）</span>
-          <button id="debug-adv-scene12" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene13（ミサキに突きつける）</span>
-          <button id="debug-adv-scene13" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene14（夜のシンジ尾行）</span>
-          <button id="debug-adv-scene14" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene15（証拠の整理・謎の石）</span>
-          <button id="debug-adv-scene15" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene16（シンジ対峙・豹変）</span>
-          <button id="debug-adv-scene16" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Scene17（逃走・第一章完結）</span>
-          <button id="debug-adv-scene17" class="debug-loop-btn">▶</button>
-        </div>
-      </div>
-      <div class="debug-section-label">第二章アドベンチャーシーン</div>
-      <div id="debug-gen-level-row">
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene01（リナ来訪）</span>
-          <button id="debug-adv-c2s01" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene02（現場へ）</span>
-          <button id="debug-adv-c2s02" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene03（タツオ初接触）</span>
-          <button id="debug-adv-c2s03" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene04（リナの部屋）</span>
-          <button id="debug-adv-c2s04" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene05（ユウの証言①）</span>
-          <button id="debug-adv-c2s05" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene06（タツオ再訪）</span>
-          <button id="debug-adv-c2s06" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene07（ハルトと出会う）</span>
-          <button id="debug-adv-c2s07" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene08（ハルトが語る）</span>
-          <button id="debug-adv-c2s08" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene09（ジン来訪・ヤスの囁き）</span>
-          <button id="debug-adv-c2s09" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene10（ヤス独り言）</span>
-          <button id="debug-adv-c2s10" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene11（リナの過去）</span>
-          <button id="debug-adv-c2s11" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene12（タツオが語る）</span>
-          <button id="debug-adv-c2s12" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene13（ハルトが暴露）</span>
-          <button id="debug-adv-c2s13" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene14（ユウの証言②）</span>
-          <button id="debug-adv-c2s14" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene15（証拠を整理）</span>
-          <button id="debug-adv-c2s15" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene15b（夜間証拠収集）</span>
-          <button id="debug-adv-c2s15b" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene16（ジン問い詰め①）</span>
-          <button id="debug-adv-c2s16" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene17（ジンが吐露）</span>
-          <button id="debug-adv-c2s17" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene18（全行為判明）</span>
-          <button id="debug-adv-c2s18" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene19（逃走）</span>
-          <button id="debug-adv-c2s19" class="debug-loop-btn">▶</button>
-        </div>
-        <div class="debug-gen-row">
-          <span class="debug-gen-label">Ch2 Scene20（エピローグ）</span>
-          <button id="debug-adv-c2s20" class="debug-loop-btn">▶</button>
+          <span class="debug-gen-label">第二章</span>
+          <select id="debug-adv-ch2-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <option value="c2s01">Ch2 Scene01（リナ来訪）</option>
+            <option value="c2s02">Ch2 Scene02（現場へ）</option>
+            <option value="c2s03">Ch2 Scene03（タツオ初接触）</option>
+            <option value="c2s04">Ch2 Scene04（リナの部屋）</option>
+            <option value="c2s05">Ch2 Scene05（ユウの証言①）</option>
+            <option value="c2s06">Ch2 Scene06（タツオ再訪）</option>
+            <option value="c2s07">Ch2 Scene07（ハルトと出会う）</option>
+            <option value="c2s08">Ch2 Scene08（ハルトが語る）</option>
+            <option value="c2s09">Ch2 Scene09（ジン来訪・ヤスの囁き）</option>
+            <option value="c2s10">Ch2 Scene10（ヤス独り言）</option>
+            <option value="c2s11">Ch2 Scene11（リナの過去）</option>
+            <option value="c2s12">Ch2 Scene12（タツオが語る）</option>
+            <option value="c2s13">Ch2 Scene13（ハルトが暴露）</option>
+            <option value="c2s14">Ch2 Scene14（ユウの証言②）</option>
+            <option value="c2s15">Ch2 Scene15（証拠を整理）</option>
+            <option value="c2s15b">Ch2 Scene15b（夜間証拠収集）</option>
+            <option value="c2s16">Ch2 Scene16（ジン問い詰め①）</option>
+            <option value="c2s17">Ch2 Scene17（ジンが吐露）</option>
+            <option value="c2s18">Ch2 Scene18（全行為判明）</option>
+            <option value="c2s19">Ch2 Scene19（逃走）</option>
+            <option value="c2s20">Ch2 Scene20（エピローグ）</option>
+          </select>
+          <button id="debug-adv-ch2-play" class="debug-loop-btn">▶</button>
         </div>
       </div>
     </div>

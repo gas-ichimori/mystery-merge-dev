@@ -65,6 +65,28 @@ const CHAINS = [
       '子供用リュック','スケッチブック','色鉛筆','マンション模型','設計図',
     ]
   },
+  // チェーン12：第三章（鑑定台アイテム）※画像は順次追加予定
+  { name: '第三章',
+    stages: Array(20).fill('🔍'),
+    stageImages: [
+      'img/Chapter3/Icon/image_merge_icon3_01.png','img/Chapter3/Icon/image_merge_icon3_02.png',
+      'img/Chapter3/Icon/image_merge_icon3_03.png','img/Chapter3/Icon/image_merge_icon3_04.png',
+      'img/Chapter3/Icon/image_merge_icon3_05.png','img/Chapter3/Icon/image_merge_icon3_06.png',
+      'img/Chapter3/Icon/image_merge_icon3_07.png','img/Chapter3/Icon/image_merge_icon3_08.png',
+      'img/Chapter3/Icon/image_merge_icon3_09.png','img/Chapter3/Icon/image_merge_icon3_10.png',
+      'img/Chapter3/Icon/image_merge_icon3_11.png','img/Chapter3/Icon/image_merge_icon3_12.png',
+      'img/Chapter3/Icon/image_merge_icon3_13.png','img/Chapter3/Icon/image_merge_icon3_14.png',
+      'img/Chapter3/Icon/image_merge_icon3_15.png','img/Chapter3/Icon/image_merge_icon3_16.png',
+      'img/Chapter3/Icon/image_merge_icon3_17.png','img/Chapter3/Icon/image_merge_icon3_18.png',
+      'img/Chapter3/Icon/image_merge_icon3_19.png','img/Chapter3/Icon/image_merge_icon3_20.png',
+    ],
+    stageNames: [
+      '封筒','手紙','遺書','印鑑','通帳',
+      '金庫','遺言書','相続証明書','鑑定書','宝石',
+      '骨董品','絵画','時計','蔵','土地権利書',
+      '家系図','古文書','依頼書','解決の鍵','真相解明ボード',
+    ]
+  },
 ];
 
 // 出力上限（stage 5 まで、6以降は出力不可）
@@ -3135,86 +3157,57 @@ document.getElementById('story-ch2-next-btn').addEventListener('click', () => {
   progressStory();
 });
 
-document.getElementById('debug-adv-test').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('test');
+// デバッグ：ジェネレーター出現
+document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
+  const val = document.getElementById('debug-gen-spawn-select').value;
+  if (!val) { showToast('ジェネレーターを選択してください'); return; }
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showToast('ボードが満杯です'); return; }
+  const [type, lvStr] = val.split('-');
+  const lv = parseInt(lvStr, 10);
+  if (type === 'ev') {
+    eventState.board[emptyIdx] = { isEventGen: true, genLevel: lv };
+    showToast(`第一章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'fire') {
+    eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: lv };
+    showToast(`第二章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'kante') {
+    eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: lv };
+    showToast(`第三章ジェネレーター Lv${lv + 1} を出現`);
+  }
+  renderEventBoard();
 });
-document.getElementById('debug-adv-scene01').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene01');
+
+// デバッグ：マージアイテム出現
+document.getElementById('debug-item-spawn-btn').addEventListener('click', () => {
+  const val = document.getElementById('debug-item-spawn-select').value;
+  if (!val) { showToast('アイテムを選択してください'); return; }
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showToast('ボードが満杯です'); return; }
+  const [chStr, stageStr] = val.split('-');
+  const chainId = parseInt(chStr, 10);
+  const stage   = parseInt(stageStr, 10);
+  eventState.board[emptyIdx] = { chainId, stage };
+  renderEventBoard();
+  const chain = CHAINS[chainId];
+  const name = chain?.stageNames?.[stage - 1] ?? `Lv${stage}`;
+  showToast(`${chain?.name ?? ''}「${name}」を出現`);
 });
-document.getElementById('debug-adv-scene02').addEventListener('click', () => {
+
+// デバッグ：アドベンチャーシーン（第一章・テスト）
+document.getElementById('debug-adv-ch1-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch1-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
   document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene02');
+  openAdventureScene(val);
 });
-document.getElementById('debug-adv-scene03').addEventListener('click', () => {
+
+// デバッグ：アドベンチャーシーン（第二章）
+document.getElementById('debug-adv-ch2-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch2-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
   document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene03');
-});
-document.getElementById('debug-adv-scene04').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene04');
-});
-document.getElementById('debug-adv-scene05').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene05');
-});
-document.getElementById('debug-adv-scene06').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene06');
-});
-document.getElementById('debug-adv-scene07').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene07');
-});
-document.getElementById('debug-adv-scene08').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene08');
-});
-document.getElementById('debug-adv-scene09').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene09');
-});
-document.getElementById('debug-adv-scene10').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene10');
-});
-document.getElementById('debug-adv-scene11').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene11');
-});
-document.getElementById('debug-adv-scene12').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene12');
-});
-document.getElementById('debug-adv-scene13').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene13');
-});
-document.getElementById('debug-adv-scene14').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene14');
-});
-document.getElementById('debug-adv-scene15').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene15');
-});
-document.getElementById('debug-adv-scene16').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene16');
-});
-document.getElementById('debug-adv-scene17').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene('scene17');
-});
-// 第二章デバッグボタン
-['c2s01','c2s02','c2s03','c2s04','c2s05','c2s06','c2s07','c2s08','c2s09','c2s10',
- 'c2s11','c2s12','c2s13','c2s14','c2s15','c2s15b','c2s16','c2s17','c2s18','c2s19','c2s20'
-].forEach(id => {
-  document.getElementById(`debug-adv-${id}`).addEventListener('click', () => {
-    document.getElementById('debug-screen').classList.add('hidden');
-    openAdventureScene(id);
-  });
+  openAdventureScene(val);
 });
 
 document.getElementById('story-btn').addEventListener('click', () => {
@@ -3416,6 +3409,21 @@ const SEIZO_GEN_IMAGES = [
 ];
 // 第二章ジェネレーター名（Lv1〜7）
 const SEIZO_GEN_NAMES = ['鍵製造機', 'ICカード製造機', '鍛冶製造機', '監視室', 'レーダー探知機', 'マンション模型', '3Dプリンター'];
+
+// 第三章チェーンID
+const KANTEITA_CHAIN_ID = 12;
+
+// 第三章ジェネレーター画像（Lv1〜7）- 鑑定台
+const KANTEITA_GEN_IMAGES = [
+  'img/Chapter3/icon/image_merge_gene3_01.png', // Lv1
+  'img/Chapter3/icon/image_merge_gene3_02.png', // Lv2
+  'img/Chapter3/icon/image_merge_gene3_03.png', // Lv3
+  'img/Chapter3/icon/image_merge_gene3_04.png', // Lv4
+  'img/Chapter3/icon/image_merge_gene3_05.png', // Lv5
+  'img/Chapter3/icon/image_merge_gene3_06.png', // Lv6
+  'img/Chapter3/icon/image_merge_gene3_07.png', // Lv7
+];
+const KANTEITA_GEN_NAMES = ['鑑定台', '鑑定台+', '精密鑑定機', '解析装置', '真相分析機', '証拠鑑定室', '完全解析台'];
 
 // 第二章ジェネレーター Lvボタン別出力設定（Lucky/PowerはLUCKY_CONFIG/GEN_POWER_BONUSを使用）
 const FIRE_POWER_CONFIG = [
@@ -4298,6 +4306,25 @@ function renderEventBoard() {
           }
           if (step) cell.classList.add('tutorial-dim');
           else if (isGenMergeTutActive()) cell.classList.add('tutorial-dim');
+          cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
+          cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
+        } else if (item.isKanteGen) {
+          // 鑑定台ジェネレーター（第三章）
+          const kLv  = item.kanteLevel ?? 0;
+          const kImg = KANTEITA_GEN_IMAGES[Math.min(kLv, KANTEITA_GEN_IMAGES.length - 1)];
+          cell.innerHTML = `
+            <img class="item-img item-img-lg" src="${kImg}" alt="鑑定台">
+            <div class="gen-stars">${starsHtml}</div>
+            <span class="gen-energy-badge">⚡</span>
+          `;
+          if (!step) {
+            if (i === eventState.selectedCell) cell.classList.add('selected');
+            if (selItem && selItem.isKanteGen && i !== eventState.selectedCell &&
+                (selItem.kanteLevel ?? 0) === kLv) {
+              cell.classList.add('merge-target');
+            }
+          }
+          if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
           cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
           cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
         } else {
