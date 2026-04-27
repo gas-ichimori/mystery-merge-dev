@@ -213,7 +213,10 @@ let state = {
   selectedCell: null,
   playerLevel: 1,   // プレイヤーレベル
   playerXP: 0,      // 現レベル内の経験値（コイン換算）
-  storyCount: 0,    // ストーリー進行回数（コイン支払い回数）
+  storyCount: 0,    // ストーリー総読了数（コイン支払い回数・XP計算用）
+  ch1Count: 0,      // 第一章既読シーン数（0-16）
+  ch2Count: 0,      // 第二章既読シーン数（0-21）
+  ch3Count: 0,      // 第三章既読シーン数（0-26）
   pendingUse: null,
   // 発見済みアイテム管理: discovered[chainId][stage] = true
   discovered: {},
@@ -2071,7 +2074,7 @@ const ADV_SCENES = {
   scene08: {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
-    rightImg:     'img/Chapter1/Chara/image_merge_order_chara_05aa.png',
+    rightImg:     'img/Chapter1/Chara/image_merge_order_chara_05.png',
     bg:           'img/bg/image_merge_bg_hiruma.png',
     leftEntrance: 'fade',
     flipLeft:     true,
@@ -2234,7 +2237,7 @@ const ADV_SCENES = {
   scene16: {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
-    rightImg:     'img/Chapter1/Chara/image_merge_order_chara_05aa.png',
+    rightImg:     'img/Chapter1/Chara/image_merge_order_chara_05.png',
     bg:           'img/bg/image_merge_bg_hiruma.png',
     leftEntrance: 'fade',
     flipLeft:     true,
@@ -2256,7 +2259,7 @@ const ADV_SCENES = {
       { speaker: 'ヤス',   text: 'ミサキさんへの接触も、全て配達の仕事に紛れている。同じルートに、週に３回以上。', side: 'left' },
       { speaker: 'シンジ', text: '...（長い沈黙）', side: 'right' },
       // 豹変：表の顔→裏の顔
-      { speaker: 'シンジ', text: '...ハ。', side: 'right', changeRightImg: 'img/Chapter1/Chara/image_merge_order_chara_05a.png' },
+      { speaker: 'シンジ', text: '...ハ。', side: 'right', changeRightImg: 'img/Chapter1/Chara/image_merge_order_chara_05b.png' },
       { speaker: 'シンジ', text: '全部わかってるんですね。...まあ、いいですよ。ミサキが裏切ったのが悪いんで。', side: 'right' },
       { speaker: 'ヤス',   text: 'ケンイチさんの家族まで巻き込んだのは。', side: 'left' },
       { speaker: 'シンジ', text: 'あの男にも、痛い目を見てもらわないといけなかった。それだけです。', side: 'right' },
@@ -2266,7 +2269,7 @@ const ADV_SCENES = {
   scene17: {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
-    rightImg:     'img/Chapter1/Chara/image_merge_order_chara_05a.png',
+    rightImg:     'img/Chapter1/Chara/image_merge_order_chara_05b.png',
     bg:           'img/bg/image_merge_bg_light.png',
     leftEntrance: 'fade',
     flipLeft:     true,
@@ -3722,15 +3725,15 @@ document.getElementById('story-screen-close-btn').addEventListener('click', () =
 });
 document.getElementById('story-ch1-next-btn').addEventListener('click', () => {
   closeStoryScreen();
-  progressStory();
+  progressStory(1);
 });
 document.getElementById('story-ch2-next-btn').addEventListener('click', () => {
   closeStoryScreen();
-  progressStory();
+  progressStory(2);
 });
 document.getElementById('story-ch3-next-btn').addEventListener('click', () => {
   closeStoryScreen();
-  progressStory();
+  progressStory(3);
 });
 
 // デバッグ：ジェネレーター出現
@@ -4434,20 +4437,20 @@ function closeStoryScreen() {
 }
 
 function renderStoryScreen() {
-  // 第一章：storyCount 1-16 で scene02〜scene17 を消費。16話すべて読んだら完了
-  const ch1Complete   = state.storyCount >= 16;
-  const ch2Unlocked   = eventState.fireGenUnlocked;
-  const ch2Complete   = state.storyCount >= 37;
-  const ch3Unlocked   = eventState.kanteGenUnlocked;
-  const ch3Complete   = state.storyCount >= 63;
-  const cost          = getStoryCost(state.playerLevel);
-  const canAfford     = state.coin >= cost;
+  const ch1Complete = state.ch1Count >= CH1_SCENE_IDS.length;
+  const ch2Unlocked = eventState.fireGenUnlocked;
+  const ch2Complete = state.ch2Count >= CH2_SCENE_IDS.length;
+  const ch3Unlocked = eventState.kanteGenUnlocked;
+  const ch3Complete = state.ch3Count >= CH3_SCENE_IDS.length;
+  const cost        = getStoryCost(state.playerLevel);
+  const canAfford   = state.coin >= cost;
+  const costLabel   = `💰 ${cost.toLocaleString()}消費`;
 
   // ── 第一章 ──
-  const ch1NextWrap  = document.getElementById('story-ch1-next-wrap');
-  const ch1NextBtn   = document.getElementById('story-ch1-next-btn');
-  const ch1CostLabel = document.getElementById('story-ch1-cost-label');
-  const ch1Complete_ = document.getElementById('story-ch1-complete');
+  const ch1NextWrap   = document.getElementById('story-ch1-next-wrap');
+  const ch1NextBtn    = document.getElementById('story-ch1-next-btn');
+  const ch1CostLabel  = document.getElementById('story-ch1-cost-label');
+  const ch1Complete_  = document.getElementById('story-ch1-complete');
   const ch1ReplayWrap = document.getElementById('story-ch1-replay-wrap');
 
   if (ch1Complete) {
@@ -4460,69 +4463,54 @@ function renderStoryScreen() {
     ch1Complete_.classList.add('hidden');
     ch1ReplayWrap.classList.add('hidden');
     ch1NextBtn.disabled = !canAfford;
-    ch1CostLabel.textContent = `💰 ${cost.toLocaleString()}`;
+    ch1CostLabel.textContent = costLabel;
   }
 
   // ── 第二章 ──
-  const ch2Block    = document.getElementById('story-ch2-block');
-  const ch2NextWrap = document.getElementById('story-ch2-next-wrap');
-  const ch2NextBtn  = document.getElementById('story-ch2-next-btn');
-  const ch2CostLbl  = document.getElementById('story-ch2-cost-label');
+  const ch2Block     = document.getElementById('story-ch2-block');
+  const ch2NextWrap  = document.getElementById('story-ch2-next-wrap');
+  const ch2NextBtn   = document.getElementById('story-ch2-next-btn');
+  const ch2CostLbl   = document.getElementById('story-ch2-cost-label');
   const ch2Complete_ = document.getElementById('story-ch2-complete');
   const ch2LockedLbl = document.getElementById('story-ch2-locked');
 
   if (ch2Unlocked) {
     ch2Block.classList.remove('hidden');
+    ch2LockedLbl?.classList.add('hidden');
     if (ch2Complete) {
       ch2NextWrap.classList.add('hidden');
-      ch2LockedLbl?.classList.add('hidden');
       ch2Complete_.classList.remove('hidden');
-    } else if (!ch1Complete) {
-      // 第二章は解放済みだが第一章未完了 → グレーアウト表示
-      ch2NextWrap.classList.remove('hidden');
-      ch2Complete_.classList.add('hidden');
-      ch2LockedLbl?.classList.remove('hidden');
-      ch2NextBtn.disabled = true;
-      ch2CostLbl.textContent = '第一章クリア後に開放';
     } else {
       ch2NextWrap.classList.remove('hidden');
       ch2Complete_.classList.add('hidden');
-      ch2LockedLbl?.classList.add('hidden');
       ch2NextBtn.disabled = !canAfford;
-      ch2CostLbl.textContent = `💰 ${cost.toLocaleString()}`;
+      ch2CostLbl.textContent = costLabel;
     }
   } else {
     ch2Block.classList.add('hidden');
   }
 
   // ── 第三章 ──
-  const ch3Block    = document.getElementById('story-ch3-block');
-  const ch3NextWrap = document.getElementById('story-ch3-next-wrap');
-  const ch3NextBtn  = document.getElementById('story-ch3-next-btn');
-  const ch3CostLbl  = document.getElementById('story-ch3-cost-label');
+  const ch3Block     = document.getElementById('story-ch3-block');
+  const ch3NextWrap  = document.getElementById('story-ch3-next-wrap');
+  const ch3NextBtn   = document.getElementById('story-ch3-next-btn');
+  const ch3CostLbl   = document.getElementById('story-ch3-cost-label');
   const ch3Complete_ = document.getElementById('story-ch3-complete');
   const ch3LockedLbl = document.getElementById('story-ch3-locked');
 
   if (ch3Unlocked) {
     ch3Block.classList.remove('hidden');
+    ch3LockedLbl?.classList.add('hidden');
     if (ch3Complete) {
       ch3NextWrap.classList.add('hidden');
-      ch3LockedLbl?.classList.add('hidden');
       ch3Complete_.classList.remove('hidden');
       renderCh3ReplayList();
       document.getElementById('story-ch3-replay-wrap')?.classList.remove('hidden');
-    } else if (!ch2Complete) {
-      ch3NextWrap.classList.remove('hidden');
-      ch3Complete_.classList.add('hidden');
-      ch3LockedLbl?.classList.remove('hidden');
-      ch3NextBtn.disabled = true;
-      ch3CostLbl.textContent = '第二章クリア後に開放';
     } else {
       ch3NextWrap.classList.remove('hidden');
       ch3Complete_.classList.add('hidden');
-      ch3LockedLbl?.classList.add('hidden');
       ch3NextBtn.disabled = !canAfford;
-      ch3CostLbl.textContent = `💰 ${cost.toLocaleString()}`;
+      ch3CostLbl.textContent = costLabel;
     }
   } else {
     ch3Block?.classList.add('hidden');
@@ -5172,13 +5160,31 @@ function renderPlayerLevel() {
   }
 }
 
-// ストーリー進行処理（コイン消費 → 経験値加算 → レベルアップ判定 → シーン再生）
-function progressStory() {
+// 章別シーンID配列
+const CH1_SCENE_IDS = ['scene02','scene03','scene04','scene05','scene06','scene07','scene08','scene09','scene10','scene11','scene12','scene13','scene14','scene15','scene16','scene17'];
+const CH2_SCENE_IDS = ['c2s01','c2s02','c2s03','c2s04','c2s05','c2s06','c2s07','c2s08','c2s09','c2s10','c2s11','c2s12','c2s13','c2s14','c2s15','c2s15b','c2s16','c2s17','c2s18','c2s19','c2s20'];
+const CH3_SCENE_IDS = ['c3s01','c3s02','c3s03','c3s04','c3s05','c3s06','c3s07','c3s08','c3s09','c3s10','c3s11','c3s12','c3s13','c3s14','c3s15','c3s16','c3s17','c3s18','c3s19','c3s20','c3s21','c3s22','c3s23','c3s24','c3s25','c3s26'];
+
+// ストーリー進行処理（chapter: 1/2/3）
+function progressStory(chapter = 1) {
   const cost = getStoryCost(state.playerLevel);
   if (state.coin < cost) { showToast('コインが足りません'); return; }
   state.coin    -= cost;
   state.playerXP += cost;
-  state.storyCount++;  // 支払い回数をカウントアップ
+  state.storyCount++;  // 総読了数（XP計算用）
+
+  // 章別カウントアップ＆シーンID取得
+  let sceneId;
+  if (chapter === 1) {
+    sceneId = CH1_SCENE_IDS[state.ch1Count] ?? CH1_SCENE_IDS[CH1_SCENE_IDS.length - 1];
+    state.ch1Count = Math.min(state.ch1Count + 1, CH1_SCENE_IDS.length);
+  } else if (chapter === 2) {
+    sceneId = CH2_SCENE_IDS[state.ch2Count] ?? CH2_SCENE_IDS[CH2_SCENE_IDS.length - 1];
+    state.ch2Count = Math.min(state.ch2Count + 1, CH2_SCENE_IDS.length);
+  } else {
+    sceneId = CH3_SCENE_IDS[state.ch3Count] ?? CH3_SCENE_IDS[CH3_SCENE_IDS.length - 1];
+    state.ch3Count = Math.min(state.ch3Count + 1, CH3_SCENE_IDS.length);
+  }
 
   // レベルアップ判定（複数回上がる場合も対応）
   let leveledUp = false;
@@ -5195,7 +5201,7 @@ function progressStory() {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
     }
-    // 第二章ジェネレーターLvアップ（プレイヤーLvトリガー）
+    // ジェネレーターLvアップ（プレイヤーLvトリガー）
     for (let lv = prevPlayerLevel + 1; lv <= state.playerLevel; lv++) {
       checkSeizoGenLevelUpByPlayerLevel(lv);
       checkKanteGenLevelUpByPlayerLevel(lv);
@@ -5203,75 +5209,6 @@ function progressStory() {
   }
 
   renderEventHeader();
-
-  // 支払い回数に応じてシーンを選択
-  let sceneId;
-  if      (state.storyCount === 1) sceneId = 'scene02';
-  else if (state.storyCount === 2) sceneId = 'scene03';
-  else if (state.storyCount === 3) sceneId = 'scene04';
-  else if (state.storyCount === 4) sceneId = 'scene05';
-  else if (state.storyCount === 5) sceneId = 'scene06';
-  else if (state.storyCount === 6)  sceneId = 'scene07';
-  else if (state.storyCount === 7)  sceneId = 'scene08';
-  else if (state.storyCount === 8)  sceneId = 'scene09';
-  else if (state.storyCount === 9)  sceneId = 'scene10';
-  else if (state.storyCount === 10) sceneId = 'scene11';
-  else if (state.storyCount === 11) sceneId = 'scene12';
-  else if (state.storyCount === 12) sceneId = 'scene13';
-  else if (state.storyCount === 13) sceneId = 'scene14';
-  else if (state.storyCount === 14) sceneId = 'scene15';
-  else if (state.storyCount === 15) sceneId = 'scene16';
-  else if (state.storyCount === 16) sceneId = 'scene17';
-  // ===== 第二章 =====
-  else if (state.storyCount === 17) sceneId = 'c2s01';
-  else if (state.storyCount === 18) sceneId = 'c2s02';
-  else if (state.storyCount === 19) sceneId = 'c2s03';
-  else if (state.storyCount === 20) sceneId = 'c2s04';
-  else if (state.storyCount === 21) sceneId = 'c2s05';
-  else if (state.storyCount === 22) sceneId = 'c2s06';
-  else if (state.storyCount === 23) sceneId = 'c2s07';
-  else if (state.storyCount === 24) sceneId = 'c2s08';
-  else if (state.storyCount === 25) sceneId = 'c2s09';
-  else if (state.storyCount === 26) sceneId = 'c2s10';
-  else if (state.storyCount === 27) sceneId = 'c2s11';
-  else if (state.storyCount === 28) sceneId = 'c2s12';
-  else if (state.storyCount === 29) sceneId = 'c2s13';
-  else if (state.storyCount === 30) sceneId = 'c2s14';
-  else if (state.storyCount === 31) sceneId = 'c2s15';
-  else if (state.storyCount === 32) sceneId = 'c2s15b';
-  else if (state.storyCount === 33) sceneId = 'c2s16';
-  else if (state.storyCount === 34) sceneId = 'c2s17';
-  else if (state.storyCount === 35) sceneId = 'c2s18';
-  else if (state.storyCount === 36) sceneId = 'c2s19';
-  else if (state.storyCount === 37) sceneId = 'c2s20';
-  // ===== 第三章 =====
-  else if (state.storyCount === 38) sceneId = 'c3s01';
-  else if (state.storyCount === 39) sceneId = 'c3s02';
-  else if (state.storyCount === 40) sceneId = 'c3s03';
-  else if (state.storyCount === 41) sceneId = 'c3s04';
-  else if (state.storyCount === 42) sceneId = 'c3s05';
-  else if (state.storyCount === 43) sceneId = 'c3s06';
-  else if (state.storyCount === 44) sceneId = 'c3s07';
-  else if (state.storyCount === 45) sceneId = 'c3s08';
-  else if (state.storyCount === 46) sceneId = 'c3s09';
-  else if (state.storyCount === 47) sceneId = 'c3s10';
-  else if (state.storyCount === 48) sceneId = 'c3s11';
-  else if (state.storyCount === 49) sceneId = 'c3s12';
-  else if (state.storyCount === 50) sceneId = 'c3s13';
-  else if (state.storyCount === 51) sceneId = 'c3s14';
-  else if (state.storyCount === 52) sceneId = 'c3s15';
-  else if (state.storyCount === 53) sceneId = 'c3s16';
-  else if (state.storyCount === 54) sceneId = 'c3s17';
-  else if (state.storyCount === 55) sceneId = 'c3s18';
-  else if (state.storyCount === 56) sceneId = 'c3s19';
-  else if (state.storyCount === 57) sceneId = 'c3s20';
-  else if (state.storyCount === 58) sceneId = 'c3s21';
-  else if (state.storyCount === 59) sceneId = 'c3s22';
-  else if (state.storyCount === 60) sceneId = 'c3s23';
-  else if (state.storyCount === 61) sceneId = 'c3s24';
-  else if (state.storyCount === 62) sceneId = 'c3s25';
-  else if (state.storyCount === 63) sceneId = 'c3s26';
-  else sceneId = 'c3s01'; // 未実装分はフォールバック
 
   // 閲覧済みシーン記録
   if (!state.seenScenes) state.seenScenes = [];
@@ -5293,8 +5230,8 @@ function progressStory() {
     };
   }
 
-  // 第三章ジェネレーター解放：storyCount === 24（c2s08後）
-  if (state.storyCount === 24) {
+  // 第三章ジェネレーター解放：Ch2シーン8読了後（c2s08）
+  if (chapter === 2 && state.ch2Count === 8) {
     const prev = postSceneCallback;
     postSceneCallback = () => {
       if (prev) prev();
@@ -5433,18 +5370,28 @@ function fillEventRequests() {
   const usedCharIds = new Set(eventState.requests.map(r => r.characterId));
 
   // 章完了フラグ（完了した章のアイテムは新規依頼に出さない）
-  const ch1StoryDone = state.storyCount >= 16; // 第一章全16話完了
-  const ch2StoryDone = state.storyCount >= 37; // 第二章全20話完了
+  const ch1StoryDone = state.ch1Count >= CH1_SCENE_IDS.length;
+  const ch2StoryDone = state.ch2Count >= CH2_SCENE_IDS.length;
+  const ch3StoryDone = state.ch3Count >= CH3_SCENE_IDS.length;
 
   // ランダムなステージキーを1つ選ぶ内部ヘルパー
   // 除外条件: usedKeys, completedLowStages, recentlySolvedKeys（Lv6+のみ）
   function pickRandomItem(excludeKeys) {
     for (let t = 0; t < 30; t++) {
       let item;
-      // 製造機ジェネレーター解放済みかつLv3以上なら製造機アイテム依頼も混ぜる（30%）
+      // 章ジェネレーター解放状況に応じてアイテム種別を抽選
       const seizoAvailable = eventState.fireGenUnlocked && eventState.seizoGenLevel >= 2;
-      if (seizoAvailable && Math.random() < 0.3) {
-        if (ch2StoryDone) continue; // 第二章完了後は製造機アイテム依頼を生成しない
+      const kanteAvailable = eventState.kanteGenUnlocked && eventState.kanteGenLevel >= 0;
+      const rand = Math.random();
+      const useSeizo = seizoAvailable && !ch2StoryDone && rand < 0.3;
+      const useKante = kanteAvailable && !ch3StoryDone && !useSeizo && rand < 0.5;
+      if (useKante) {
+        // 第三章アイテム依頼（30%）
+        const maxKanteStage = Math.min(CHAINS[KANTEITA_CHAIN_ID].stages.length, (eventState.kanteGenLevel + 1) * 2 + 1);
+        const kanteStage = Math.floor(Math.random() * maxKanteStage) + 1;
+        item = { chainId: KANTEITA_CHAIN_ID, stage: kanteStage };
+      } else if (useSeizo) {
+        // 第二章アイテム依頼（30%）
         const maxSeizoStage = Math.min(CHAINS[SEIZO_CHAIN_ID].stages.length, (eventState.seizoGenLevel + 1) * 2);
         const seizoStage = Math.floor(Math.random() * maxSeizoStage) + 1;
         item = { chainId: SEIZO_CHAIN_ID, stage: seizoStage };
