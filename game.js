@@ -1439,6 +1439,13 @@ function discoverSeizoItem(stage) {
   updateCatalogBadge();
 }
 
+// 第三章マージアイテムを発見（初回のみ）
+function discoverKanteItem(stage) {
+  if (eventState.kanteDiscovered[stage]) return;
+  eventState.kanteDiscovered[stage] = true;
+  updateCatalogBadge();
+}
+
 // ジェネレーターのレベルを発見（初回のみ）
 // genType: 'ch1' / 'ch2', level: 0始まり
 function discoverGen(genType, level) {
@@ -1860,16 +1867,26 @@ const CHARACTERS = [
   { img: 'img/Chapter2/Chara/image_merge_order_chara_08.png',  name: 'ユウ',     age: '10歳', desc: 'リナの子供' },
   { img: 'img/Chapter2/Chara/image_merge_order_chara_09a.png',  name: 'ハルト',   age: '20歳', desc: '大学生' },
   { img: 'img/Chapter2/Chara/image_merge_order_chara_10.png',  name: 'タツオ',   age: '44歳', desc: '警備員' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_15.png', name: 'フミコ',   age: '71歳', desc: '旅館女将・依頼人' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_16.png', name: 'コウジ',   age: '47歳', desc: '旅館の跡取り' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_17.png', name: 'サチコ',   age: '44歳', desc: '故人の長女' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_18.png', name: 'ノブオ',   age: '67歳', desc: '弁護士' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_19.png', name: 'ミドリ',   age: '52歳', desc: '旅館の番頭' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_20.png', name: 'リョウタ', age: '24歳', desc: '故人の孫' },
+  { img: 'img/Chapter3/chara/image_merge_order_chara_21.png', name: 'アキラ',   age: '27歳', desc: '故人の隠し子' },
 ];
 
 function renderCharacters() {
   const list = document.getElementById('characters-list');
   list.innerHTML = '';
   const ch2Unlocked = !!eventState.fireGenUnlocked;
+  const ch3Unlocked = !!eventState.kanteGenUnlocked;
   CHARACTERS.forEach((c, idx) => {
-    // 第二章キャラクター（idx 6〜）は製造機解放後のみ表示
-    if (idx >= 6 && !ch2Unlocked) return;
-    // 第一章・第二章ラベルを挿入
+    // 第二章キャラクター（idx 6〜10）は製造機解放後のみ表示
+    if (idx >= 6 && idx <= 10 && !ch2Unlocked) return;
+    // 第三章キャラクター（idx 11〜）は鑑定台解放後のみ表示
+    if (idx >= 11 && !ch3Unlocked) return;
+    // 章ラベルを挿入
     if (idx === 1) {
       const label = document.createElement('div');
       label.className = 'character-chapter-label';
@@ -1879,6 +1896,11 @@ function renderCharacters() {
       const label = document.createElement('div');
       label.className = 'character-chapter-label';
       label.textContent = '第二章';
+      list.appendChild(label);
+    } else if (idx === 11) {
+      const label = document.createElement('div');
+      label.className = 'character-chapter-label';
+      label.textContent = '第三章';
       list.appendChild(label);
     }
     const card = document.createElement('div');
@@ -4399,6 +4421,31 @@ const CH1_SCENE_LIST = [
   { id: 'scene17', label: 'Ep.16（完結）' },
 ];
 
+// 第二章シーン一覧（c2s01〜c2s20）
+const CH2_SCENE_LIST = [
+  { id: 'c2s01',  label: 'Ep.01' },
+  { id: 'c2s02',  label: 'Ep.02' },
+  { id: 'c2s03',  label: 'Ep.03' },
+  { id: 'c2s04',  label: 'Ep.04' },
+  { id: 'c2s05',  label: 'Ep.05' },
+  { id: 'c2s06',  label: 'Ep.06' },
+  { id: 'c2s07',  label: 'Ep.07' },
+  { id: 'c2s08',  label: 'Ep.08' },
+  { id: 'c2s09',  label: 'Ep.09' },
+  { id: 'c2s10',  label: 'Ep.10' },
+  { id: 'c2s11',  label: 'Ep.11' },
+  { id: 'c2s12',  label: 'Ep.12' },
+  { id: 'c2s13',  label: 'Ep.13' },
+  { id: 'c2s14',  label: 'Ep.14' },
+  { id: 'c2s15',  label: 'Ep.15' },
+  { id: 'c2s15b', label: 'Ep.15（後半）' },
+  { id: 'c2s16',  label: 'Ep.16' },
+  { id: 'c2s17',  label: 'Ep.17' },
+  { id: 'c2s18',  label: 'Ep.18' },
+  { id: 'c2s19',  label: 'Ep.19' },
+  { id: 'c2s20',  label: 'Ep.20（完結）' },
+];
+
 // 第三章シーン一覧（c3s01〜c3s26）
 const CH3_SCENE_LIST = [
   { id: 'c3s01', label: 'Ep.01' },
@@ -4523,6 +4570,8 @@ function renderStoryScreen() {
     if (ch2Complete) {
       ch2NextWrap.classList.add('hidden');
       ch2Complete_.classList.remove('hidden');
+      renderCh2ReplayList();
+      document.getElementById('story-ch2-replay-wrap')?.classList.remove('hidden');
     } else {
       ch2NextWrap.classList.remove('hidden');
       ch2Complete_.classList.add('hidden');
@@ -4594,6 +4643,31 @@ function renderCh1ReplayList() {
     const li = document.createElement('li');
     li.className = 'story-replay-item';
     li.textContent = `第一章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
+  }
+}
+
+function renderCh2ReplayList() {
+  const list = document.getElementById('story-ch2-replay-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH2_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第二章 ${s.label}`;
     li.addEventListener('click', () => {
       closeStoryScreen();
       openAdventureScene(s.id);
@@ -4813,6 +4887,16 @@ function showNaviHintForFireGen(item, persistent = false) {
     : '第二章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   if (!isMax) updateFireNaviLvBtn(sLv);
   _showNaviHintPanel(text, !isMax, persistent);
+}
+
+function showNaviHintForKanteGen(item, persistent = false) {
+  const kLv = item.kanteLevel ?? 0;
+  const maxKLv = KANTEITA_GEN_IMAGES.length - 1;
+  const isMax = kLv >= maxKLv;
+  const text = isMax
+    ? '第三章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
+    : '第三章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
+  _showNaviHintPanel(text, false, persistent);
 }
 
 function showNaviHintForItem(item, persistent = false) {
@@ -5659,8 +5743,9 @@ function handleAnyGenTap(i) {
     }
     // 種類違い or レベル違いなら選択切替
     eventState.selectedCell = i;
-    if (isFireGen) showNaviHintForFireGen(item, true);
-    else           showNaviHintForGen(item.genLevel ?? 0, true);
+    if (isFireGen)          showNaviHintForFireGen(item, true);
+    else if (item.isKanteGen) showNaviHintForKanteGen(item, true);
+    else                    showNaviHintForGen(item.genLevel ?? 0, true);
     renderEventBoard();
     return;
   }
@@ -5668,12 +5753,14 @@ function handleAnyGenTap(i) {
   // 2タップ：選択中→生成（選択・ナビヒント維持） / 未選択→選択
   if (eventState.selectedCell === i) {
     // 選択はそのまま・ナビヒントも維持して生成
-    if (isFireGen) onEventFireGenTap(i);
-    else           onEventGenTap(i);
+    if (isFireGen)          onEventFireGenTap(i);
+    else if (item.isKanteGen) onEventKanteGenTap(i);
+    else                    onEventGenTap(i);
   } else {
     eventState.selectedCell = i;
-    if (isFireGen) showNaviHintForFireGen(item, true);
-    else           showNaviHintForGen(item.genLevel ?? 0, true);
+    if (isFireGen)          showNaviHintForFireGen(item, true);
+    else if (item.isKanteGen) showNaviHintForKanteGen(item, true);
+    else                    showNaviHintForGen(item.genLevel ?? 0, true);
     renderEventBoard();
   }
 }
@@ -6336,6 +6423,56 @@ function onEventFireGenTap(tappedCellIdx = null) {
     flyEventItemAnimation(animFrom !== -1 ? animFrom : slot, slot, imgSrc || chain.stages[finalStage - 1]);
   }
   const genShowIdx = animFrom !== -1 ? animFrom : (slot !== -1 ? slot : 0);
+  if (isPower) showPowerOnCell(genShowIdx, 'event-board');
+  else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
+
+  renderEventHeader();
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// 第三章ジェネレーター（鑑定台）タップ → KANTEITA_CHAINアイテムを生成
+function onEventKanteGenTap(tappedCellIdx = null) {
+  const powerLv    = eventState.genPowerLevel;
+  const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
+  const outStage   = cfg.startStage;
+  const energyCost = POWER_COSTS[powerLv] ?? 1;
+
+  if (!debugState.infiniteEnergy && state.energy < energyCost) {
+    showToast(`体力が足りません（必要: ${energyCost}）`);
+    return;
+  }
+
+  const animFrom = tappedCellIdx !== null
+    ? tappedCellIdx
+    : eventState.board.findIndex(c => c && c.isEventGen && c.isKanteGen);
+
+  const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showCellToast('ボードが満杯です', animFrom !== -1 ? animFrom : null, true); return; }
+
+  const chain = CHAINS[KANTEITA_CHAIN_ID];
+  let finalStage = outStage;
+  let isLucky = false, isPower = false;
+
+  const powerStage = rollPower(powerLv, chain.stages.length);
+  if (powerStage !== null) {
+    finalStage = powerStage;
+    isPower = true;
+  } else if (outStage >= 2) {
+    const luckyMult = rollLucky(powerLv);
+    if (luckyMult !== null) {
+      const ls = Math.min(Math.floor(outStage * luckyMult), chain.stages.length);
+      if (ls > outStage) { finalStage = ls; isLucky = true; }
+    }
+  }
+
+  if (!debugState.infiniteEnergy) state.energy -= energyCost;
+  eventState.board[emptyIdx] = { chainId: KANTEITA_CHAIN_ID, stage: finalStage };
+  discoverKanteItem(finalStage);
+
+  const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
+  const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
