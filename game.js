@@ -720,7 +720,7 @@ function mergeItems(fromIdx, toIdx) {
   state.board[toIdx] = { chainId: item.chainId, stage: nextStage };
   state.board[fromIdx] = null;
   state.selectedCell = null;
-  discoverItem(item.chainId, nextStage);
+  discoverItem(item.chainId, nextStage, toIdx, 'board');
 
   // マージ演出
   setTimeout(() => {
@@ -868,7 +868,7 @@ function onGeneratorClick(genId) {
   // 体力消耗・アイテム配置
   state.energy -= cost;
   state.board[emptyIdx] = { chainId: gen.chainId, stage: outputStage };
-  discoverItem(gen.chainId, outputStage);
+  discoverItem(gen.chainId, outputStage, emptyIdx, 'board');
 
   // ジェネレータータイルから対象セルへ飛び出す演出
   const genCellIdx = state.board.findIndex((c, i) => i !== emptyIdx && c?.isGenerator && c.genId === genId);
@@ -931,7 +931,7 @@ function showSpecialOnCell(cellIdx, boardId, text, color) {
 }
 
 function showLuckyOnCell(cellIdx, boardId = 'board') {
-  showSpecialOnCell(cellIdx, boardId, '🍀 Lucky!', '#ffd700');
+  showSpecialOnCell(cellIdx, boardId, '🍀 Lucky!', '#4cff6e');
 }
 
 function showPowerOnCell(cellIdx, boardId = 'board') {
@@ -1268,7 +1268,7 @@ function completeRequest(index) {
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
   checkStoryGuide();
-  showToast(`依頼完了！ 💰+${req.coin.toLocaleString()}`);
+  showRewardInPanel('依頼完了！', document.getElementById('request-panel'), '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
   }
@@ -1368,13 +1368,15 @@ function startEnergyTimer() {
 // ========================================
 // アイテム発見処理
 // ========================================
-function discoverItem(chainId, stage) {
+function discoverItem(chainId, stage, cellIdx = null, boardId = 'board') {
   if (state.discovered[chainId][stage]) return; // 既発見
   state.discovered[chainId][stage] = true;
   state.diamond += 1;
-  const chain = CHAINS[chainId];
-  const emoji = chain.stages[stage - 1];
-  showToast(`新発見！ ${emoji} ${chain.name} Lv${stage}  💎+1`);
+  if (cellIdx !== null) {
+    showSpecialOnCell(cellIdx, boardId, '新アイテム発見！', '#f9c846');
+  } else {
+    showToast('新アイテム発見！');
+  }
   renderHeader();
 
   // Lv8発見で次のジェネレーターを解放（UNLOCK_CHAINに基づく）
@@ -1621,9 +1623,9 @@ function renderCatalog() {
 // ========================================
 // 体力加算ヘルパー
 // ========================================
-function addEnergy(amount, reason) {
+function addEnergy(amount, _reason) {
   state.energy += amount;
-  showToast(`⚡ +${amount} ${reason}`);
+  showEnergyGain(amount);
   renderHeader();
 }
 
@@ -1709,7 +1711,7 @@ function showAboveNaviToast(msg) {
 }
 
 // 依頼人パネルの中央にトーストを表示（依頼完了メッセージ）
-function showRewardInPanel(msg, panelEl) {
+function showRewardInPanel(msg, panelEl, textColor = '#fff') {
   if (!panelEl) { showToast(msg); return; }
   const rect = panelEl.getBoundingClientRect();
   const el = document.createElement('div');
@@ -1719,13 +1721,104 @@ function showRewardInPanel(msg, panelEl) {
     left:${rect.left + rect.width / 2}px;
     top:${rect.top + rect.height / 2}px;
     transform:translate(-50%, -50%);
-    background:rgba(10,30,70,0.92); color:#fff; padding:8px 18px;
+    background:rgba(10,30,70,0.92); color:${textColor}; padding:8px 18px;
     border-radius:20px; font-size:14px; font-weight:bold;
     pointer-events:none; z-index:9999; white-space:nowrap;
     animation:toast-pop 2s ease-out forwards;
   `;
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 2100);
+}
+
+// 任意のDOM要素の近くにフロートテキストを表示（lucky-fade アニメ適用）
+function showFloatNearEl(text, color, el) {
+  if (!el) { showToast(text); return; }
+  const rect = el.getBoundingClientRect();
+  const div = document.createElement('div');
+  div.textContent = text;
+  div.style.cssText = `
+    position: fixed;
+    left: ${rect.left + rect.width / 2}px;
+    top: ${rect.top}px;
+    transform: translate(-50%, -50%) scale(1.2);
+    color: ${color};
+    font-size: 15px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 9999;
+    text-shadow: 0 1px 5px #000, 0 0 8px rgba(0,0,0,0.6);
+    white-space: nowrap;
+    animation: lucky-fade 1.4s ease-out forwards;
+  `;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 1400);
+}
+
+// デバッグ用：デバッグ画面を閉じずにその場で表示するフロートテキスト
+function showSpecialFixed(text, color) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  div.style.cssText = `
+    position: fixed;
+    left: 50%;
+    top: 45%;
+    transform: translate(-50%, -50%) scale(1.2);
+    color: ${color};
+    font-size: 18px;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 99999;
+    text-shadow: 0 1px 6px #000;
+    white-space: nowrap;
+    animation: lucky-fade 1.4s ease-out forwards;
+  `;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 1400);
+}
+
+// 体力回復演出: ⚡が体力表示に向かって飛び込む + オレンジ+N テキスト
+function showEnergyGain(amount) {
+  const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
+  const energyEl = eventVisible
+    ? document.getElementById('ev-energy')
+    : document.getElementById('energy-wrap');
+  if (!energyEl) { showToast(`⚡ +${amount}`); return; }
+
+  // +N テキスト（オレンジ、体力の上に浮かぶ）
+  showFloatNearEl(`+${amount}`, '#ff8c00', energyEl);
+
+  // ⚡ ボルトが体力アイコンへ飛び込む
+  const rect = energyEl.getBoundingClientRect();
+  const targetX = rect.left + rect.width  / 2;
+  const targetY = rect.top  + rect.height / 2;
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const bolt = document.createElement('div');
+      bolt.textContent = '⚡';
+      const startX = targetX + (Math.random() - 0.5) * 70;
+      const startY = targetY + 45 + Math.random() * 35;
+      bolt.style.cssText = `
+        position: fixed;
+        left: ${startX}px;
+        top: ${startY}px;
+        font-size: 18px;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition: left 0.4s ease-in, top 0.4s ease-in,
+                    opacity 0.35s ease-in, transform 0.4s ease-in;
+        opacity: 1;
+      `;
+      document.body.appendChild(bolt);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        bolt.style.left      = `${targetX}px`;
+        bolt.style.top       = `${targetY}px`;
+        bolt.style.opacity   = '0';
+        bolt.style.transform = 'translate(-50%, -50%) scale(0.2)';
+      }));
+      setTimeout(() => bolt.remove(), 450);
+    }, i * 130);
+  }
 }
 
 function showCellToast(msg, cellIdx, isEventBoard) {
@@ -1881,40 +1974,44 @@ document.getElementById('debug-spawn-coin5').addEventListener('click', () => {
   showToast(`💰 Lv5コインを出しました`);
 });
 
-// ポップアップ文字確認ボタン
-// Lucky! / Power! は event-board のセル上に表示するため、デバッグ画面を閉じてから実行
+// ポップアップ文字確認ボタン（デバッグ画面を閉じずにその場で表示）
 document.getElementById('debug-popup-lucky').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  const midIdx = Math.floor(EVENT_TOTAL / 2);
-  showLuckyOnCell(midIdx, 'event-board');
+  showSpecialFixed('🍀 Lucky!', '#4cff6e');
 });
 document.getElementById('debug-popup-power').addEventListener('click', () => {
-  document.getElementById('debug-screen').classList.add('hidden');
-  const midIdx = Math.floor(EVENT_TOTAL / 2);
-  showPowerOnCell(midIdx, 'event-board');
+  showSpecialFixed('⚡ Power!', '#e74c3c');
 });
 document.getElementById('debug-popup-levelup').addEventListener('click', () => {
-  showToast(`プレイヤー Lv${state.playerLevel + 1} になりました！`);
   const ringEl = document.getElementById('player-level-ring');
+  showFloatNearEl(`プレイヤーLv${state.playerLevel + 1}！`, '#f9c846', ringEl ?? document.getElementById('debug-screen'));
   if (ringEl) {
     ringEl.classList.add('player-level-up-flash');
     setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
   }
 });
 document.getElementById('debug-popup-genlvup').addEventListener('click', () => {
-  showToast(`🏭 メモ机 Lv3 にレベルアップ！`);
+  showSpecialFixed('メモ机 Lv3！', '#f9c846');
 });
 document.getElementById('debug-popup-request').addEventListener('click', () => {
-  showToast(`依頼完了！ 💰+1,500`);
+  showSpecialFixed('依頼完了！', '#ff8c00');
 });
 document.getElementById('debug-popup-discover').addEventListener('click', () => {
-  showToast(`新発見！ 📝 第一章 Lv1  💎+1`);
+  showSpecialFixed('新アイテム発見！', '#f9c846');
 });
 document.getElementById('debug-popup-energy').addEventListener('click', () => {
-  showToast(`体力 +25！`);
+  showEnergyGain(25);
 });
 document.getElementById('debug-popup-bonus').addEventListener('click', () => {
-  addEnergy(25, '依頼10回達成ボーナス！');
+  showEnergyGain(25);
+});
+document.getElementById('debug-popup-bubble').addEventListener('click', () => {
+  showToast('💎-6 しゃぼん玉を割りました');
+});
+document.getElementById('debug-popup-storycost').addEventListener('click', () => {
+  showToast('コインが足りません');
+});
+document.getElementById('debug-popup-maxlv').addEventListener('click', () => {
+  showToast('最大レベルです');
 });
 
 // ========================================
@@ -4542,9 +4639,8 @@ function progressStory() {
     leveledUp = true;
   }
   if (leveledUp) {
-    showToast(`プレイヤー Lv${state.playerLevel} になりました！`);
-    // レベルアップ時にリングを一瞬フラッシュ
     const ringEl = document.getElementById('player-level-ring');
+    showFloatNearEl(`プレイヤーLv${state.playerLevel}！`, '#f9c846', ringEl);
     if (ringEl) {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
@@ -4690,7 +4786,7 @@ function completeEventRequest(index) {
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
   checkStoryGuide();
-  showRewardInPanel(`依頼完了！ 💰+${req.coin.toLocaleString()}`, document.getElementById('event-req-panel'));
+  showRewardInPanel('依頼完了！', document.getElementById('event-req-panel'), '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
   }
@@ -5425,7 +5521,8 @@ function mergeEventGenerators(fromIdx, toIdx) {
   eventState.board[fromIdx] = null;
   eventState.selectedCell   = null;
   discoverGen('ch1', newLevel); // Lvアップで新レベルを発見
-  showCellToast(`第一章ジェネレーター Lv${newLevel + 1} にレベルアップ！`, toIdx, true);
+  const ch1GenName = EVENT_GEN_NAMES[Math.min(newLevel, EVENT_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${ch1GenName} Lv${newLevel + 1}！`, '#f9c846');
   state.energy += 25; renderHeader();
   showAboveNaviToast('⚡ +25 ジェネレーターLvアップボーナス！');
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
@@ -5498,7 +5595,8 @@ function mergeFireGenerators(fromIdx, toIdx) {
   // グローバルレベルも最高値に更新
   eventState.seizoGenLevel = Math.max(eventState.seizoGenLevel, newLevel);
   discoverGen('ch2', newLevel); // Lvアップで新レベルを発見
-  showCellToast(`第二章ジェネレーター Lv${newLevel + 1} にレベルアップ！`, toIdx, true);
+  const ch2GenName = SEIZO_GEN_NAMES[Math.min(newLevel, SEIZO_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${ch2GenName} Lv${newLevel + 1}！`, '#f9c846');
   addEnergy(25, '第二章ジェネレーターLvアップボーナス！');
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
   eventState.firePowerLevel = getFireGenMaxAvailablePowerLv(newLevel);
