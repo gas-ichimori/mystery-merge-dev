@@ -6265,7 +6265,7 @@ function doEventMerge(fromIdx, toIdx) {
     if (finalStage !== nextStage) discoverEventItem(nextStage);
 
     // Lv4/8/12 初回到達でジェネレーター2枚目タイルを自動出現（ベースnextStageで判定）
-    if ((nextStage === 4 || nextStage === 8 || nextStage === 12) &&
+    if ((nextStage === 4 || nextStage === 8 || nextStage === 10) &&
         !eventState.genUpTriggered.has(nextStage)) {
       eventState.genUpTriggered.add(nextStage); // 同じステージでは二度と出現しない
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
