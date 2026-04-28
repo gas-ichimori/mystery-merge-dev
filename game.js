@@ -5800,26 +5800,9 @@ function fillEventRequests() {
       fallbackRetry = 0;
     }
   }
-  // フェーズ2: それでも足りない場合のみクールダウン無視（本当に選択肢ゼロの超緊急時）
-  if (eventState.requests.length < MIN_SLOTS) {
-    let emergencyRetry = 0;
-    while (eventState.requests.length < MIN_SLOTS && emergencyRetry < 20) {
-      const result1 = pickRandomItem(usedStageKeys, true, true); // superRelaxed
-      if (!result1) { emergencyRetry++; continue; }
-      const { item: reqItem1, key: key1 } = result1;
-      const chars = getCharsForItems([reqItem1]);
-      if (chars.length === 0) { emergencyRetry++; continue; }
-      const char = chars[Math.floor(Math.random() * chars.length)];
-      eventState.requests.push({
-        characterId: char.id,
-        items: [reqItem1],
-        coin: calcCoinReward(reqItem1.stage),
-      });
-      usedStageKeys.add(key1);
-      usedCharIds.add(char.id);
-      emergencyRetry = 0;
-    }
-  }
+  // フェーズ2（廃止）: superRelaxed でクールダウン無視すると同じアイテムが即再登場するため削除。
+  // クールダウン中で選択肢が少ない場合は MIN_SLOTS を下回ってよい。
+  // 別の依頼が1件解決されるとクールダウンが解除され自然に補充される。
 }
 
 function renderEventRequest() {
