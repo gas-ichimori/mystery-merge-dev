@@ -5539,16 +5539,18 @@ function completeEventRequest(index) {
   }
 
   // 完了履歴を記録
-  const newRecent = new Set();
   for (const it of req.items) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
     if (it.stage <= 5) {
       eventState.completedLowStages.add(key); // Lv1-5: 永久に再出現しない
     } else {
-      newRecent.add(key); // Lv6+: 次の補充で1回スキップ
+      eventState.recentlySolvedKeys.add(key); // Lv6+: 次の補充でスキップ（蓄積、上書きしない）
     }
   }
-  eventState.recentlySolvedKeys = newRecent;
+  // 4件ごとにリセットして高Lvアイテムが永久封印されるのを防ぐ
+  if (state.requestCompletedTotal % 4 === 0) {
+    eventState.recentlySolvedKeys = new Set();
+  }
 
   eventState.requests.splice(index, 1);
   fillEventRequests();
@@ -5688,6 +5690,8 @@ function fillEventRequests() {
         items.push(result2.item);
         totalCoin += calcCoinReward(result2.item.stage);
         usedStageKeys.add(result2.key);
+        // 2個依頼は合計×2/3（端数切捨て・10の位丸め）
+        totalCoin = Math.floor(totalCoin * 2 / 3 / 10) * 10;
       }
     }
 
