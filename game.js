@@ -4278,7 +4278,7 @@ let eventState = {
   pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
-  recentlySolvedKeys: new Set(), // 直前に解決したLv6+キー（次の補充で1回スキップ）
+  recentlySolvedKeys: new Map(), // 直前に解決したLv6+キー Map<key, cldown残り件数>（0になると再出現可）
   unlockedFogCells: new Set(),  // マージ可能な霧セルのインデックス
   genMergeTutStep: null,        // ジェネレーターマージ誘導チュート: null=非アクティブ, 0/1/2=ステップ
   genMergeTutDone: false,       // 一度完了したら二度と出さない
@@ -4327,7 +4327,7 @@ function initEventMap() {
   eventState.pendingGenLvUpNotice  = [];
   eventState.genUpTriggered        = new Set();
   eventState.completedLowStages = new Set();
-  eventState.recentlySolvedKeys = new Set();
+  eventState.recentlySolvedKeys = new Map();
   eventState.unlockedFogCells   = new Set(INITIAL_UNLOCKED_FOG);
   eventState.genMergeTutStep    = null;
   eventState.genMergeTutDone    = false;
@@ -5611,17 +5611,19 @@ function completeEventRequest(index) {
   }
 
   // 完了履歴を記録
+  // Step1: 既存クールダウンを1件分消費（0になったエントリは削除）
+  for (const [k, v] of eventState.recentlySolvedKeys) {
+    if (v <= 1) eventState.recentlySolvedKeys.delete(k);
+    else        eventState.recentlySolvedKeys.set(k, v - 1);
+  }
+  // Step2: 今回解決したアイテムをクールダウン登録
   for (const it of req.items) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
     if (it.stage <= 5) {
       eventState.completedLowStages.add(key); // Lv1-5: 永久に再出現しない
     } else {
-      eventState.recentlySolvedKeys.add(key); // Lv6+: 次の補充でスキップ（蓄積、上書きしない）
+      eventState.recentlySolvedKeys.set(key, 1); // Lv6+: 別の依頼1件解決後に復活
     }
-  }
-  // 4件ごとにリセットして高Lvアイテムが永久封印されるのを防ぐ
-  if (state.requestCompletedTotal % 4 === 0) {
-    eventState.recentlySolvedKeys = new Set();
   }
 
   eventState.requests.splice(index, 1);
@@ -5707,9 +5709,9 @@ function fillEventRequests() {
   }
 
   // ランダムなステージキーを1つ選ぶ内部ヘルパー
-  // relaxed=true のとき recentlySolvedKeys を無視（最低枠保証用）
-  // completedLowStages は relaxed でも常に尊重（解決済みを再出現させない）
-  function pickRandomItem(excludeKeys, relaxed = false) {
+  // superRelaxed=true のみ recentlySolvedKeys を無視（選択肢が本当にゼロの超緊急時）
+  // completedLowStages は常に尊重（永久封印）
+  function pickRandomItem(excludeKeys, relaxed = false, superRelaxed = false) {
     for (let t = 0; t < 50; t++) {
       let item;
 
@@ -5738,8 +5740,8 @@ function fillEventRequests() {
       if (excludeKeys.has(key)) continue;
       // Ch1のみLv1-2をチュートリアル後は除外（Ch2・Ch3は序盤Lvも許可）
       if (!item.chainId && item.stage <= 2 && tutDone) continue;
-      if (eventState.completedLowStages.has(key)) continue; // 常に尊重（relaxedでも再出現しない）
-      if (!relaxed && item.stage >= 6 && eventState.recentlySolvedKeys.has(key)) continue;
+      if (eventState.completedLowStages.has(key)) continue; // 常に尊重（永久封印）
+      if (!superRelaxed && eventState.recentlySolvedKeys.has(key)) continue; // クールダウン中はスキップ
       return { item, key };
     }
     return null;
@@ -5777,11 +5779,12 @@ function fillEventRequests() {
     retry = 0;
   }
 
-  // 最低 MIN_SLOTS 枠を保証（制約を緩和して再試行）
+  // 最低 MIN_SLOTS 枠を保証（2段階フォールバック）
+  // フェーズ1: クールダウンを尊重したまま補充
   if (eventState.requests.length < MIN_SLOTS) {
     let fallbackRetry = 0;
     while (eventState.requests.length < MIN_SLOTS && fallbackRetry < 30) {
-      const result1 = pickRandomItem(usedStageKeys, true);
+      const result1 = pickRandomItem(usedStageKeys, true, false); // クールダウン尊重
       if (!result1) { fallbackRetry++; continue; }
       const { item: reqItem1, key: key1 } = result1;
       const chars = getCharsForItems([reqItem1]);
@@ -5795,6 +5798,26 @@ function fillEventRequests() {
       usedStageKeys.add(key1);
       usedCharIds.add(char.id);
       fallbackRetry = 0;
+    }
+  }
+  // フェーズ2: それでも足りない場合のみクールダウン無視（本当に選択肢ゼロの超緊急時）
+  if (eventState.requests.length < MIN_SLOTS) {
+    let emergencyRetry = 0;
+    while (eventState.requests.length < MIN_SLOTS && emergencyRetry < 20) {
+      const result1 = pickRandomItem(usedStageKeys, true, true); // superRelaxed
+      if (!result1) { emergencyRetry++; continue; }
+      const { item: reqItem1, key: key1 } = result1;
+      const chars = getCharsForItems([reqItem1]);
+      if (chars.length === 0) { emergencyRetry++; continue; }
+      const char = chars[Math.floor(Math.random() * chars.length)];
+      eventState.requests.push({
+        characterId: char.id,
+        items: [reqItem1],
+        coin: calcCoinReward(reqItem1.stage),
+      });
+      usedStageKeys.add(key1);
+      usedCharIds.add(char.id);
+      emergencyRetry = 0;
     }
   }
 }
