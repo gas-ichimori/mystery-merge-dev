@@ -1476,6 +1476,9 @@ function hasUnrevealedItems() {
   for (const s of Object.keys(eventState.seizoDiscovered)) {
     if (eventState.seizoDiscovered[s] && !eventState.seizoRevealed[s]) return true;
   }
+  for (const s of Object.keys(eventState.kanteDiscovered)) {
+    if (eventState.kanteDiscovered[s] && !eventState.kanteRevealed[s]) return true;
+  }
   for (const k of Object.keys(eventState.genDiscovered)) {
     if (eventState.genDiscovered[k] && !eventState.genRevealed[k]) return true;
   }
@@ -1491,7 +1494,7 @@ function updateCatalogBadge() {
 }
 
 // アイテムリスト内の「？」をタップして解放（💎+1）
-// itemType: 'event' | 'seizo' | 'ch1gen' | 'ch2gen', id: stage or level（0始まり）
+// itemType: 'event' | 'seizo' | 'kante' | 'ch1gen' | 'ch2gen' | 'ch3gen'
 function revealCatalogItem(itemType, id) {
   if (itemType === 'event') {
     if (!eventState.discovered[id] || eventState.revealed[id]) return;
@@ -1499,12 +1502,19 @@ function revealCatalogItem(itemType, id) {
   } else if (itemType === 'seizo') {
     if (!eventState.seizoDiscovered[id] || eventState.seizoRevealed[id]) return;
     eventState.seizoRevealed[id] = true;
+  } else if (itemType === 'kante') {
+    if (!eventState.kanteDiscovered[id] || eventState.kanteRevealed[id]) return;
+    eventState.kanteRevealed[id] = true;
   } else if (itemType === 'ch1gen') {
     const k = `ch1_${id}`;
     if (!eventState.genDiscovered[k] || eventState.genRevealed[k]) return;
     eventState.genRevealed[k] = true;
   } else if (itemType === 'ch2gen') {
     const k = `ch2_${id}`;
+    if (!eventState.genDiscovered[k] || eventState.genRevealed[k]) return;
+    eventState.genRevealed[k] = true;
+  } else if (itemType === 'ch3gen') {
+    const k = `ch3_${id}`;
     if (!eventState.genDiscovered[k] || eventState.genRevealed[k]) return;
     eventState.genRevealed[k] = true;
   } else { return; }
@@ -1521,7 +1531,6 @@ function revealCatalogItem(itemType, id) {
 // アイテムリスト レンダリング
 // ========================================
 function renderCatalog() {
-  // タブ：第一章（EVENT_CHAIN）と第二章（CHAINS[11]）のみ
   const tabsEl = document.getElementById('catalog-gen-tabs');
   tabsEl.innerHTML = '';
 
@@ -1537,6 +1546,14 @@ function renderCatalog() {
     tab2.textContent = CHAINS[SEIZO_CHAIN_ID].name;
     tab2.addEventListener('click', () => { catalogCurrentChain = SEIZO_CHAIN_ID; renderCatalog(); });
     tabsEl.appendChild(tab2);
+  }
+
+  if (eventState.kanteGenUnlocked) {
+    const tab3 = document.createElement('div');
+    tab3.className = 'catalog-tab' + (catalogCurrentChain === KANTEITA_CHAIN_ID ? ' active' : '');
+    tab3.textContent = CHAINS[KANTEITA_CHAIN_ID].name;
+    tab3.addEventListener('click', () => { catalogCurrentChain = KANTEITA_CHAIN_ID; renderCatalog(); });
+    tabsEl.appendChild(tab3);
   }
 
   const listEl = document.getElementById('catalog-list');
@@ -1637,6 +1654,42 @@ function renderCatalog() {
       const stageName = chain.stageNames?.[idx] ?? `${chain.name} Lv${stage}`;
       const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
       const card = makeCard(imgSrc, emoji, `Lv${stage}`, stageName, itemState, () => revealCatalogItem('seizo', stage));
+      listEl.appendChild(card);
+    });
+
+  } else if (catalogCurrentChain === KANTEITA_CHAIN_ID) {
+    // ── ジェネレーター（第三章）
+    const genHeader = document.createElement('div');
+    genHeader.className = 'catalog-section-header';
+    genHeader.textContent = 'ジェネレーター';
+    listEl.appendChild(genHeader);
+
+    KANTEITA_GEN_IMAGES.forEach((imgSrc, idx) => {
+      const key = `ch3_${idx}`;
+      const disc = !!eventState.genDiscovered[key];
+      const rev  = !!eventState.genRevealed[key];
+      const lvLabel = `Lv${idx + 1}`;
+      const name    = KANTEITA_GEN_NAMES[idx] ?? lvLabel;
+      const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
+      const card = makeCard(imgSrc, '🔬', lvLabel, name, itemState, () => revealCatalogItem('ch3gen', idx));
+      listEl.appendChild(card);
+    });
+
+    // ── マージアイテム（第三章）
+    const itemHeader = document.createElement('div');
+    itemHeader.className = 'catalog-section-header';
+    itemHeader.textContent = 'マージアイテム';
+    listEl.appendChild(itemHeader);
+
+    const kChain = CHAINS[KANTEITA_CHAIN_ID];
+    kChain.stages.forEach((emoji, idx) => {
+      const stage = idx + 1;
+      const disc  = !!eventState.kanteDiscovered[stage];
+      const rev   = !!eventState.kanteRevealed[stage];
+      const imgSrc    = kChain.stageImages?.[idx];
+      const stageName = kChain.stageNames?.[idx] ?? `${kChain.name} Lv${stage}`;
+      const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
+      const card = makeCard(imgSrc, emoji, `Lv${stage}`, stageName, itemState, () => revealCatalogItem('kante', stage));
       listEl.appendChild(card);
     });
   }
@@ -4182,6 +4235,7 @@ let eventState = {
   kanteGenUnlocked: false, // 鑑定台ジェネレーター解放済み（第三章）
   kanteGenLevel: 0,        // 鑑定台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
   kanteDiscovered: {},     // 発見済み鑑定台アイテム { stage: true }
+  kanteRevealed: {},       // 第三章アイテム: stage→true（ダイヤ取得済み）
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
   pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
@@ -4228,6 +4282,7 @@ function initEventMap() {
   eventState.kanteGenUnlocked     = false;
   eventState.kanteGenLevel     = 0;
   eventState.kanteDiscovered   = {};
+  eventState.kanteRevealed     = {};
   eventState.seizoLvTriggered  = new Set();
   eventState.kanteLvTriggered      = new Set();
   eventState.pendingGenLvUpNotice  = [];
@@ -5515,9 +5570,9 @@ function fillEventRequests() {
   const genItem = eventState.board.find(c => c && c.isEventGen && !c.isFireGen);
   const genLv   = genItem ? (genItem.genLevel ?? 0) : 0;
 
-  // Ch1ステージ範囲（ジェネレーターLvに応じて伸びる）
-  const ch1StageMin = Math.max(3, genLv * 2 + 3);
-  const ch1StageMax = Math.min(EVENT_CHAIN.stages.length, genLv * 3 + 5);
+  // Ch1ステージ範囲（序盤は最低8まで開放して多様性を確保）
+  const ch1StageMin = 3;
+  const ch1StageMax = Math.min(EVENT_CHAIN.stages.length, Math.max(8, genLv * 2 + 5));
 
   // 章解放・完了フラグ
   const ch1StoryDone = state.ch1Count >= CH1_SCENE_IDS.length;
@@ -5577,20 +5632,9 @@ function fillEventRequests() {
     );
   }
 
-  // フォールバック用：全解放済みキャラ
-  function getAvailableChars() {
-    let maxCharId = 5;
-    if (eventState.fireGenUnlocked)  maxCharId = 10;
-    if (eventState.kanteGenUnlocked) maxCharId = 17;
-    return REQUESTERS.filter(r =>
-      r.id <= maxCharId &&
-      !usedCharIds.has(r.id) &&
-      !(tutDone && r.id === 1)
-    );
-  }
-
   // ランダムなステージキーを1つ選ぶ内部ヘルパー
-  // relaxed=true のとき recentlySolvedKeys / completedLowStages を無視（最低枠保証用）
+  // relaxed=true のとき recentlySolvedKeys を無視（最低枠保証用）
+  // completedLowStages は relaxed でも常に尊重（解決済みを再出現させない）
   function pickRandomItem(excludeKeys, relaxed = false) {
     for (let t = 0; t < 50; t++) {
       let item;
@@ -5620,7 +5664,7 @@ function fillEventRequests() {
       if (excludeKeys.has(key)) continue;
       // Ch1のみLv1-2をチュートリアル後は除外（Ch2・Ch3は序盤Lvも許可）
       if (!item.chainId && item.stage <= 2 && tutDone) continue;
-      if (!relaxed && eventState.completedLowStages.has(key)) continue;
+      if (eventState.completedLowStages.has(key)) continue; // 常に尊重（relaxedでも再出現しない）
       if (!relaxed && item.stage >= 6 && eventState.recentlySolvedKeys.has(key)) continue;
       return { item, key };
     }
