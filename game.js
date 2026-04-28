@@ -774,7 +774,7 @@ function onGeneratorLevelUp(genId) {
       const emptyIdx = state.board.findIndex(c => c === null);
       if (emptyIdx === -1) {
         const genCellIdx = state.board.findIndex(c => c?.isGenerator && c.genId === genId);
-        showCellToast('ボードが満杯です', genCellIdx, false);
+        showBoardFullToast(genCellIdx, false);
         return;
       }
       state.board[emptyIdx] = { isGenerator: true, genId };
@@ -847,7 +847,7 @@ function onGeneratorClick(genId) {
   const emptyIdx = state.board.findIndex(c => c === null);
   if (emptyIdx === -1) {
     const genCellIdx = state.board.findIndex(c => c?.isGenerator && c.genId === genId);
-    showCellToast('ボードが満杯です', genCellIdx, false);
+    showBoardFullToast(genCellIdx, false);
     return;
   }
 
@@ -1909,6 +1909,43 @@ function showEnergyGain(amount) {
       setTimeout(() => bolt.remove(), 450);
     }, i * 130);
   }
+}
+
+// 「捜査盤面が満杯です」専用トースト（赤・立体・背景透明）
+function showBoardFullToast(cellIdx, isEventBoard) {
+  const boardId = isEventBoard ? 'event-board' : 'board';
+  const cells = document.querySelectorAll(`#${boardId} .cell`);
+  const cell = (cellIdx !== null && cellIdx >= 0) ? cells[cellIdx] : null;
+  const el = document.createElement('div');
+  el.textContent = '捜査盤面が満杯です';
+  el.style.cssText = `
+    position: fixed;
+    background: transparent;
+    color: #ff2222;
+    font-size: 15px;
+    font-weight: bold;
+    text-shadow:
+      1px 1px 0 #000, -1px -1px 0 #000,
+      1px -1px 0 #000, -1px 1px 0 #000,
+      2px 3px 5px rgba(0,0,0,0.85);
+    padding: 6px 12px;
+    z-index: 500;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+  `;
+  if (cell) {
+    const rect = cell.getBoundingClientRect();
+    el.style.left = `${rect.left + rect.width / 2}px`;
+    el.style.top  = `${Math.max(rect.top - 8, 10)}px`;
+    el.style.transform = 'translate(-50%, -100%)';
+  } else {
+    el.style.left = '50%';
+    el.style.top  = '40%';
+    el.style.transform = 'translate(-50%, -50%)';
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
 }
 
 function showCellToast(msg, cellIdx, isEventBoard) {
@@ -4245,6 +4282,8 @@ let eventState = {
   unlockedFogCells: new Set(),  // マージ可能な霧セルのインデックス
   genMergeTutStep: null,        // ジェネレーターマージ誘導チュート: null=非アクティブ, 0/1/2=ステップ
   genMergeTutDone: false,       // 一度完了したら二度と出さない
+  bubbleTutShown: false,        // しゃぼん玉説明ガイド表示済み
+  energyTutShown: false,        // スタミナ不足説明ガイド表示済み
   genPowerLevel: 0,             // 第一章ジェネレーター 現在選択中の出力パワーレベル
   firePowerLevel: 0,            // 第二章ジェネレーター 現在選択中の出力パワーレベル
   revealed: {},            // 第一章アイテム: stage→true（ダイヤ取得済み）
@@ -4292,6 +4331,8 @@ function initEventMap() {
   eventState.unlockedFogCells   = new Set(INITIAL_UNLOCKED_FOG);
   eventState.genMergeTutStep    = null;
   eventState.genMergeTutDone    = false;
+  eventState.bubbleTutShown     = false;
+  eventState.energyTutShown     = false;
   eventState.genPowerLevel      = 0;
   eventState.firePowerLevel     = 0;
   eventState.revealed           = {};
@@ -4428,6 +4469,12 @@ function onTutorialTap() {
 let guideState = null; // null=非アクティブ
 
 function isGuideInProgress() { return guideState !== null; }
+
+// デバッグ画面を開いているか、いずれかのデバッグフラグが有効なら true
+function isDebugModeActive() {
+  return !document.getElementById('debug-screen').classList.contains('hidden') ||
+    debugState.infiniteEnergy || debugState.infiniteCoin || debugState.infiniteDiamond;
+}
 
 function startGuide(messages, attentionSelector, onDone) {
   guideState = { messages, idx: 0, attentionSelector, onDone };
@@ -4631,14 +4678,21 @@ function renderStoryScreen() {
   if (ch1Complete) {
     ch1NextWrap.classList.add('hidden');
     ch1Complete_.classList.remove('hidden');
-    ch1ReplayWrap.classList.remove('hidden');
-    renderCh1ReplayList();
   } else {
     ch1NextWrap.classList.remove('hidden');
     ch1Complete_.classList.add('hidden');
-    ch1ReplayWrap.classList.add('hidden');
     ch1NextBtn.disabled = !canAfford;
     ch1CostLabel.textContent = costLabel;
+  }
+  // 既読シーンがあれば章完了前でも見返し可能
+  {
+    const seenCh1 = (state.seenScenes ?? []).some(id => CH1_SCENE_LIST.some(s => s.id === id));
+    if (seenCh1) {
+      ch1ReplayWrap.classList.remove('hidden');
+      renderCh1ReplayList();
+    } else {
+      ch1ReplayWrap.classList.add('hidden');
+    }
   }
 
   // ── 第二章 ──
@@ -4655,13 +4709,22 @@ function renderStoryScreen() {
     if (ch2Complete) {
       ch2NextWrap.classList.add('hidden');
       ch2Complete_.classList.remove('hidden');
-      renderCh2ReplayList();
-      document.getElementById('story-ch2-replay-wrap')?.classList.remove('hidden');
     } else {
       ch2NextWrap.classList.remove('hidden');
       ch2Complete_.classList.add('hidden');
       ch2NextBtn.disabled = !canAfford;
       ch2CostLbl.textContent = costLabel;
+    }
+    // 既読シーンがあれば章完了前でも見返し可能
+    {
+      const seenCh2 = (state.seenScenes ?? []).some(id => CH2_SCENE_LIST.some(s => s.id === id));
+      const ch2ReplayWrap = document.getElementById('story-ch2-replay-wrap');
+      if (seenCh2) {
+        ch2ReplayWrap?.classList.remove('hidden');
+        renderCh2ReplayList();
+      } else {
+        ch2ReplayWrap?.classList.add('hidden');
+      }
     }
   } else {
     ch2Block.classList.add('hidden');
@@ -4681,13 +4744,22 @@ function renderStoryScreen() {
     if (ch3Complete) {
       ch3NextWrap.classList.add('hidden');
       ch3Complete_.classList.remove('hidden');
-      renderCh3ReplayList();
-      document.getElementById('story-ch3-replay-wrap')?.classList.remove('hidden');
     } else {
       ch3NextWrap.classList.remove('hidden');
       ch3Complete_.classList.add('hidden');
       ch3NextBtn.disabled = !canAfford;
       ch3CostLbl.textContent = costLabel;
+    }
+    // 既読シーンがあれば章完了前でも見返し可能
+    {
+      const seenCh3 = (state.seenScenes ?? []).some(id => CH3_SCENE_LIST.some(s => s.id === id));
+      const ch3ReplayWrap = document.getElementById('story-ch3-replay-wrap');
+      if (seenCh3) {
+        ch3ReplayWrap?.classList.remove('hidden');
+        renderCh3ReplayList();
+      } else {
+        ch3ReplayWrap?.classList.add('hidden');
+      }
     }
   } else {
     ch3Block?.classList.add('hidden');
@@ -5946,7 +6018,17 @@ function onEventGenTap(tappedCellIdx = null) {
 
   // チュートリアル中は Lv1 固定・体力消費 1
   const baseCost = step ? 1 : energyCost;
-  if (!debugState.infiniteEnergy && state.energy < baseCost) { showToast(`体力が足りません（必要: ${baseCost}）`); return; }
+  if (!debugState.infiniteEnergy && state.energy < baseCost) {
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide([
+        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+      ], '#ev-energy', null);
+    } else {
+      showToast(`体力が足りません（必要: ${baseCost}）`);
+    }
+    return;
+  }
 
   // アニメーション始点: タップされたセル（不明なら最初のジェネレーターセル）
   const animFrom = tappedCellIdx !== null
@@ -5954,7 +6036,7 @@ function onEventGenTap(tappedCellIdx = null) {
     : eventState.board.findIndex(c => c && c.isEventGen && !c.isFireGen);
 
   const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
-  if (emptyIdx === -1) { showCellToast('ボードが満杯です', animFrom !== -1 ? animFrom : null, true); return; }
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
 
   // Power → Lucky の順で判定（チュートリアル中はスキップ）
   let finalStage = step ? 1 : outStage;
@@ -6248,15 +6330,8 @@ function doEventMerge(fromIdx, toIdx) {
   // 第一章Lv1はアップもしゃぼん玉もしない
   const isLv1Ch1 = chainId === undefined && nextStage === 1;
 
-  // 5%〜10%の確率でワンランクアップ（Lv1/チュートリアル/霧マージは除外）
+  // マージ結果は常に nextStage（ランダムボーナスなし）
   let finalStage = nextStage;
-  if (!tutStepNow && !isGenMergeTutActive() && !toWasFog && !isLv1Ch1) {
-    const upProb = 0.05 + Math.random() * 0.05;
-    if (Math.random() < upProb) {
-      const up = Math.min(nextStage + 1, maxStage);
-      if (up > nextStage) finalStage = up;
-    }
-  }
 
   eventState.board[toIdx]   = chainId !== undefined ? { chainId, stage: finalStage } : { stage: finalStage };
   eventState.board[fromIdx] = null;
@@ -6305,6 +6380,24 @@ function doEventMerge(fromIdx, toIdx) {
       eventState.board[bubbleSlot] = chainId !== undefined
         ? { chainId, stage: finalStage, isBubble: true, isNewBubble: true, bubbleTimestamp: Date.now() }
         : { stage: finalStage, isBubble: true, isNewBubble: true, bubbleTimestamp: Date.now() };
+
+      // しゃぼん玉チュートリアルナビ（初回のみ・デバッグモード以外）
+      if (!eventState.bubbleTutShown && !isDebugModeActive()) {
+        eventState.bubbleTutShown = true;
+        const slot = bubbleSlot;
+        setTimeout(() => {
+          const cells = document.querySelectorAll('#event-board .cell');
+          const cell = cells[slot];
+          if (cell) {
+            cell.classList.add('bubble-tut-target');
+            startGuide([
+              'しゃぼん玉のアイテムはマージできません。時間が経過するとコインになります。アイテムを欲しい場合は、ダイヤを消費してしゃぼん玉を割ってください。'
+            ], '.bubble-tut-target', () => {
+              cell.classList.remove('bubble-tut-target');
+            });
+          }
+        }, 200);
+      }
     }
   }
 
@@ -6406,7 +6499,7 @@ function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
   if (existingIdx === -1) return;
   const currentLv = eventState.board[existingIdx].seizoLevel ?? 0;
   const emptyIdx = findNearestEmptyEventCell(existingIdx);
-  if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); return; }
+  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: currentLv };
   eventState.seizoLvTriggered.add(playerLevel);
   eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第二章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
@@ -6425,7 +6518,7 @@ function checkKanteGenLevelUpByPlayerLevel(playerLevel) {
   if (existingIdx === -1) return;
   const currentLv = eventState.board[existingIdx].kanteLevel ?? 0;
   const emptyIdx = findNearestEmptyEventCell(existingIdx);
-  if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); return; }
+  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: currentLv };
   eventState.kanteLvTriggered.add(playerLevel);
   eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第三章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
@@ -6445,7 +6538,7 @@ function checkSeizoGenLevelUp(discoveredStage) {
       const currentLv = existingTile.seizoLevel ?? 0;
       // 同Lvの複製タイルを近くに配置（マージして昇格させる）
       const emptyIdx = findNearestEmptyEventCell(existingIdx);
-      if (emptyIdx === -1) { showCellToast('ボードが満杯です', existingIdx, true); break; }
+      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
       eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: currentLv };
       eventState.seizoLvTriggered.add(trig.triggerStage);
       showToast('第二章ジェネレータータイルが増えた！マージしてLvアップ！');
@@ -6523,14 +6616,21 @@ function onEventFireGenTap(tappedCellIdx = null) {
   const energyCost = POWER_COSTS[powerLv] ?? 1;
 
   if (!debugState.infiniteEnergy && state.energy < energyCost) {
-    showToast(`体力が足りません（必要: ${energyCost}）`);
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide([
+        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+      ], '#ev-energy', null);
+    } else {
+      showToast(`体力が足りません（必要: ${energyCost}）`);
+    }
     return;
   }
 
   // 空きセル確認
   if (eventState.board.every(c => c !== null)) {
     const fireGenIdx = tappedCellIdx !== null ? tappedCellIdx : eventState.board.findIndex(c => c && c.isEventGen && c.isFireGen);
-    showCellToast('ボードが満杯です', fireGenIdx, true);
+    showBoardFullToast(fireGenIdx, true);
     return;
   }
 
@@ -6581,7 +6681,14 @@ function onEventKanteGenTap(tappedCellIdx = null) {
   const energyCost = POWER_COSTS[powerLv] ?? 1;
 
   if (!debugState.infiniteEnergy && state.energy < energyCost) {
-    showToast(`体力が足りません（必要: ${energyCost}）`);
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide([
+        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+      ], '#ev-energy', null);
+    } else {
+      showToast(`体力が足りません（必要: ${energyCost}）`);
+    }
     return;
   }
 
@@ -6590,7 +6697,7 @@ function onEventKanteGenTap(tappedCellIdx = null) {
     : eventState.board.findIndex(c => c && c.isEventGen && c.isKanteGen);
 
   const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
-  if (emptyIdx === -1) { showCellToast('ボードが満杯です', animFrom !== -1 ? animFrom : null, true); return; }
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
 
   const chain = CHAINS[KANTEITA_CHAIN_ID];
   let finalStage = outStage;
