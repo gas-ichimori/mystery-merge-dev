@@ -4278,7 +4278,7 @@ let eventState = {
   pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
-  recentlySolvedKeys: new Map(), // 直前に解決したLv6+キー Map<key, cldown残り件数>（0になると再出現可）
+  recentlySolvedKeys: new Set(), // 直前に解決した依頼のキー Set（次の依頼解決時に置き換え→自動解除）
   unlockedFogCells: new Set(),  // マージ可能な霧セルのインデックス
   genMergeTutStep: null,        // ジェネレーターマージ誘導チュート: null=非アクティブ, 0/1/2=ステップ
   genMergeTutDone: false,       // 一度完了したら二度と出さない
@@ -4327,7 +4327,7 @@ function initEventMap() {
   eventState.pendingGenLvUpNotice  = [];
   eventState.genUpTriggered        = new Set();
   eventState.completedLowStages = new Set();
-  eventState.recentlySolvedKeys = new Map();
+  eventState.recentlySolvedKeys = new Set();
   eventState.unlockedFogCells   = new Set(INITIAL_UNLOCKED_FOG);
   eventState.genMergeTutStep    = null;
   eventState.genMergeTutDone    = false;
@@ -5610,13 +5610,9 @@ function completeEventRequest(index) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
   }
 
-  // 完了履歴を記録
-  // Step1: 既存クールダウンを1件分消費（0になったエントリは削除）
-  for (const [k, v] of eventState.recentlySolvedKeys) {
-    if (v <= 1) eventState.recentlySolvedKeys.delete(k);
-    else        eventState.recentlySolvedKeys.set(k, v - 1);
-  }
-  // Step2: 今回解決したアイテムをクールダウン登録
+  // 完了履歴を記録（Set 置き換え方式）
+  // 今回解決した依頼のキーで Set を丸ごと置き換え → 前回のブロックは自動解除
+  const newKeys = new Set();
   for (const it of req.items) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
     if (!it.chainId && it.stage <= 5) {
@@ -5624,9 +5620,10 @@ function completeEventRequest(index) {
       eventState.completedLowStages.add(key);
     } else {
       // Ch2/Ch3全Lv・Ch1 Lv6+: 1件おやすみ後に復活
-      eventState.recentlySolvedKeys.set(key, 1);
+      newKeys.add(key);
     }
   }
+  eventState.recentlySolvedKeys = newKeys; // 置き換え（前回分は自動クリア）
 
   eventState.requests.splice(index, 1);
   fillEventRequests();
