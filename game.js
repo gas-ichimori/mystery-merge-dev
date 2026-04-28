@@ -5619,10 +5619,12 @@ function completeEventRequest(index) {
   // Step2: 今回解決したアイテムをクールダウン登録
   for (const it of req.items) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
-    if (it.stage <= 5) {
-      eventState.completedLowStages.add(key); // Lv1-5: 永久に再出現しない
+    if (!it.chainId && it.stage <= 5) {
+      // Ch1 Lv1-5のみ永久封印（第一章序盤アイテムは一度解決したら不要）
+      eventState.completedLowStages.add(key);
     } else {
-      eventState.recentlySolvedKeys.set(key, 1); // Lv6+: 別の依頼1件解決後に復活
+      // Ch2/Ch3全Lv・Ch1 Lv6+: 1件おやすみ後に復活
+      eventState.recentlySolvedKeys.set(key, 1);
     }
   }
 
@@ -5711,7 +5713,7 @@ function fillEventRequests() {
   // ランダムなステージキーを1つ選ぶ内部ヘルパー
   // superRelaxed=true のみ recentlySolvedKeys を無視（選択肢が本当にゼロの超緊急時）
   // completedLowStages は常に尊重（永久封印）
-  function pickRandomItem(excludeKeys, relaxed = false, superRelaxed = false) {
+  function pickRandomItem(excludeKeys, superRelaxed = false) {
     for (let t = 0; t < 50; t++) {
       let item;
 
@@ -5784,7 +5786,7 @@ function fillEventRequests() {
   if (eventState.requests.length < MIN_SLOTS) {
     let fallbackRetry = 0;
     while (eventState.requests.length < MIN_SLOTS && fallbackRetry < 30) {
-      const result1 = pickRandomItem(usedStageKeys, true, false); // クールダウン尊重
+      const result1 = pickRandomItem(usedStageKeys); // クールダウン尊重
       if (!result1) { fallbackRetry++; continue; }
       const { item: reqItem1, key: key1 } = result1;
       const chars = getCharsForItems([reqItem1]);
