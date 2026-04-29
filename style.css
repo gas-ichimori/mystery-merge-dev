@@ -1112,8 +1112,8 @@ body {
 
 /* ヘッダーアイコン画像（コイン・体力・ダイヤ等） */
 .ev-icon-img {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   vertical-align: middle;
   margin-right: 2px;
@@ -1131,8 +1131,8 @@ body {
 
 /* ボタン内アイコン画像（設定・アイテムリスト・ストーリー・閉じる等） */
 .navi-icon-img {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
   display: block;
   pointer-events: none;
