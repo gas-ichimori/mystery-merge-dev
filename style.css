@@ -1108,6 +1108,20 @@ body {
   align-items: center;
 }
 
+/* ヘッダーアイコン画像（コイン等） */
+.ev-icon-img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+#ev-coin, #ev-diamond {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+
 #ev-settings-btn {
   background: rgba(30, 60, 120, 0.7);
   color: #e0eaff;
@@ -1207,15 +1221,14 @@ body {
   to   { box-shadow: 0 0 26px 12px rgba(249,200,70,1);  transform: scale(1.12); }
 }
 
-/* 依頼パネル（イベント） */
+/* 依頼パネル（イベント）：盤面背景をそのまま透過表示 */
 #event-req-panel {
   position: sticky;
   top: var(--event-header-h, 100px);
   z-index: 9;
   width: 100%;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px);
-  border-bottom: 2px solid #f1c40f55;
+  background: transparent;
+  border-bottom: none;
   padding: 3px 8px;
   display: flex;
   flex-direction: row;
@@ -1676,10 +1689,10 @@ body {
   object-position: center top;
   display: block;
 }
-/* スタートボタン：画面下部に中央配置 */
+/* スタートボタン：フッター最下部に中央配置 */
 #title-start-btn {
   position: absolute;
-  bottom: 14%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
   left: 50%;
   transform: translateX(-50%);
   width: clamp(180px, 52vw, 280px);

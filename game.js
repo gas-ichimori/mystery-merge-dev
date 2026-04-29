@@ -5413,10 +5413,10 @@ function renderEventBoard() {
 function renderEventHeader() {
   const el = document.getElementById('ev-energy');
   if (el) el.textContent = `⚡${Math.floor(state.energy)}`;
-  const ec = document.getElementById('ev-coin');
-  if (ec) ec.textContent = `💰${state.coin}`;
-  const ed = document.getElementById('ev-diamond');
-  if (ed) ed.textContent = `💎${state.diamond}`;
+  const ecn = document.getElementById('ev-coin-num');
+  if (ecn) ecn.textContent = state.coin;
+  const edn = document.getElementById('ev-diamond-num');
+  if (edn) edn.textContent = state.diamond;
   renderPlayerLevel();
 }
 
