@@ -519,13 +519,14 @@ body {
 }
 
 #catalog-close {
-  padding: 6px 12px;
+  padding: 5px;
   background: #333;
   border: none;
   border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #catalog-title {
@@ -640,15 +641,15 @@ body {
 /* アイテムリストアクセスボタン（メインゲーム・イベント共通） */
 .catalog-access-btn {
   background: rgba(30, 60, 120, 0.5);
-  color: #aabbdd;
   border: 1px solid rgba(100, 150, 220, 0.3);
   border-radius: 7px;
-  padding: 3px 8px;
-  font-size: 15px;
+  padding: 4px;
   cursor: pointer;
-  line-height: 1;
   position: relative;
   transition: background 0.3s, border-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .catalog-access-btn:active { background: rgba(20, 40, 90, 0.9); }
 
@@ -698,13 +699,14 @@ body {
 }
 
 #shop-close {
-  padding: 6px 12px;
+  padding: 5px;
   background: #333;
   border: none;
   border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #shop-title {
@@ -1108,7 +1110,7 @@ body {
   align-items: center;
 }
 
-/* ヘッダーアイコン画像（コイン等） */
+/* ヘッダーアイコン画像（コイン・体力・ダイヤ等） */
 .ev-icon-img {
   width: 18px;
   height: 18px;
@@ -1116,21 +1118,30 @@ body {
   vertical-align: middle;
   margin-right: 2px;
 }
-#ev-coin, #ev-diamond {
+#ev-coin, #ev-diamond, #ev-energy {
   display: inline-flex;
   align-items: center;
-  gap: 1px;
+  gap: 2px;
+}
+
+/* ボタン内アイコン画像（設定・アイテムリスト・ストーリー・閉じる等） */
+.navi-icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
 }
 
 #ev-settings-btn {
   background: rgba(30, 60, 120, 0.7);
-  color: #e0eaff;
   border: 1px solid rgba(100, 150, 220, 0.5);
   border-radius: 6px;
-  padding: 2px 7px;
-  font-size: 15px;
+  padding: 4px;
   cursor: pointer;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #ev-settings-btn:active { background: rgba(20, 40, 90, 0.9); }
 
@@ -1178,15 +1189,15 @@ body {
 /* ストーリー進行ボタン */
 #story-btn {
   background: rgba(30, 60, 120, 0.5);
-  color: #667799;
   border: 1px solid rgba(100, 150, 220, 0.25);
   border-radius: 8px;
-  padding: 3px 8px;
-  font-size: 16px;
+  padding: 4px;
   cursor: not-allowed;
   opacity: 0.45;
-  transition: opacity 0.3s, background 0.3s, border-color 0.3s, color 0.3s, box-shadow 0.3s;
-  line-height: 1;
+  transition: opacity 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #story-btn.story-btn-active {
   cursor: pointer;
@@ -1297,13 +1308,13 @@ body {
 ======================================== */
 #settings-btn {
   background: rgba(30, 60, 120, 0.7);
-  color: #e0eaff;
   border: 1px solid rgba(100, 150, 220, 0.5);
   border-radius: 8px;
-  padding: 4px 10px;
-  font-size: clamp(14px, 4vw, 18px);
+  padding: 4px;
   cursor: pointer;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #settings-btn:active { background: rgba(20, 40, 90, 0.9); }
 
@@ -1330,12 +1341,13 @@ body {
 }
 #settings-close {
   background: rgba(255,255,255,0.12);
-  color: #e8f4fd;
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 13px;
+  padding: 5px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #settings-title {
   color: #e8f4fd;
@@ -1476,12 +1488,13 @@ body {
 }
 #characters-close {
   background: rgba(30,60,120,0.7);
-  color: #e0eaff;
   border: 1px solid rgba(100,150,220,0.5);
   border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 13px;
+  padding: 5px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #characters-title {
   font-size: 16px;
@@ -1572,12 +1585,13 @@ body {
 }
 #debug-close {
   background: rgba(30,60,120,0.7);
-  color: #e0eaff;
   border: 1px solid rgba(100,150,220,0.5);
   border-radius: 6px;
-  padding: 4px 10px;
-  font-size: 13px;
+  padding: 5px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #debug-title {
   font-size: 16px;
@@ -2059,12 +2073,13 @@ body {
 #story-screen-close-btn {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #ccc;
   border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 13px;
+  padding: 5px;
   cursor: pointer;
   transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #story-screen-close-btn:active { background: rgba(255,255,255,0.1); }
 

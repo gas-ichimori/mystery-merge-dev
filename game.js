@@ -5411,8 +5411,8 @@ function renderEventBoard() {
 // イベントヘッダー・依頼描画
 // ========================================
 function renderEventHeader() {
-  const el = document.getElementById('ev-energy');
-  if (el) el.textContent = `⚡${Math.floor(state.energy)}`;
+  const el = document.getElementById('ev-energy-num');
+  if (el) el.textContent = Math.floor(state.energy);
   const ecn = document.getElementById('ev-coin-num');
   if (ecn) ecn.textContent = state.coin;
   const edn = document.getElementById('ev-diamond-num');
