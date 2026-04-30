@@ -195,6 +195,8 @@ function getLevelUpXP(level) {
 const COLS = 7;
 const ROWS = 9;
 const TOTAL_CELLS = COLS * ROWS;
+const COIN_ICON = '<img src="img/UI/image_merge_icon_coin01.png" class="icon-inline" alt="💰">';
+const HP_ICON   = '<img src="img/UI/image_merge_navi_hp.png"    class="icon-inline" alt="⚡">';
 
 let state = {
   board: Array(TOTAL_CELLS).fill(null), // null or { chainId, stage }
@@ -636,7 +638,7 @@ function renderGenerators() {
 
 function renderHeader() {
   document.getElementById('energy-text').textContent = `${Math.floor(state.energy)}`;
-  document.getElementById('coin-display').textContent = `💰 ${state.coin}`;
+  document.getElementById('coin-display').innerHTML = `${COIN_ICON} ${state.coin}`;
   document.getElementById('diamond-display').textContent = `💎 ${state.diamond}`;
 }
 
@@ -928,7 +930,7 @@ function showSpecialOnCell(cellIdx, boardId, text, color) {
     if (!cell) return;
     const rect = cell.getBoundingClientRect();
     const el = document.createElement('div');
-    el.textContent = text;
+    el.innerHTML = text;
     el.style.cssText = `
       position: fixed;
       left: ${rect.left + rect.width / 2}px;
@@ -953,7 +955,7 @@ function showLuckyOnCell(cellIdx, boardId = 'board') {
 }
 
 function showPowerOnCell(cellIdx, boardId = 'board') {
-  showSpecialOnCell(cellIdx, boardId, '⚡ Power!', '#e74c3c');
+  showSpecialOnCell(cellIdx, boardId, `${HP_ICON} Power!`, '#e74c3c');
 }
 
 // アイテムが fromIdx セルから toIdx セルへ湾曲しながら飛ぶアニメーション
@@ -1256,7 +1258,7 @@ function renderRequest() {
       <div class="req-slot-frame">
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
-          <span class="req-coin">💰${req.coin.toLocaleString()}</span>
+          <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>
           ${completable ? `<button class="req-complete-btn">依頼済</button>` : ''}
         </div>
       </div>
@@ -1734,7 +1736,7 @@ function shopRemaining(lastTs) {
 // ========================================
 function showToast(msg) {
   const el = document.createElement('div');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.cssText = `
     position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,0.82); color: #fff; padding: 6px 14px;
@@ -1750,7 +1752,7 @@ function showToast(msg) {
 // パネル要素のすぐ下にトーストを表示（依頼完了など）
 function showToastRed(msg) {
   const el = document.createElement('div');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.cssText = `
     position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
     background: rgba(180,0,0,0.92); color: #fff; padding: 8px 18px;
@@ -1767,7 +1769,7 @@ function showToastNearPanel(msg, panelEl) {
   if (!panelEl) { showToast(msg); return; }
   const rect = panelEl.getBoundingClientRect();
   const el = document.createElement('div');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.cssText = `
     position:fixed;
     left:${rect.left + rect.width / 2}px;
@@ -1801,7 +1803,7 @@ function showAboveNaviToast(msg) {
     topY = rect ? rect.bottom - 40 : window.innerHeight - 80;
   }
   const el = document.createElement('div');
-  el.textContent = msg;
+  el.innerHTML = msg;
   el.style.cssText = `
     position:fixed; left:50%; top:${topY}px;
     transform:translate(-50%, -100%);
@@ -1862,7 +1864,7 @@ function showFloatNearEl(text, color, el) {
 // デバッグ用：デバッグ画面を閉じずにその場で表示するフロートテキスト
 function showSpecialFixed(text, color) {
   const div = document.createElement('div');
-  div.textContent = text;
+  div.innerHTML = text;
   div.style.cssText = `
     position: fixed;
     left: 50%;
@@ -1887,26 +1889,27 @@ function showEnergyGain(amount) {
   const energyEl = eventVisible
     ? document.getElementById('ev-energy')
     : document.getElementById('energy-wrap');
-  if (!energyEl) { showToast(`⚡ +${amount}`); return; }
+  if (!energyEl) { showToast(`${HP_ICON} +${amount}`); return; }
 
   // +N テキスト（オレンジ、体力の上に浮かぶ）
   showFloatNearEl(`+${amount}`, '#ff8c00', energyEl);
 
-  // ⚡ ボルトが体力アイコンへ飛び込む
+  // HPアイコンが体力アイコンへ飛び込む
   const rect = energyEl.getBoundingClientRect();
   const targetX = rect.left + rect.width  / 2;
   const targetY = rect.top  + rect.height / 2;
   for (let i = 0; i < 3; i++) {
     setTimeout(() => {
       const bolt = document.createElement('div');
-      bolt.textContent = '⚡';
+      bolt.innerHTML = HP_ICON;
       const startX = targetX + (Math.random() - 0.5) * 70;
       const startY = targetY + 45 + Math.random() * 35;
       bolt.style.cssText = `
         position: fixed;
         left: ${startX}px;
         top: ${startY}px;
-        font-size: 18px;
+        width: 20px;
+        height: 20px;
         pointer-events: none;
         z-index: 9999;
         transform: translate(-50%, -50%);
@@ -2105,7 +2108,7 @@ document.getElementById('debug-gen-lv-up').addEventListener('click', () => {
   const next = (eventState.genPowerLevel + 1) % POWER_COSTS.length;
   eventState.genPowerLevel = next;
   const cost = POWER_COSTS[next];
-  showToast(`出力Lv → ${cost}⚡`);
+  showToast(`出力Lv → ${cost}${HP_ICON}`);
   renderEventBoard();
   renderEventHeader();
 });
@@ -2128,7 +2131,7 @@ document.getElementById('debug-spawn-coin5').addEventListener('click', () => {
   if (emptyIdx === -1) { showToast('ボードが満杯です'); return; }
   eventState.board[emptyIdx] = { isCoin: true, coinLv: COIN_MAX_LV };
   renderEventBoard();
-  showToast(`💰 Lv5コインを出しました`);
+  showToast(`${COIN_ICON} Lv5コインを出しました`);
 });
 
 // ポップアップ文字確認ボタン（デバッグ画面を閉じずにその場で表示）
@@ -2136,7 +2139,7 @@ document.getElementById('debug-popup-lucky').addEventListener('click', () => {
   showSpecialFixed('🍀 Lucky!', '#4cff6e');
 });
 document.getElementById('debug-popup-power').addEventListener('click', () => {
-  showSpecialFixed('⚡ Power!', '#e74c3c');
+  showSpecialFixed(`${HP_ICON} Power!`, '#e74c3c');
 });
 document.getElementById('debug-popup-levelup').addEventListener('click', () => {
   const ringEl = document.getElementById('player-level-ring');
@@ -4006,7 +4009,7 @@ function renderShop() {
 
   const items = [
     {
-      icon: '⚡',
+      icon: HP_ICON,
       title: '無料 体力回復',
       detail: '体力 +25',
       badge: '無料',
@@ -4021,14 +4024,14 @@ function renderShop() {
       },
     },
     {
-      icon: '⚡',
+      icon: HP_ICON,
       title: '体力大回復',
       detail: '体力 +100',
-      badge: '💰 10,000',
+      badge: `${COIN_ICON} 10,000`,
       badgeClass: 'badge-coin',
       remaining: () => shopRemaining(state.shop.lastCoinEnergy),
       canBuy: () => !shopRemaining(state.shop.lastCoinEnergy) && state.coin >= 10000,
-      btnLabel: '💰 10,000で購入',
+      btnLabel: `${COIN_ICON} 10,000で購入`,
       action() {
         if (state.coin < 10000) { showToast('コインが足りません'); return; }
         state.shop.lastCoinEnergy = Date.now();
@@ -4039,7 +4042,7 @@ function renderShop() {
       },
     },
     {
-      icon: '⚡',
+      icon: HP_ICON,
       title: '体力大回復',
       detail: '体力 +100',
       badge: '💎 10',
@@ -4681,7 +4684,7 @@ function renderStoryScreen() {
   const ch3Complete = state.ch3Count >= CH3_SCENE_IDS.length;
   const cost        = getStoryCost(state.playerLevel);
   const canAfford   = state.coin >= cost;
-  const costLabel   = `💰 ${cost.toLocaleString()}消費`;
+  const costLabel   = `${COIN_ICON} ${cost.toLocaleString()}消費`;
 
   // ── 第一章 ──
   const ch1NextWrap   = document.getElementById('story-ch1-next-wrap');
@@ -4697,7 +4700,7 @@ function renderStoryScreen() {
     ch1NextWrap.classList.remove('hidden');
     ch1Complete_.classList.add('hidden');
     ch1NextBtn.disabled = !canAfford;
-    ch1CostLabel.textContent = costLabel;
+    ch1CostLabel.innerHTML = costLabel;
   }
   // 既読シーンがあれば章完了前でも見返し可能
   {
@@ -4728,7 +4731,7 @@ function renderStoryScreen() {
       ch2NextWrap.classList.remove('hidden');
       ch2Complete_.classList.add('hidden');
       ch2NextBtn.disabled = !canAfford;
-      ch2CostLbl.textContent = costLabel;
+      ch2CostLbl.innerHTML = costLabel;
     }
     // 既読シーンがあれば章完了前でも見返し可能
     {
@@ -4763,7 +4766,7 @@ function renderStoryScreen() {
       ch3NextWrap.classList.remove('hidden');
       ch3Complete_.classList.add('hidden');
       ch3NextBtn.disabled = !canAfford;
-      ch3CostLbl.textContent = costLabel;
+      ch3CostLbl.innerHTML = costLabel;
     }
     // 既読シーンがあれば章完了前でも見返し可能
     {
@@ -4979,7 +4982,7 @@ function updateFireNaviLvBtn(seizoLevel) {
   if (!lvLabel || !lvCrown) return;
   const curPL = eventState.firePowerLevel;
   const maxPL = getFireGenMaxAvailablePowerLv(seizoLevel);
-  lvLabel.textContent = `${POWER_COSTS[curPL]}⚡`;
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
   lvCrown.textContent = curPL === maxPL ? '👑' : '';
 }
 
@@ -5011,7 +5014,7 @@ function _showNaviHintPanel(text, showLvBtn, persistent = false) {
   if (tutPanel && !tutPanel.classList.contains('hidden')) return;
   // 持続表示中（ジェネレーター選択など）は非持続の呼び出しを無視
   if (naviHintPersistent && !persistent) return;
-  textEl.textContent = text;
+  textEl.innerHTML = text;
   if (lvBtn) lvBtn.classList.toggle('hidden', !showLvBtn);
   document.getElementById('navi-diamond-btn')?.classList.add('hidden');
   document.getElementById('navi-trash-btn')?.classList.add('hidden');
@@ -5036,7 +5039,7 @@ function updateNaviLvBtn(genLevel) {
   if (!lvLabel || !lvCrown) return;
   const curPL = eventState.genPowerLevel;
   const maxPL = getGenMaxAvailablePowerLv(genLevel);
-  lvLabel.textContent = `${POWER_COSTS[curPL]}⚡`;
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
   lvCrown.textContent = curPL === maxPL ? '👑' : '';
 }
 
@@ -5090,7 +5093,7 @@ function showNaviHintForItem(item, persistent = false) {
   } else {
     trashBtn?.classList.add('hidden');
     const reward = item.stage * 10;
-    if (coinLbl) coinLbl.textContent = `💰 ${reward}`;
+    if (coinLbl) coinLbl.innerHTML = `${COIN_ICON} ${reward}`;
     coinBtn?.classList.remove('hidden');
   }
 }
@@ -5100,8 +5103,8 @@ function showNaviHintForCoin(item) {
   const reward = COIN_REWARD[lv] ?? 0;
   const isMax  = lv >= COIN_MAX_LV;
   const text   = isMax
-    ? `コインLv${lv}（最大）: ダブルタップで💰+${reward}`
-    : `コインLv${lv}: ダブルタップで💰+${reward}。同じLvと重ねてLvアップ！`;
+    ? `コインLv${lv}（最大）: ダブルタップで${COIN_ICON}+${reward}`
+    : `コインLv${lv}: ダブルタップで${COIN_ICON}+${reward}。同じLvと重ねてLvアップ！`;
   _showNaviHintPanel(text, false, true);
 }
 
@@ -5263,7 +5266,7 @@ function renderEventBoard() {
           cell.innerHTML = `
             <img class="item-img item-img-lg" src="${sImg}" alt="製造機">
             <div class="gen-stars">${starsHtml}</div>
-            <span class="gen-energy-badge">⚡</span>
+            <span class="gen-energy-badge">${HP_ICON}</span>
           `;
           // 選択・マージターゲット表示
           if (!step) {
@@ -5284,7 +5287,7 @@ function renderEventBoard() {
           cell.innerHTML = `
             <img class="item-img item-img-lg" src="${kImg}" alt="鑑定台">
             <div class="gen-stars">${starsHtml}</div>
-            <span class="gen-energy-badge">⚡</span>
+            <span class="gen-energy-badge">${HP_ICON}</span>
           `;
           if (!step) {
             if (i === eventState.selectedCell) cell.classList.add('selected');
@@ -5301,7 +5304,7 @@ function renderEventBoard() {
           cell.innerHTML = `
             <img class="item-img item-img-lg" src="${EVENT_GEN_IMAGES[Math.min(item.genLevel ?? 0, EVENT_GEN_IMAGES.length - 1)]}" alt="ジェネレーター">
             <div class="gen-stars">${starsHtml}</div>
-            <span class="gen-energy-badge">⚡</span>
+            <span class="gen-energy-badge">${HP_ICON}</span>
           `;
 
           // チュートリアル完了後: 選択・マージターゲット表示
@@ -5847,7 +5850,7 @@ function renderEventRequest() {
           <span class="req-item-badge">${badgeIcon}</span>
         </div>
         <div class="req-coin-row">
-          <span class="req-coin">💰100</span>
+          <span class="req-coin">${COIN_ICON}100</span>
           ${completable ? `<button class="req-complete-btn">依頼解決</button>` : ''}
         </div>
       </div>
@@ -5901,7 +5904,7 @@ function renderEventRequest() {
       <div class="req-slot-frame">
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
-          <span class="req-coin">💰${req.coin.toLocaleString()}</span>
+          <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>
           ${completable ? `<button class="req-complete-btn">依頼解決</button>` : ''}
         </div>
       </div>
@@ -6237,7 +6240,7 @@ function onEventCellClick(index) {
       eventState.board[index] = null;
       eventState.selectedCell = null;
       hideNaviHint();
-      showToast(`💰 +${reward}`);
+      showToast(`${COIN_ICON} +${reward}`);
       renderEventBoard();
       renderEventHeader();
       lastCoinTapTime = 0; lastCoinTapIdx = -1;
@@ -6288,7 +6291,7 @@ function completeTutorialRequest() {
   if (idx === -1) { showToast('アイテムがありません'); return; }
   eventState.board[idx] = null;
   state.coin += 100;
-  showToastNearPanel('依頼完了！ 💰+100', document.getElementById('event-req-panel'));
+  showToastNearPanel(`依頼完了！ ${COIN_ICON}+100`, document.getElementById('event-req-panel'));
   renderEventHeader();
   renderEventBoard();
   advanceTutorial();
@@ -6451,7 +6454,7 @@ function mergeEventGenerators(fromIdx, toIdx) {
   const ch1GenName = EVENT_GEN_NAMES[Math.min(newLevel, EVENT_GEN_NAMES.length - 1)];
   showSpecialOnCell(toIdx, 'event-board', `${ch1GenName} Lv${newLevel + 1}！`, '#f9c846');
   state.energy += 25; renderHeader();
-  showAboveNaviToast('⚡ +25 ジェネレーターLvアップボーナス！');
+  showAboveNaviToast(`${HP_ICON} +25 ジェネレーターLvアップボーナス！`);
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
   eventState.genPowerLevel = getGenMaxAvailablePowerLv(newLevel);
   // ジェネレーターマージ誘導チュートリアルのフォーカスステップを完了
@@ -6999,7 +7002,7 @@ function endEvDrag(x, y) {
           eventState.board[fromIdx] = null;
           eventState.selectedCell   = null;
           hideNaviHint();
-          showToast(`💰 +${reward}`);
+          showToast(`${COIN_ICON} +${reward}`);
           renderEventBoard();
           renderEventHeader();
           lastCoinTapTime = 0; lastCoinTapIdx = -1;
@@ -7216,7 +7219,7 @@ document.getElementById('navi-coin-btn').addEventListener('click', (e) => {
   eventState.board[selIdx] = null;
   eventState.selectedCell  = null;
   hideNaviHint();
-  showToast(`💰 +${reward}`);
+  showToast(`${COIN_ICON} +${reward}`);
   renderEventBoard();
   renderEventHeader();
 });

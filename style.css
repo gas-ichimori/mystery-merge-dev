@@ -408,7 +408,19 @@ body {
   line-height: 1;
   pointer-events: none;
   z-index: 3;
-  filter: hue-rotate(180deg) saturate(3) brightness(1.4);
+}
+.gen-energy-badge img {
+  width: 12px;
+  height: 12px;
+  vertical-align: middle;
+}
+
+/* インラインアイコン（コイン・HP）*/
+.icon-inline {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  display: inline-block;
 }
 
 /* ========================================
