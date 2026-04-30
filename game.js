@@ -575,13 +575,8 @@ function mergeGenerators(fromIdx, toIdx) {
   if (gen.powerLevel === 4) addEnergy(100, '最大レベル達成ボーナス！');
   else addEnergy(25, 'Lvアップボーナス！');
 
-  setTimeout(() => {
-    const cells = document.querySelectorAll('.cell');
-    cells[toIdx]?.classList.add('merge-pop');
-    setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
-  }, 10);
-
   renderAll();
+  triggerMergeAnim('#board', toIdx);
 }
 
 
@@ -706,6 +701,26 @@ function onCellClick(index) {
 }
 
 // ========================================
+// マージアニメーション共通ヘルパー
+// ========================================
+// boardSelector: '#board' or '#event-board'
+// cellIdx: セルインデックス
+// 描画後に確実にアニメーションを発火させるため double rAF を使用
+function triggerMergeAnim(boardSelector, cellIdx) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const cells = document.querySelectorAll(boardSelector + ' .cell');
+      const cell = cells[cellIdx];
+      if (!cell) return;
+      cell.classList.remove('merge-pop'); // 連続マージ時にリセット
+      void cell.offsetWidth;             // リフロー強制（アニメーション再起動）
+      cell.classList.add('merge-pop');
+      setTimeout(() => cell.classList.remove('merge-pop'), 420);
+    });
+  });
+}
+
+// ========================================
 // マージ処理
 // ========================================
 function mergeItems(fromIdx, toIdx) {
@@ -725,17 +740,11 @@ function mergeItems(fromIdx, toIdx) {
   state.selectedCell = null;
   discoverItem(item.chainId, nextStage, toIdx, 'board');
 
-  // マージ演出
-  setTimeout(() => {
-    const cells = document.querySelectorAll('.cell');
-    cells[toIdx].classList.add('merge-pop');
-    setTimeout(() => cells[toIdx].classList.remove('merge-pop'), 300);
-  }, 10);
-
   // リクエスト完了チェック
   checkRequestComplete();
 
   renderAll();
+  triggerMergeAnim('#board', toIdx);
 }
 
 // ========================================
@@ -6306,12 +6315,8 @@ function doEventMerge(fromIdx, toIdx) {
     eventState.board[fromIdx] = null;
     eventState.selectedCell   = null;
     hideNaviHint();
-    setTimeout(() => {
-      const cells = document.querySelectorAll('#event-board .cell');
-      cells[toIdx]?.classList.add('merge-pop');
-      setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
-    }, 10);
     renderEventBoard();
+    triggerMergeAnim('#event-board', toIdx);
     return;
   }
 
@@ -6406,12 +6411,6 @@ function doEventMerge(fromIdx, toIdx) {
     }
   }
 
-  setTimeout(() => {
-    const cells = document.querySelectorAll('#event-board .cell');
-    cells[toIdx]?.classList.add('merge-pop');
-    setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
-  }, 10);
-
   const step = currentTutStep();
   if (step && step.type === 'merge_focus') {
     setTimeout(() => advanceTutorial(), 500);
@@ -6419,7 +6418,8 @@ function doEventMerge(fromIdx, toIdx) {
 
   renderEventBoard();
   renderEventGenerators();
-  renderEventRequest(); // 依頼達成可否を更新
+  renderEventRequest();
+  triggerMergeAnim('#event-board', toIdx);
 }
 
 // ========================================
@@ -6453,18 +6453,13 @@ function mergeEventGenerators(fromIdx, toIdx) {
     setTimeout(() => advanceGenMergeTut(), 400);
   }
 
-  setTimeout(() => {
-    const cells = document.querySelectorAll('#event-board .cell');
-    cells[toIdx]?.classList.add('merge-pop');
-    setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
-  }, 10);
-
   // Lvアップで依頼ステージ上限が上がるので再補充
   fillEventRequests();
   renderEventBoard();
   renderEventGenerators();
   renderEventRequest();
   renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
 }
 
 // 製造機ジェネレーター解放（メモ帳アイテムLv8到達時）
@@ -6573,16 +6568,11 @@ function mergeFireGenerators(fromIdx, toIdx) {
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
   eventState.firePowerLevel = getFireGenMaxAvailablePowerLv(newLevel);
 
-  setTimeout(() => {
-    const cells = document.querySelectorAll('#event-board .cell');
-    cells[toIdx]?.classList.add('merge-pop');
-    setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
-  }, 10);
-
   fillEventRequests();
   renderEventBoard();
   renderEventRequest();
   renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
 }
 
 // 鑑定台ジェネレータータイル同士のマージ（Lvアップ）
@@ -6600,16 +6590,11 @@ function mergeKanteGenerators(fromIdx, toIdx) {
   showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
   addEnergy(25, '第三章ジェネレーターLvアップボーナス！');
 
-  setTimeout(() => {
-    const cells = document.querySelectorAll('#event-board .cell');
-    cells[toIdx]?.classList.add('merge-pop');
-    setTimeout(() => cells[toIdx]?.classList.remove('merge-pop'), 300);
-  }, 10);
-
   fillEventRequests();
   renderEventBoard();
   renderEventRequest();
   renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
 }
 
 // 製造機ジェネレータータップ（tappedCellIdx: タップされたセルのインデックス）
