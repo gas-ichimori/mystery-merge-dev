@@ -712,8 +712,8 @@ function triggerMergeAnim(boardSelector, cellIdx) {
       const cells = document.querySelectorAll(boardSelector + ' .cell');
       const cell = cells[cellIdx];
       if (!cell) return;
-      cell.style.transition = 'none';
-      const anim = cell.animate([
+      const target = cell.querySelector('img, .item-emoji, .item-stage') || cell;
+      target.animate([
         { transform: 'scale(1)',    offset: 0,    easing: 'ease-in'  },
         { transform: 'scale(0.1)',  offset: 0.3,  easing: 'ease-out' },
         { transform: 'scale(1.25)', offset: 0.75, easing: 'ease-out' },
@@ -722,7 +722,6 @@ function triggerMergeAnim(boardSelector, cellIdx) {
         duration: 750,
         fill: 'none'
       });
-      anim.onfinish = () => { cell.style.transition = ''; };
     });
   });
 }
