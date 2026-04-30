@@ -712,16 +712,17 @@ function triggerMergeAnim(boardSelector, cellIdx) {
       const cells = document.querySelectorAll(boardSelector + ' .cell');
       const cell = cells[cellIdx];
       if (!cell) return;
-      cell.animate([
-        { transform: 'scale(1)',    offset: 0    },
-        { transform: 'scale(0.35)', offset: 0.3  },
-        { transform: 'scale(1.25)', offset: 0.75 },
-        { transform: 'scale(1)',    offset: 1    }
+      cell.style.transition = 'none';
+      const anim = cell.animate([
+        { transform: 'scale(1)',    offset: 0,    easing: 'ease-in'  },
+        { transform: 'scale(0.1)',  offset: 0.3,  easing: 'ease-out' },
+        { transform: 'scale(1.25)', offset: 0.75, easing: 'ease-out' },
+        { transform: 'scale(1)',    offset: 1                         }
       ], {
-        duration: 500,
-        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        duration: 1250,
         fill: 'none'
       });
+      anim.onfinish = () => { cell.style.transition = ''; };
     });
   });
 }
