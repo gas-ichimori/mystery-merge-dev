@@ -7290,6 +7290,174 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
   setTimeout(() => ts.classList.add('hidden'), 600);
 });
 
+// ===== 画像プリロード =====
+(function preloadImages() {
+  const PRELOAD_PATHS = [
+    // UI
+    'img/UI/image_merge_title_main_01.png',
+    'img/UI/image_merge_start_button.png',
+    'img/UI/image_merge_navi_chara.png',
+    'img/UI/image_merge_navi_close.png',
+    'img/UI/image_merge_navi_daiya.png',
+    'img/UI/image_merge_navi_hp.png',
+    'img/UI/image_merge_navi_itemlist.png',
+    'img/UI/image_merge_navi_setting.png',
+    'img/UI/image_merge_navi_story.png',
+    'img/UI/image_merge_icon_coin01.png',
+    'img/UI/image_merge_icon_coin02.png',
+    'img/UI/image_merge_icon_coin03.png',
+    'img/UI/image_merge_icon_coin04.png',
+    // 背景
+    'img/bg/image_merge_bg.png',
+    'img/bg/image_merge_bg_hiruma.png',
+    'img/bg/image_merge_bg_light.png',
+    'img/bg/image_merge_bg_road.png',
+    'img/bg/image_merge_bg_road_light.png',
+    'img/bg/image_merge_bg_road_light02.png',
+    'img/bg/image_merge_bg_road_night.png',
+    // Ch1 キャラ
+    'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    'img/Chapter1/Chara/image_merge_order_chara_01.png',
+    'img/Chapter1/Chara/image_merge_order_chara_01a.png',
+    'img/Chapter1/Chara/image_merge_order_chara_01ab.png',
+    'img/Chapter1/Chara/image_merge_order_chara_01b.png',
+    'img/Chapter1/Chara/image_merge_order_chara_02.png',
+    'img/Chapter1/Chara/image_merge_order_chara_03.png',
+    'img/Chapter1/Chara/image_merge_order_chara_04.png',
+    'img/Chapter1/Chara/image_merge_order_chara_05.png',
+    'img/Chapter1/Chara/image_merge_order_chara_05a.png',
+    'img/Chapter1/Chara/image_merge_order_chara_05b.png',
+    // Ch1 アイコン
+    'img/Chapter1/Icon/image_merge_gene1_01.png',
+    'img/Chapter1/Icon/image_merge_gene1_02.png',
+    'img/Chapter1/Icon/image_merge_gene1_03.png',
+    'img/Chapter1/Icon/image_merge_gene1_04.png',
+    'img/Chapter1/Icon/image_merge_icon1_01.png',
+    'img/Chapter1/Icon/image_merge_icon1_02.png',
+    'img/Chapter1/Icon/image_merge_icon1_03.png',
+    'img/Chapter1/Icon/image_merge_icon1_04.png',
+    'img/Chapter1/Icon/image_merge_icon1_05.png',
+    'img/Chapter1/Icon/image_merge_icon1_06.png',
+    'img/Chapter1/Icon/image_merge_icon1_07.png',
+    'img/Chapter1/Icon/image_merge_icon1_08.png',
+    'img/Chapter1/Icon/image_merge_icon1_09.png',
+    'img/Chapter1/Icon/image_merge_icon1_10.png',
+    'img/Chapter1/Icon/image_merge_icon1_11.png',
+    'img/Chapter1/Icon/image_merge_icon1_12.png',
+    // Ch2 キャラ
+    'img/Chapter2/Chara/image_merge_order_chara_06a.png',
+    'img/Chapter2/Chara/image_merge_order_chara_07.png',
+    'img/Chapter2/Chara/image_merge_order_chara_08.png',
+    'img/Chapter2/Chara/image_merge_order_chara_09.png',
+    'img/Chapter2/Chara/image_merge_order_chara_09a.png',
+    'img/Chapter2/Chara/image_merge_order_chara_10.png',
+    // Ch2 アイコン
+    'img/Chapter2/Icon/image_merge_gene2_01.png',
+    'img/Chapter2/Icon/image_merge_gene2_02.png',
+    'img/Chapter2/Icon/image_merge_gene2_03.png',
+    'img/Chapter2/Icon/image_merge_gene2_04.png',
+    'img/Chapter2/Icon/image_merge_gene2_05.png',
+    'img/Chapter2/Icon/image_merge_gene2_06.png',
+    'img/Chapter2/Icon/image_merge_gene2_07.png',
+    'img/Chapter2/Icon/image_merge_icon2_01.png',
+    'img/Chapter2/Icon/image_merge_icon2_02.png',
+    'img/Chapter2/Icon/image_merge_icon2_03.png',
+    'img/Chapter2/Icon/image_merge_icon2_04.png',
+    'img/Chapter2/Icon/image_merge_icon2_05.png',
+    'img/Chapter2/Icon/image_merge_icon2_06.png',
+    'img/Chapter2/Icon/image_merge_icon2_07.png',
+    'img/Chapter2/Icon/image_merge_icon2_08.png',
+    'img/Chapter2/Icon/image_merge_icon2_09.png',
+    'img/Chapter2/Icon/image_merge_icon2_10.png',
+    'img/Chapter2/Icon/image_merge_icon2_11.png',
+    'img/Chapter2/Icon/image_merge_icon2_12.png',
+    'img/Chapter2/Icon/image_merge_icon2_13.png',
+    'img/Chapter2/Icon/image_merge_icon2_14.png',
+    'img/Chapter2/Icon/image_merge_icon2_15.png',
+    // Ch2 背景
+    'img/Chapter2/bg/image_merge_bg_Apartmentexterior.png',
+    'img/Chapter2/bg/image_merge_bg_Apartmentinterior.png',
+    'img/Chapter2/bg/image_merge_bg_sunrisehills.png',
+    // Ch3 キャラ
+    'img/Chapter3/chara/image_merge_order_chara_15.png',
+    'img/Chapter3/chara/image_merge_order_chara_16.png',
+    'img/Chapter3/chara/image_merge_order_chara_17.png',
+    'img/Chapter3/chara/image_merge_order_chara_18.png',
+    'img/Chapter3/chara/image_merge_order_chara_18_.png',
+    'img/Chapter3/chara/image_merge_order_chara_18a.png',
+    'img/Chapter3/chara/image_merge_order_chara_19.png',
+    'img/Chapter3/chara/image_merge_order_chara_20.png',
+    'img/Chapter3/chara/image_merge_order_chara_21.png',
+    'img/Chapter3/chara/image_q.png',
+    // Ch3 アイコン
+    'img/Chapter3/icon/image_merge_gene3_01.png',
+    'img/Chapter3/icon/image_merge_gene3_02.png',
+    'img/Chapter3/icon/image_merge_gene3_03.png',
+    'img/Chapter3/icon/image_merge_gene3_04.png',
+    'img/Chapter3/icon/image_merge_gene3_05.png',
+    'img/Chapter3/icon/image_merge_gene3_06.png',
+    'img/Chapter3/icon/image_merge_gene3_07.png',
+    'img/Chapter3/icon/image_merge_icon3_01.png',
+    'img/Chapter3/icon/image_merge_icon3_02.png',
+    'img/Chapter3/icon/image_merge_icon3_03.png',
+    'img/Chapter3/icon/image_merge_icon3_04.png',
+    'img/Chapter3/icon/image_merge_icon3_05.png',
+    'img/Chapter3/icon/image_merge_icon3_06.png',
+    'img/Chapter3/icon/image_merge_icon3_07.png',
+    'img/Chapter3/icon/image_merge_icon3_08.png',
+    'img/Chapter3/icon/image_merge_icon3_09.png',
+    'img/Chapter3/icon/image_merge_icon3_10.png',
+    'img/Chapter3/icon/image_merge_icon3_11.png',
+    'img/Chapter3/icon/image_merge_icon3_12.png',
+    'img/Chapter3/icon/image_merge_icon3_13.png',
+    'img/Chapter3/icon/image_merge_icon3_14.png',
+    'img/Chapter3/icon/image_merge_icon3_15.png',
+    'img/Chapter3/icon/image_merge_icon3_16.png',
+    'img/Chapter3/icon/image_merge_icon3_17.png',
+    'img/Chapter3/icon/image_merge_icon3_18.png',
+    'img/Chapter3/icon/image_merge_icon3_19.png',
+    'img/Chapter3/icon/image_merge_icon3_20.png',
+    // Ch3 背景
+    'img/Chapter3/bg/image_merge_bg_inn_exterior.png',
+    'img/Chapter3/bg/image_merge_bg_inn_interior.png',
+    'img/Chapter3/bg/image_merge_bg_inn_study.png',
+    'img/Chapter3/bg/image_merge_bg_lawyer_office.png',
+    'img/Chapter3/bg/image_merge_bg_lawyer_office_evidence.png',
+    'img/Chapter3/bg/image_merge_bg_lawyer_office_messy.png',
+    'img/Chapter3/bg/image_merge_bg_lawyer_office_night.png',
+    'img/Chapter3/bg/image_merge_bg_lawyer_office_rain.png',
+  ];
+
+  const total    = PRELOAD_PATHS.length;
+  let   loaded   = 0;
+  const barEl    = document.getElementById('title-loading-bar');
+  const textEl   = document.getElementById('title-loading-text');
+  const loadingEl = document.getElementById('title-loading');
+  const startBtn = document.getElementById('title-start-btn');
+
+  function onProgress() {
+    loaded++;
+    const pct = Math.round((loaded / total) * 100);
+    if (barEl) barEl.style.width = pct + '%';
+    if (textEl) textEl.textContent = `読み込み中... ${pct}%`;
+    if (loaded >= total) onComplete();
+  }
+
+  function onComplete() {
+    if (loadingEl) loadingEl.classList.add('hidden');
+    if (startBtn) {
+      startBtn.style.display = '';
+    }
+  }
+
+  PRELOAD_PATHS.forEach(src => {
+    const img = new Image();
+    img.onload  = onProgress;
+    img.onerror = onProgress; // エラーでも進める
+    img.src     = src;
+  });
+})();
+
 // 起動時にイベントマップ①を最初に表示
 document.getElementById('event-screen').classList.remove('hidden');
 renderEventBoard();
