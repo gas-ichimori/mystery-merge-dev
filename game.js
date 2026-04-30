@@ -719,7 +719,7 @@ function triggerMergeAnim(boardSelector, cellIdx) {
         { transform: 'scale(1.25)', offset: 0.75, easing: 'ease-out' },
         { transform: 'scale(1)',    offset: 1                         }
       ], {
-        duration: 1250,
+        duration: 750,
         fill: 'none'
       });
       anim.onfinish = () => { cell.style.transition = ''; };
