@@ -26,9 +26,27 @@
     </div>
   </div>
 
-  <!-- リクエスト表示 -->
+  <!-- リクエスト表示（イベントスロット + 依頼スクロール） -->
   <div id="request-panel">
+    <div id="event-slots-panel">
+      <!-- デイリーミッション（スロット1-1） -->
+      <button class="event-slot-btn" id="daily-mission-btn">
+        <span class="event-slot-icon">📋</span>
+        <span class="event-slot-label">デイリー</span>
+        <span class="event-slot-badge hidden" id="daily-mission-badge">!</span>
+      </button>
+    </div>
     <div id="request-label">依頼</div>
+  </div>
+
+  <!-- デイリーミッションポップアップ -->
+  <div id="daily-mission-screen" class="hidden">
+    <div id="daily-mission-popup">
+      <button id="daily-mission-close">×</button>
+      <div id="daily-mission-title">毎日のやる事</div>
+      <div id="daily-mission-msg">毎日のやる事をこなして、報酬を入手しよう！</div>
+      <div id="daily-mission-tasks"></div>
+    </div>
   </div>
 
   <!-- ゲームボード -->

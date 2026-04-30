@@ -231,9 +231,156 @@ let state = {
     lastCoinEnergy:    0, // コイン購入の最終時刻
     lastDiamondEnergy: 0, // ダイヤ購入の最終時刻
   },
+  dailyMission: {
+    date:       '',  // YYYY-MM-DD（当日判定用）
+    generation: 0,   // 何周目か（目標値算出に使用）
+    tasks: [
+      { progress: 0, cleared: false, claimed: false }, // アイテムマージ
+      { progress: 0, cleared: false, claimed: false }, // 依頼解決
+      { progress: 0, cleared: false, claimed: false }, // ダイヤ消費
+    ],
+  },
 };
 
 let catalogCurrentChain = 0;
+
+// ========================================
+// ========================================
+// デイリーミッション
+// ========================================
+
+// タスク定義（generationに応じて目標値が変わる）
+function getDailyTaskDefs() {
+  const g = state.dailyMission.generation;
+  return [
+    {
+      label:       `アイテムを${100 + g * 50}個マージする`,
+      target:      100 + g * 50,
+      rewardLabel: `${HP_ICON} +50`,
+      rewardFn()   { addEnergy(50, 'デイリーミッション報酬！'); },
+    },
+    {
+      label:       `依頼を${5 + g * 5}個解決する`,
+      target:      5 + g * 5,
+      rewardLabel: `${HP_ICON} +25`,
+      rewardFn()   { addEnergy(25, 'デイリーミッション報酬！'); },
+    },
+    {
+      label:       `${5 + g * 5}個のダイヤを消費する`,
+      target:      5 + g * 5,
+      rewardLabel: `${HP_ICON} +100`,
+      rewardFn()   { addEnergy(100, 'デイリーミッション報酬！'); },
+    },
+  ];
+}
+
+function saveDailyMission() {
+  try { localStorage.setItem('dm', JSON.stringify(state.dailyMission)); } catch(e) {}
+}
+
+function loadDailyMission() {
+  try {
+    const s = localStorage.getItem('dm');
+    if (s) {
+      const d = JSON.parse(s);
+      // tasks配列の構造を維持しながらマージ
+      if (d && Array.isArray(d.tasks) && d.tasks.length === 3) {
+        state.dailyMission = d;
+      }
+    }
+  } catch(e) {}
+}
+
+function checkDailyMissionReset() {
+  const today = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
+  if (state.dailyMission.date !== today) {
+    if (state.dailyMission.date !== '') {
+      state.dailyMission.generation++;
+    }
+    state.dailyMission.date = today;
+    state.dailyMission.tasks.forEach(t => {
+      t.progress = 0;
+      t.cleared  = false;
+      t.claimed  = false;
+    });
+    saveDailyMission();
+  }
+}
+
+// 進捗を加算して条件達成チェック
+function _advanceDailyTask(idx, amount = 1) {
+  const t = state.dailyMission.tasks[idx];
+  if (t.cleared) return;
+  const defs = getDailyTaskDefs();
+  t.progress = Math.min(t.progress + amount, defs[idx].target);
+  if (t.progress >= defs[idx].target) {
+    t.cleared = true;
+    renderDailyMissionBadge();
+    showToast(`📋 デイリーミッション達成！${defs[idx].rewardLabel}`);
+  }
+  saveDailyMission();
+}
+
+function trackDailyMerge()           { _advanceDailyTask(0); }
+function trackDailyRequest()         { _advanceDailyTask(1); }
+function trackDailyDiamond(amount)   { _advanceDailyTask(2, amount); }
+
+// イベントスロットのバッジ（未受け取り報酬あり → ！）更新
+function renderDailyMissionBadge() {
+  const badge = document.getElementById('daily-mission-badge');
+  if (!badge) return;
+  const hasUnclaimed = state.dailyMission.tasks.some(t => t.cleared && !t.claimed);
+  badge.classList.toggle('hidden', !hasUnclaimed);
+}
+
+// ポップアップ内容レンダリング
+function renderDailyMissionPopup() {
+  const wrap = document.getElementById('daily-mission-tasks');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  const defs = getDailyTaskDefs();
+  defs.forEach((def, i) => {
+    const t    = state.dailyMission.tasks[i];
+    const pct  = Math.min(t.progress / def.target * 100, 100);
+    const card = document.createElement('div');
+    card.className = 'daily-task-card' +
+      (t.claimed ? ' claimed' : t.cleared ? ' cleared' : '');
+
+    let actionHtml = '';
+    if (t.claimed) {
+      actionHtml = `<div class="daily-task-done-label">✅ 受取済</div>`;
+    } else if (t.cleared) {
+      actionHtml = `<button class="daily-task-claim-btn" data-idx="${i}">受け取る</button>`;
+    }
+
+    card.innerHTML = `
+      <div class="daily-task-name">${def.label}</div>
+      <div class="daily-task-progress-wrap">
+        <div class="daily-task-progress-bar">
+          <div class="daily-task-progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="daily-task-progress-text">${t.progress} / ${def.target}</div>
+      </div>
+      <div class="daily-task-reward">${def.rewardLabel}</div>
+      ${actionHtml}
+    `;
+    wrap.appendChild(card);
+  });
+
+  // 受け取るボタンのイベント
+  wrap.querySelectorAll('.daily-task-claim-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const t   = state.dailyMission.tasks[idx];
+      if (!t.cleared || t.claimed) return;
+      t.claimed = true;
+      getDailyTaskDefs()[idx].rewardFn();
+      saveDailyMission();
+      renderDailyMissionPopup();
+      renderDailyMissionBadge();
+    });
+  });
+}
 
 // ========================================
 // 初期化
@@ -573,6 +720,7 @@ function mergeGenerators(fromIdx, toIdx) {
   state.board[fromIdx] = null;
   state.selectedCell = null;
   showToast(`${gen.emoji} ${gen.name} Lv${gen.powerLevel + 1} にパワーアップ！`);
+  trackDailyMerge();
   // 体力ボーナス
   if (gen.powerLevel === 4) addEnergy(100, '最大レベル達成ボーナス！');
   else addEnergy(25, 'Lvアップボーナス！');
@@ -747,6 +895,7 @@ function mergeItems(fromIdx, toIdx) {
   state.board[fromIdx] = null;
   state.selectedCell = null;
   discoverItem(item.chainId, nextStage, toIdx, 'board');
+  trackDailyMerge();
 
   // リクエスト完了チェック
   checkRequestComplete();
@@ -1295,6 +1444,7 @@ function completeRequest(index) {
   state.coin += req.coin;
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
+  trackDailyRequest();
   checkStoryGuide();
   showRewardInPanel('依頼完了！', document.getElementById('request-panel'), '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
@@ -4054,6 +4204,7 @@ function renderShop() {
         if (state.diamond < 10) { showToast('ダイヤが足りません'); return; }
         state.shop.lastDiamondEnergy = Date.now();
         state.diamond -= 10;
+        trackDailyDiamond(10);
         addEnergy(100, 'ダイヤ購入 体力+100！');
         renderShop();
         renderHeader();
@@ -5622,6 +5773,7 @@ function completeEventRequest(index) {
   state.coin += req.coin;
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
+  trackDailyRequest();
   checkStoryGuide();
   showRewardInPanel('依頼完了！', document.getElementById('event-req-panel'), '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
@@ -6426,6 +6578,8 @@ function doEventMerge(fromIdx, toIdx) {
     setTimeout(() => advanceTutorial(), 500);
   }
 
+  trackDailyMerge();
+
   renderEventBoard();
   renderEventGenerators();
   renderEventRequest();
@@ -6454,6 +6608,7 @@ function mergeEventGenerators(fromIdx, toIdx) {
   discoverGen('ch1', newLevel); // Lvアップで新レベルを発見
   const ch1GenName = EVENT_GEN_NAMES[Math.min(newLevel, EVENT_GEN_NAMES.length - 1)];
   showSpecialOnCell(toIdx, 'event-board', `${ch1GenName} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
   state.energy += 25; renderHeader();
   showAboveNaviToast(`${HP_ICON} +25 ジェネレーターLvアップボーナス！`);
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
@@ -6574,6 +6729,7 @@ function mergeFireGenerators(fromIdx, toIdx) {
   discoverGen('ch2', newLevel); // Lvアップで新レベルを発見
   const ch2GenName = SEIZO_GEN_NAMES[Math.min(newLevel, SEIZO_GEN_NAMES.length - 1)];
   showSpecialOnCell(toIdx, 'event-board', `${ch2GenName} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
   addEnergy(25, '第二章ジェネレーターLvアップボーナス！');
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
   eventState.firePowerLevel = getFireGenMaxAvailablePowerLv(newLevel);
@@ -6598,6 +6754,7 @@ function mergeKanteGenerators(fromIdx, toIdx) {
   discoverGen('ch3', newLevel);
   const name = KANTEITA_GEN_NAMES[Math.min(newLevel, KANTEITA_GEN_NAMES.length - 1)];
   showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
   addEnergy(25, '第三章ジェネレーターLvアップボーナス！');
 
   fillEventRequests();
@@ -7193,6 +7350,7 @@ document.getElementById('navi-diamond-btn').addEventListener('click', (e) => {
     return;
   }
   state.diamond -= cost;
+  trackDailyDiamond(cost);
   renderEventHeader();
   popBubble(selIdx);
 });
@@ -7265,6 +7423,9 @@ window.addEventListener('blur', () => {
 // ========================================
 initGame();
 initEventMap();
+loadDailyMission();
+checkDailyMissionReset();
+renderDailyMissionBadge();
 
 // フル画面 + 縦向きロック要求（ユーザー操作起因が必須のため、スタートボタン押下時に実行）
 function requestAppFullscreen() {
@@ -7488,3 +7649,23 @@ setInterval(() => {
     if (!screen?.classList.contains('hidden')) renderEventBoard();
   }
 }, 5000);
+
+// ========================================
+// デイリーミッション UI イベント
+// ========================================
+document.getElementById('daily-mission-btn').addEventListener('click', () => {
+  checkDailyMissionReset();
+  renderDailyMissionPopup();
+  document.getElementById('daily-mission-screen').classList.remove('hidden');
+});
+
+document.getElementById('daily-mission-close').addEventListener('click', () => {
+  document.getElementById('daily-mission-screen').classList.add('hidden');
+});
+
+// 画面外タップで閉じる
+document.getElementById('daily-mission-screen').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('daily-mission-screen')) {
+    document.getElementById('daily-mission-screen').classList.add('hidden');
+  }
+});
