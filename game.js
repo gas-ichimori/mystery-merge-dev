@@ -6048,7 +6048,8 @@ function onEventGenTap(tappedCellIdx = null) {
         'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
       ], '#ev-energy', null);
     } else {
-      showToast(`体力が足りません（必要: ${baseCost}）`);
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${baseCost}）`, '#e74c3c');
     }
     return;
   }
@@ -6621,7 +6622,8 @@ function onEventFireGenTap(tappedCellIdx = null) {
         'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
       ], '#ev-energy', null);
     } else {
-      showToast(`体力が足りません（必要: ${energyCost}）`);
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isFireGen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
     }
     return;
   }
@@ -6686,7 +6688,8 @@ function onEventKanteGenTap(tappedCellIdx = null) {
         'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
       ], '#ev-energy', null);
     } else {
-      showToast(`体力が足りません（必要: ${energyCost}）`);
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isKanteGen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
     }
     return;
   }
