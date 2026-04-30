@@ -712,10 +712,16 @@ function triggerMergeAnim(boardSelector, cellIdx) {
       const cells = document.querySelectorAll(boardSelector + ' .cell');
       const cell = cells[cellIdx];
       if (!cell) return;
-      cell.classList.remove('merge-pop'); // 連続マージ時にリセット
-      void cell.offsetWidth;             // リフロー強制（アニメーション再起動）
-      cell.classList.add('merge-pop');
-      setTimeout(() => cell.classList.remove('merge-pop'), 420);
+      cell.animate([
+        { transform: 'scale(1)',    offset: 0    },
+        { transform: 'scale(0.35)', offset: 0.3  },
+        { transform: 'scale(1.25)', offset: 0.75 },
+        { transform: 'scale(1)',    offset: 1    }
+      ], {
+        duration: 500,
+        easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        fill: 'none'
+      });
     });
   });
 }
