@@ -7618,13 +7618,33 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
   });
 })();
 
+// ========================================
+// 初回起動ガイド（初回のみ、チュートリアル前に表示）
+// ========================================
+function checkIntroGuide() {
+  // 初回のみ表示（localStorage フラグで管理）
+  if (localStorage.getItem('introGuideShown')) {
+    renderTutorialPanel();
+    return;
+  }
+  localStorage.setItem('introGuideShown', '1');
+  startGuide(
+    [
+      '初回だけのサービスです。',
+      'この\u201cメモ\u201dアイテムにマージすることができます。',
+    ],
+    '#event-board .cell[data-index="31"]',
+    () => renderTutorialPanel()
+  );
+}
+
 // 起動時にイベントマップ①を最初に表示
 document.getElementById('event-screen').classList.remove('hidden');
 renderEventBoard();
 renderEventGenerators();
 renderEventHeader();
 renderEventRequest();
-renderTutorialPanel();
+checkIntroGuide();
 
 // DOM描画完了後にヘッダー高さを計測（2段RFAで確実にレイアウト後に実行）
 requestAnimationFrame(() => requestAnimationFrame(updateStickyHeights));
