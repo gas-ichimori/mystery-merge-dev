@@ -61,7 +61,7 @@ body {
 /* ========================================
    依頼パネル（ヘッダー直下・横スクロール）
 ======================================== */
-/* 依頼パネル（sticky・横スクロール） */
+/* 依頼パネル外枠（sticky・背景） */
 #request-panel {
   position: sticky;
   top: var(--main-header-h, 100px);
@@ -70,19 +70,27 @@ body {
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
   border-bottom: 2px solid #f1c40f55;
-  padding: 6px 8px;
   display: flex;
   flex-direction: row;
   align-items: stretch;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* 依頼スロットの横スクロール領域 */
+#request-slots-wrap {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: row;
   gap: 6px;
   overflow-x: auto;
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  box-sizing: border-box;
 }
-
-#request-panel::-webkit-scrollbar { display: none; }
+#request-slots-wrap::-webkit-scrollbar { display: none; }
 
 #request-label {
   display: none;
@@ -2228,9 +2236,8 @@ body {
    イベントスロットパネル（依頼枠の左端・固定）
 ======================================== */
 #event-slots-panel {
-  flex: 0 0 68px;
+  flex: 0 0 auto;
   width: 68px;
-  min-height: 94px;
   padding: 6px 4px;
   display: flex;
   flex-direction: column;
@@ -2242,6 +2249,7 @@ body {
   border-right: 1px solid rgba(255,255,255,0.15);
   align-items: center;
   box-sizing: border-box;
+  align-self: stretch;
 }
 #event-slots-panel::-webkit-scrollbar { display: none; }
 
