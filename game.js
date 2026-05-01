@@ -1378,7 +1378,14 @@ function checkRequestComplete() {
 // ========================================
 function renderRequest() {
   const panel = document.getElementById('request-panel');
-  panel.innerHTML = '<div id="request-label">依頼</div>';
+  // イベントスロットパネルは残し、依頼スロットだけ差し替える
+  Array.from(panel.children).forEach(child => {
+    if (child.id !== 'event-slots-panel') child.remove();
+  });
+  const label = document.createElement('div');
+  label.id = 'request-label';
+  label.textContent = '依頼';
+  panel.appendChild(label);
 
   state.requests.forEach((req, i) => {
     const character = REQUESTERS[req.characterId];
