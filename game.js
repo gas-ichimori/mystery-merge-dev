@@ -7421,6 +7421,33 @@ window.addEventListener('blur', () => {
 // ========================================
 // 起動
 // ========================================
+
+// #event-slots-panel が HTML から消えていた場合の保険（キャッシュ対策）
+(function ensureEventSlotsPanel() {
+  const reqPanel = document.getElementById('request-panel');
+  if (!reqPanel) return;
+
+  // #request-slots-wrap がなければ作る
+  if (!document.getElementById('request-slots-wrap')) {
+    const wrap = document.createElement('div');
+    wrap.id = 'request-slots-wrap';
+    reqPanel.appendChild(wrap);
+  }
+
+  // #event-slots-panel がなければ作る
+  if (!document.getElementById('event-slots-panel')) {
+    const panel = document.createElement('div');
+    panel.id = 'event-slots-panel';
+    panel.innerHTML = `
+      <button class="event-slot-btn" id="daily-mission-btn">
+        <span class="event-slot-icon">📋</span>
+        <span class="event-slot-label">デイリー</span>
+        <span class="event-slot-badge hidden" id="daily-mission-badge">!</span>
+      </button>`;
+    reqPanel.insertBefore(panel, reqPanel.firstChild);
+  }
+})();
+
 initGame();
 initEventMap();
 loadDailyMission();
