@@ -2238,6 +2238,7 @@ body {
 #event-slots-panel {
   flex: 0 0 auto;
   width: 68px;
+  min-height: 80px;
   padding: 6px 4px;
   display: flex;
   flex-direction: column;
@@ -2250,6 +2251,8 @@ body {
   align-items: center;
   box-sizing: border-box;
   align-self: stretch;
+  background: rgba(255,0,0,0.6); /* DEBUG: 赤背景 */
+  z-index: 99;
 }
 #event-slots-panel::-webkit-scrollbar { display: none; }
 
