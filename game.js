@@ -7622,12 +7622,6 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
 // 初回起動ガイド（初回のみ、チュートリアル前に表示）
 // ========================================
 function checkIntroGuide() {
-  // 初回のみ表示（localStorage フラグで管理）
-  if (localStorage.getItem('introGuideShown')) {
-    renderTutorialPanel();
-    return;
-  }
-  localStorage.setItem('introGuideShown', '1');
   startGuide(
     [
       '初回だけのサービスです。',
