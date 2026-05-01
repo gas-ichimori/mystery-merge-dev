@@ -1262,13 +1262,24 @@ body {
 }
 
 /* 依頼パネル（イベント）：盤面背景をそのまま透過表示 */
-#event-req-panel {
+/* イベント依頼行ラッパー（sticky・イベントスロット＋依頼スロット） */
+#event-req-row {
   position: sticky;
   top: var(--event-header-h, 100px);
   z-index: 9;
   width: 100%;
-  background: transparent;
-  border-bottom: none;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  border-bottom: 2px solid #f1c40f55;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+#event-req-panel {
+  flex: 1 1 0;
+  min-width: 0;
   padding: 3px 8px;
   display: flex;
   flex-direction: row;
@@ -2251,8 +2262,7 @@ body {
   align-items: center;
   box-sizing: border-box;
   align-self: stretch;
-  background: rgba(255,0,0,0.6); /* DEBUG: 赤背景 */
-  z-index: 99;
+  border-right: 1px solid rgba(255,255,255,0.15);
 }
 #event-slots-panel::-webkit-scrollbar { display: none; }
 
