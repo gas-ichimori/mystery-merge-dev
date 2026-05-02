@@ -5387,11 +5387,16 @@ function renderEventBoard() {
         cell.classList.add('has-item', 'fog-item');
         const fogUnlocked = eventState.unlockedFogCells.has(i);
         if (!fogUnlocked) cell.classList.add('fog-locked');
-        // stage1はカスタム画像（蜘蛛の巣）を使用 → CSS霧演出を無効化
-        const useFogImg = item.stage === 1;
+        // stage1〜3はカスタム画像（蜘蛛の巣）を使用 → CSS霧演出を無効化
+        const FOG_CUSTOM_IMGS = {
+          1: 'img/Chapter1/Icon/image_merge_icon1_01a.png',
+          2: 'img/Chapter1/Icon/image_merge_icon1_02a.png',
+          3: 'img/Chapter1/Icon/image_merge_icon1_03a.png',
+        };
+        const useFogImg = item.stage in FOG_CUSTOM_IMGS;
         if (useFogImg) cell.classList.add('fog-custom-img');
         const { emoji, imgSrc: _imgSrc } = getEvItemDisplay(item);
-        const imgSrc = useFogImg ? 'img/Chapter1/Icon/image_merge_icon1_01a.png' : _imgSrc;
+        const imgSrc = useFogImg ? FOG_CUSTOM_IMGS[item.stage] : _imgSrc;
         const iconHtml = imgSrc
           ? `<img class="item-img item-img-lg" src="${imgSrc}" alt="${emoji}">`
           : `<span class="item-emoji">${emoji}</span>`;
