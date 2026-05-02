@@ -1052,6 +1052,24 @@ body {
   opacity: 1;
 }
 
+/* カスタム霧画像（蜘蛛の巣等）を使う場合はCSS霧演出を無効化 */
+.cell.fog-item.fog-custom-img {
+  background: transparent;
+  border-color: rgba(90,110,180,0.25);
+  filter: none;
+  opacity: 1;
+}
+.cell.fog-item.fog-custom-img::after {
+  display: none;
+}
+.cell.fog-item.fog-custom-img.fog-locked {
+  opacity: 0.85;
+}
+.cell.fog-item.fog-custom-img.merge-target {
+  filter: none;
+  opacity: 1;
+}
+
 /* 霧アイテムはシェイクしない */
 .cell.fog-item.merge-hint {
   animation: none;
