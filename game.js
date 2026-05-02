@@ -4595,9 +4595,19 @@ function renderTutorialPanel() {
   if (!overlay || !panel) return;
 
   if (isTutorialComplete()) {
-    transitionToMainGame();
-    // メインチュートリアル完了後はジェネレーターマージ誘導チュートに引き継ぐ
-    renderGenMergeTutPanel();
+    // チュートリアル完了後：霧アイテムを指し示すガイドを挟んでからゲームスタート
+    startGuide(
+      [
+        '初回だけのサービスです。',
+        'この\u201cメモ\u201dアイテムにマージすることができます。',
+      ],
+      '#event-board .cell[data-index="31"]',
+      () => {
+        transitionToMainGame();
+        // メインチュートリアル完了後はジェネレーターマージ誘導チュートに引き継ぐ
+        renderGenMergeTutPanel();
+      }
+    );
     return;
   }
 
@@ -7618,27 +7628,13 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
   });
 })();
 
-// ========================================
-// 初回起動ガイド（初回のみ、チュートリアル前に表示）
-// ========================================
-function checkIntroGuide() {
-  startGuide(
-    [
-      '初回だけのサービスです。',
-      'この\u201cメモ\u201dアイテムにマージすることができます。',
-    ],
-    '#event-board .cell[data-index="31"]',
-    () => renderTutorialPanel()
-  );
-}
-
 // 起動時にイベントマップ①を最初に表示
 document.getElementById('event-screen').classList.remove('hidden');
 renderEventBoard();
 renderEventGenerators();
 renderEventHeader();
 renderEventRequest();
-checkIntroGuide();
+renderTutorialPanel();
 
 // DOM描画完了後にヘッダー高さを計測（2段RFAで確実にレイアウト後に実行）
 requestAnimationFrame(() => requestAnimationFrame(updateStickyHeights));
