@@ -1054,13 +1054,18 @@ body {
 
 /* カスタム霧画像（蜘蛛の巣等）を使う場合はCSS霧演出を無効化 */
 .cell.fog-item.fog-custom-img {
-  background: transparent;
-  border-color: rgba(90,110,180,0.25);
+  background: rgba(30,45,90,0.55);
+  border-color: rgba(74,90,170,0.7);
   filter: none;
   opacity: 1;
 }
 .cell.fog-item.fog-custom-img::after {
   display: none;
+}
+.cell.fog-item.fog-custom-img .item-img-lg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .cell.fog-item.fog-custom-img.fog-locked {
   opacity: 0.85;
