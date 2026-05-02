@@ -1063,8 +1063,8 @@ body {
   display: none;
 }
 .cell.fog-item.fog-custom-img .item-img-lg {
-  width: 100%;
-  height: 100%;
+  width: 120%;
+  height: 120%;
   object-fit: contain;
 }
 .cell.fog-item.fog-custom-img.fog-locked {
