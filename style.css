@@ -904,6 +904,38 @@ body {
 
 .hidden { display: none !important; }
 
+/* ========== PVオーバーレイ ========== */
+#pv-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#pv-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+#pv-skip-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  z-index: 201;
+}
+#pv-skip-btn:active {
+  background: rgba(255,255,255,0.2);
+}
+
 /* ========================================
    チュートリアルオーバーレイ・パネル
 ======================================== */

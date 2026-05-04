@@ -4562,6 +4562,26 @@ function advanceTutorial() {
   renderEventHeader();
 }
 
+function playPVThenStart(onDone) {
+  const overlay = document.getElementById('pv-overlay');
+  const video   = document.getElementById('pv-video');
+  const skipBtn = document.getElementById('pv-skip-btn');
+  if (!overlay || !video) { onDone(); return; }
+
+  function finish() {
+    video.pause();
+    overlay.classList.add('hidden');
+    onDone();
+  }
+
+  video.src = 'movie/PV_merge_op.mov';
+  overlay.classList.remove('hidden');
+  video.play().catch(() => finish()); // 自動再生がブロックされた場合はそのままスキップ
+
+  video.addEventListener('ended', finish, { once: true });
+  skipBtn.addEventListener('click', finish, { once: true });
+}
+
 function transitionToMainGame() {
   if (mainGameStarted) return;
   mainGameStarted = true;
@@ -4595,19 +4615,21 @@ function renderTutorialPanel() {
   if (!overlay || !panel) return;
 
   if (isTutorialComplete()) {
-    // チュートリアル完了後：霧アイテムを指し示すガイドを挟んでからゲームスタート
-    startGuide(
-      [
-        '初回だけのサービスです。',
-        'この\u201cメモ\u201dアイテムにマージすることができます。',
-      ],
-      '#event-board .cell[data-index="31"]',
-      () => {
-        transitionToMainGame();
-        // メインチュートリアル完了後はジェネレーターマージ誘導チュートに引き継ぐ
-        renderGenMergeTutPanel();
-      }
-    );
+    // チュートリアル完了後：PV再生 → 霧アイテムを指し示すガイド → ゲームスタート
+    playPVThenStart(() => {
+      startGuide(
+        [
+          '蜘蛛の巣に覆われている\u201cメモ\u201dアイテムです。',
+          '最初に出現する\u201cメモ\u201dアイテムとマージすることができます。',
+          'そのほかにも蜘蛛の巣に覆われているアイテムはマージすることができますので、試してみてください。',
+        ],
+        '#event-board .cell[data-index="31"]',
+        () => {
+          transitionToMainGame();
+          renderGenMergeTutPanel();
+        }
+      );
+    });
     return;
   }
 
