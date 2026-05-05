@@ -439,28 +439,29 @@
 
   <!-- イベントマップ① 画面 -->
   <div id="event-screen" class="hidden pre-game">
-    <div id="event-header-bar">
-      <div id="event-nav">
-        <button id="event-close">← 戻る</button>
-        <div id="player-level-wrap">
-          <div id="player-level-ring">
-            <div id="player-level-inner">
-              <span id="player-level-num">1</span>
+    <div id="event-sticky-top">
+      <div id="event-header-bar">
+        <div id="event-nav">
+          <button id="event-close">← 戻る</button>
+          <div id="player-level-wrap">
+            <div id="player-level-ring">
+              <div id="player-level-inner">
+                <span id="player-level-num">1</span>
+              </div>
             </div>
           </div>
+          <button id="story-btn" title="ストーリー進行" disabled><img class="navi-icon-img" src="img/UI/image_merge_navi_story.png" alt="ストーリー"></button>
+          <span id="event-map-title">🗺️ イベントマップ①</span>
         </div>
-        <button id="story-btn" title="ストーリー進行" disabled><img class="navi-icon-img" src="img/UI/image_merge_navi_story.png" alt="ストーリー"></button>
-        <span id="event-map-title">🗺️ イベントマップ①</span>
+        <div id="event-currency">
+          <span id="ev-energy"><img class="ev-icon-img" src="img/UI/image_merge_navi_hp.png" alt="体力"><span id="ev-energy-num">100</span></span>
+          <span id="ev-coin"><img class="ev-icon-img" src="img/UI/image_merge_icon_coin01.png" alt="コイン"><span id="ev-coin-num">0</span></span>
+          <span id="ev-diamond"><img class="ev-icon-img" src="img/UI/image_merge_navi_daiya.png" alt="ダイヤ"><span id="ev-diamond-num">0</span></span>
+          <button id="ev-catalog-btn" class="catalog-access-btn" title="アイテムリスト"><img class="navi-icon-img" src="img/UI/image_merge_navi_itemlist.png" alt="アイテムリスト"></button>
+          <button id="ev-settings-btn" title="設定"><img class="navi-icon-img" src="img/UI/image_merge_navi_setting.png" alt="設定"></button>
+        </div>
       </div>
-      <div id="event-currency">
-        <span id="ev-energy"><img class="ev-icon-img" src="img/UI/image_merge_navi_hp.png" alt="体力"><span id="ev-energy-num">100</span></span>
-        <span id="ev-coin"><img class="ev-icon-img" src="img/UI/image_merge_icon_coin01.png" alt="コイン"><span id="ev-coin-num">0</span></span>
-        <span id="ev-diamond"><img class="ev-icon-img" src="img/UI/image_merge_navi_daiya.png" alt="ダイヤ"><span id="ev-diamond-num">0</span></span>
-        <button id="ev-catalog-btn" class="catalog-access-btn" title="アイテムリスト"><img class="navi-icon-img" src="img/UI/image_merge_navi_itemlist.png" alt="アイテムリスト"></button>
-        <button id="ev-settings-btn" title="設定"><img class="navi-icon-img" src="img/UI/image_merge_navi_setting.png" alt="設定"></button>
-      </div>
-    </div>
-    <div id="event-req-row">
+      <div id="event-req-row">
       <div id="event-slots-panel">
         <button class="event-slot-btn" id="daily-mission-btn">
           <span class="event-slot-icon">📋</span>
@@ -470,6 +471,7 @@
       </div>
       <div id="event-req-panel"></div>
     </div>
+    </div><!-- /#event-sticky-top -->
     <div id="event-board-wrap">
       <div id="event-board"></div>
     </div>

@@ -4147,20 +4147,6 @@ document.getElementById('main-catalog-btn').addEventListener('click', () => { if
 document.getElementById('ev-catalog-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   if (!mainGameStarted) return; // プレゲーム・エピローグ中は無効
-  if (!eventState.catalogTutShown) {
-    eventState.catalogTutShown = true;
-    const DAIYA = '<img src="img/UI/image_merge_navi_daiya.png" class="icon-inline" alt="ダイヤ">';
-    startGuide(
-      [
-        `新しいアイテムを発見すると、${DAIYA}を獲得できます。`,
-        '発見したアイテムは"？"マークになっているので、タップして、アイテムリストに追加してください。',
-        'アイテムの種類とレベルを把握しておくと、ゲーム進行に役立ちます。',
-      ],
-      '#ev-catalog-btn',
-      () => { openCatalog(); }
-    );
-    return;
-  }
   openCatalog();
 });
 
@@ -4630,6 +4616,19 @@ function transitionToMainGame() {
   renderEventGenerators();
   renderEventRequest();
   renderEventHeader();
+
+  // ゲームスタートと同時にアイテムリストガイドを表示
+  eventState.catalogTutShown = true;
+  const DAIYA = '<img src="img/UI/image_merge_navi_daiya.png" class="icon-inline" alt="ダイヤ">';
+  startGuide(
+    [
+      `新しいアイテムを発見すると、${DAIYA}を獲得できます。`,
+      '発見したアイテムは"？"マークになっているので、タップして、アイテムリストに追加してください。',
+      'アイテムの種類とレベルを把握しておくと、ゲーム進行に役立ちます。',
+    ],
+    '#ev-catalog-btn',
+    null
+  );
 }
 
 function renderTutorialPanel() {

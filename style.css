@@ -959,8 +959,7 @@ body {
 }
 
 /* ========== プレゲーム中の非表示 ========== */
-#event-screen.pre-game #event-header-bar,
-#event-screen.pre-game #event-req-row,
+#event-screen.pre-game #event-sticky-top,
 #event-screen.pre-game #event-board-wrap {
   display: none !important;
 }
@@ -1176,10 +1175,14 @@ body {
   padding-bottom: 50px;
 }
 
-#event-header-bar {
+#event-sticky-top {
   position: sticky;
   top: 0;
   z-index: 10;
+  width: 100%;
+}
+
+#event-header-bar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -1348,9 +1351,6 @@ body {
 /* 依頼パネル（イベント）：盤面背景をそのまま透過表示 */
 /* イベント依頼行ラッパー（sticky・イベントスロット＋依頼スロット） */
 #event-req-row {
-  position: sticky;
-  top: var(--event-header-h, 100px);
-  z-index: 9;
   width: 100%;
   background: rgba(0,0,0,0.5);
   backdrop-filter: blur(4px);
