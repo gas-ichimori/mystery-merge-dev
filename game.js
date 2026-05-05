@@ -5802,34 +5802,34 @@ function calcMatchHighlights() {
   const reqHighlights   = new Map();  // reqIdx  → per-item array
 
   eventState.requests.forEach((req, ri) => {
-    const tempBoard    = [...eventState.board];
-    const matchedIdxs  = [];
-
-    for (const reqItem of req.items) {
+    // Step1: 消費方式でどの依頼アイテムが揃っているか確認
+    const tempBoard   = [...eventState.board];
+    const matchedIdxs = req.items.map(reqItem => {
       const idx = tempBoard.findIndex(b =>
         b && !b.isFog && !b.isEventGen && !b.isBubble && eventItemMatchesReq(b, reqItem)
       );
-      matchedIdxs.push(idx);
-      if (idx !== -1) tempBoard[idx] = null; // 消費
-    }
+      if (idx !== -1) tempBoard[idx] = null;
+      return idx;
+    });
 
     const allMatched = matchedIdxs.every(idx => idx !== -1);
     const level = allMatched ? 'full' : 'partial';
 
-    // 盤面セルのハイライト（full が partial を上書き）
-    matchedIdxs.forEach(idx => {
-      if (idx === -1) return;
-      if (!boardHighlights.has(idx) || boardHighlights.get(idx) === 'partial') {
-        boardHighlights.set(idx, level);
-      }
-    });
+    // Step2: 依頼アイテムバッジのハイライト（消費照合結果をそのまま使用）
+    reqHighlights.set(ri, matchedIdxs.map(idx => idx !== -1 ? level : 'none'));
 
-    // 依頼アイテムごとのハイライト
-    const perItem = matchedIdxs.map(idx => {
-      if (idx === -1) return 'none';
-      return level;
+    // Step3: 盤面セルは「揃っている依頼アイテムに合致する全セル」を光らせる
+    req.items.forEach((reqItem, ii) => {
+      if (matchedIdxs[ii] === -1) return; // この依頼アイテムは未達成 → スキップ
+      eventState.board.forEach((b, idx) => {
+        if (!b || b.isFog || b.isEventGen || b.isBubble) return;
+        if (!eventItemMatchesReq(b, reqItem)) return;
+        // full が partial を上書き
+        if (!boardHighlights.has(idx) || boardHighlights.get(idx) === 'partial') {
+          boardHighlights.set(idx, level);
+        }
+      });
     });
-    reqHighlights.set(ri, perItem);
   });
 
   return { boardHighlights, reqHighlights };
