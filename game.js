@@ -4567,6 +4567,8 @@ function advanceTutorial() {
     if (!state.seenScenes) state.seenScenes = [];
     if (!state.seenScenes.includes('scene01')) state.seenScenes.push('scene01');
     openAdventureScene('scene01', () => {
+      // ミユ「ありがとうございます！」後にヘッダー・依頼行・盤面を表示
+      document.getElementById('event-screen').classList.remove('pre-game');
       renderTutorialPanel();
       renderEventBoard();
       renderEventRequest();
@@ -4605,8 +4607,6 @@ function transitionToMainGame() {
   if (mainGameStarted) return;
   mainGameStarted = true;
 
-  // pre-game非表示を解除
-  document.getElementById('event-screen').classList.remove('pre-game');
   // HP を 100 に回復
   state.energy = 100;
   renderEventHeader();
