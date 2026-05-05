@@ -187,6 +187,28 @@ body {
   flex-shrink: 0;
 }
 
+/* 依頼アイテムバッジ マッチハイライト */
+.req-item-badge.req-match-full {
+  background: rgba(60, 255, 140, 0.25);
+  border-color: rgba(60, 255, 140, 0.9);
+  box-shadow: 0 0 8px rgba(60, 255, 140, 0.7);
+}
+.req-item-badge.req-match-partial {
+  background: rgba(60, 180, 90, 0.18);
+  border-color: rgba(60, 180, 90, 0.6);
+  box-shadow: 0 0 5px rgba(60, 180, 90, 0.4);
+}
+
+/* 盤面セル マッチハイライト */
+.cell.cell-match-full {
+  background: rgba(60, 255, 140, 0.22) !important;
+  box-shadow: inset 0 0 10px rgba(60, 255, 140, 0.6), 0 0 6px rgba(60, 255, 140, 0.5);
+}
+.cell.cell-match-partial {
+  background: rgba(60, 180, 90, 0.15) !important;
+  box-shadow: inset 0 0 7px rgba(60, 180, 90, 0.4), 0 0 4px rgba(60, 180, 90, 0.3);
+}
+
 .req-item-lv {
   display: none;
 }

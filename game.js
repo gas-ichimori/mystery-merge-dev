@@ -5403,6 +5403,7 @@ function renderEventBoard() {
   board.innerHTML = '';
 
   const step = currentTutStep();
+  const { boardHighlights } = mainGameStarted ? calcMatchHighlights() : { boardHighlights: new Map() };
 
   // 同Lvペアの検出（霧アイテムも対象）
   const evPairMap = {};   // key="chainKey-stage" → count
@@ -5596,6 +5597,10 @@ function renderEventBoard() {
         if (selItem && i !== eventState.selectedCell && evItemCanMerge(selItem, item)) {
           cell.classList.add('merge-target');
         }
+        // 依頼マッチハイライト
+        const matchLv = boardHighlights.get(i);
+        if (matchLv === 'full')    cell.classList.add('cell-match-full');
+        else if (matchLv === 'partial') cell.classList.add('cell-match-partial');
         // ヒントシェイク（最大Lv・しゃぼん玉はシェイクしない）
         const normalKey = item.isCoin
           ? `coin-${item.coinLv}`
@@ -5780,6 +5785,47 @@ function eventItemMatchesReq(boardItem, reqItem) {
     // EVENT_CHAIN（メモ帳）指定
     return boardItem.chainId === undefined && boardItem.stage === reqItem.stage;
   }
+}
+
+// 依頼×盤面の照合ハイライト計算
+// 戻り値: { boardHighlights: Map<boardIdx, 'full'|'partial'>,
+//           reqHighlights: Map<reqIdx, Array<'full'|'partial'|'none'>> }
+function calcMatchHighlights() {
+  const boardHighlights = new Map();  // boardIdx → 'full'|'partial'
+  const reqHighlights   = new Map();  // reqIdx  → per-item array
+
+  eventState.requests.forEach((req, ri) => {
+    const tempBoard    = [...eventState.board];
+    const matchedIdxs  = [];
+
+    for (const reqItem of req.items) {
+      const idx = tempBoard.findIndex(b =>
+        b && !b.isFog && !b.isEventGen && !b.isBubble && eventItemMatchesReq(b, reqItem)
+      );
+      matchedIdxs.push(idx);
+      if (idx !== -1) tempBoard[idx] = null; // 消費
+    }
+
+    const allMatched = matchedIdxs.every(idx => idx !== -1);
+    const level = allMatched ? 'full' : 'partial';
+
+    // 盤面セルのハイライト（full が partial を上書き）
+    matchedIdxs.forEach(idx => {
+      if (idx === -1) return;
+      if (!boardHighlights.has(idx) || boardHighlights.get(idx) === 'partial') {
+        boardHighlights.set(idx, level);
+      }
+    });
+
+    // 依頼アイテムごとのハイライト
+    const perItem = matchedIdxs.map(idx => {
+      if (idx === -1) return 'none';
+      return level;
+    });
+    reqHighlights.set(ri, perItem);
+  });
+
+  return { boardHighlights, reqHighlights };
 }
 
 // イベントボード上のアイテムで依頼が達成可能か確認
@@ -6087,11 +6133,13 @@ function renderEventRequest() {
   if (!isTutorialComplete()) return;
 
   // チュートリアル完了後：eventState.requests を表示
+  const { reqHighlights } = calcMatchHighlights();
   eventState.requests.forEach((req, i) => {
     const character   = REQUESTERS[req.characterId];
     const completable = eventRequestCompletable(req);
+    const perItem     = reqHighlights.get(i) || req.items.map(() => 'none');
 
-    const itemsHtml = req.items.map(reqItem => {
+    const itemsHtml = req.items.map((reqItem, ii) => {
       // chainId あり → メインチェーン画像、なし → EVENT_CHAIN 画像
       let emoji, imgSrc;
       if (reqItem.chainId !== undefined) {
@@ -6105,7 +6153,9 @@ function renderEventRequest() {
       const icon = imgSrc
         ? `<img class="req-item-img" src="${imgSrc}" alt="${emoji}">`
         : emoji;
-      return `<span class="req-item-badge">${icon}</span>`;
+      const hl = perItem[ii];
+      const hlClass = hl === 'full' ? ' req-match-full' : hl === 'partial' ? ' req-match-partial' : '';
+      return `<span class="req-item-badge${hlClass}">${icon}</span>`;
     }).join('');
 
     // charImg が直接指定されている場合（最初の依頼など）を優先
