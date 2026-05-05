@@ -185,6 +185,7 @@ function getStoryCost(level) {
 }
 // 現在のレベルからレベルアップに必要な経験値（コイン換算）
 function getLevelUpXP(level) {
+  if (level === 1)  return 3000;  // Lv1→Lv2: 3話（1,000×3）
   if (level <= 10) return 10000;
   if (level <= 20) return 20000;
   return 40000; // Lv21-40+
