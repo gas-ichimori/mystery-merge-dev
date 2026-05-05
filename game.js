@@ -177,6 +177,7 @@ const BUBBLE_COIN_DELAY_MS = 40000;
 // ========================================
 // 現在のレベルでストーリー1話を進めるのに必要なコイン
 function getStoryCost(level) {
+  if (level <= 1)  return 1000;  // Lv1（Lv2到達前）
   if (level <= 11) return 2000;
   if (level <= 21) return 4000;
   if (level <= 31) return 8000;
