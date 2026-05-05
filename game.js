@@ -4144,7 +4144,25 @@ function openCatalog() {
 }
 document.getElementById('catalog-btn').addEventListener('click', () => { if (isTutorialInProgress()) return; openCatalog(); });
 document.getElementById('main-catalog-btn').addEventListener('click', () => { if (isTutorialInProgress()) return; openCatalog(); });
-document.getElementById('ev-catalog-btn').addEventListener('click', () => { if (isTutorialInProgress()) return; openCatalog(); });
+document.getElementById('ev-catalog-btn').addEventListener('click', () => {
+  if (isTutorialInProgress()) return;
+  if (!mainGameStarted) return; // プレゲーム・エピローグ中は無効
+  if (!eventState.catalogTutShown) {
+    eventState.catalogTutShown = true;
+    const DAIYA = '<img src="img/UI/image_merge_navi_daiya.png" class="icon-inline" alt="ダイヤ">';
+    startGuide(
+      [
+        `新しいアイテムを発見すると、${DAIYA}を獲得できます。`,
+        '発見したアイテムは"？"マークになっているので、タップして、アイテムリストに追加してください。',
+        'アイテムの種類とレベルを把握しておくと、ゲーム進行に役立ちます。',
+      ],
+      '#ev-catalog-btn',
+      () => { openCatalog(); }
+    );
+    return;
+  }
+  openCatalog();
+});
 
 document.getElementById('catalog-close').addEventListener('click', () => {
   document.getElementById('catalog-screen').classList.add('hidden');
@@ -4508,6 +4526,7 @@ function initEventMap() {
   eventState.seizoRevealed      = {};
   eventState.genDiscovered      = {};
   eventState.genRevealed        = {};
+  eventState.catalogTutShown    = false;
 
   // 霧アイテム配置（Lv1/2/3）
   EVENT_FOG_ITEM_MAP.forEach((stage, i) => {
@@ -4585,6 +4604,12 @@ function playPVThenStart(onDone) {
 function transitionToMainGame() {
   if (mainGameStarted) return;
   mainGameStarted = true;
+
+  // pre-game非表示を解除
+  document.getElementById('event-screen').classList.remove('pre-game');
+  // HP を 100 に回復
+  state.energy = 100;
+  renderEventHeader();
 
   // チュートリアル完了後にイベントマップ本編へ移行
   const genItem = eventState.board.find(c => c && c.isEventGen);
@@ -4698,7 +4723,7 @@ function _renderGuidePanel() {
   const hintEl  = document.getElementById('tutorial-tap-hint');
   overlay.classList.remove('hidden');
   panel.classList.remove('hidden');
-  msgEl.textContent = guideState.messages[guideState.idx];
+  msgEl.innerHTML = guideState.messages[guideState.idx];
   hintEl.style.display = '';
 }
 

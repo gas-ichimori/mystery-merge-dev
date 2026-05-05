@@ -936,6 +936,13 @@ body {
   background: rgba(255,255,255,0.2);
 }
 
+/* ========== プレゲーム中の非表示 ========== */
+#event-screen.pre-game #event-header-bar,
+#event-screen.pre-game #event-req-row,
+#event-screen.pre-game #event-board-wrap {
+  display: none !important;
+}
+
 /* ========================================
    チュートリアルオーバーレイ・パネル
 ======================================== */
@@ -1939,8 +1946,8 @@ body {
   position: absolute;
   bottom: 0; left: 0; right: 0;
   min-height: 160px;
-  background: rgba(8, 16, 50, 0.88);
-  border-top: 2px solid rgba(100, 160, 255, 0.45);
+  background: rgba(8, 16, 50, 0.30);
+  border-top: 2px solid rgba(160, 100, 50, 0.8);
   padding: 14px 20px 28px;
   z-index: 3;
   cursor: pointer;
