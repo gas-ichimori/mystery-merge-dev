@@ -5875,6 +5875,7 @@ function showRewardNearBtn(text, btnEl) {
 }
 
 function completeEventRequest(index) {
+  if (isTutorialInProgress()) return;
   const req = eventState.requests[index];
   if (!req) return;
   if (!eventRequestCompletable(req)) { showToast('該当アイテムがありません'); return; }
