@@ -956,15 +956,15 @@ body {
 
 #tutorial-panel {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
   max-width: 460px;
   background: rgba(8,8,30,0.30);
-  border-bottom: 2px solid rgba(255,140,40,0.85);
-  border-radius: 0 0 18px 18px;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 16px;
+  border-top: 2px solid rgba(255,140,40,0.85);
+  border-radius: 18px 18px 0 0;
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
   z-index: 35;
   display: flex;
   flex-direction: row;
