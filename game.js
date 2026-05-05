@@ -4152,6 +4152,10 @@ document.getElementById('ev-catalog-btn').addEventListener('click', () => {
 
 document.getElementById('catalog-close').addEventListener('click', () => {
   document.getElementById('catalog-screen').classList.add('hidden');
+  if (pendingGenMergeTutStart) {
+    pendingGenMergeTutStart = false;
+    renderGenMergeTutPanel();
+  }
 });
 
 // ========================================
@@ -4478,7 +4482,8 @@ let evDrag = {
   hasMoved: false, // 指/マウスが閾値以上動いたか（ドラッグ vs タップ判定）
 };
 
-let mainGameStarted = false; // チュートリアル → メインゲーム移行済みフラグ
+let mainGameStarted = false;        // チュートリアル → メインゲーム移行済みフラグ
+let pendingGenMergeTutStart = false; // カタログ閉じたらジェネレーター誘導を開始するフラグ
 
 function initEventMap() {
   eventState.board = Array(EVENT_TOTAL).fill(null);
@@ -4627,7 +4632,11 @@ function transitionToMainGame() {
       'アイテムの種類とレベルを把握しておくと、ゲーム進行に役立ちます。',
     ],
     '#ev-catalog-btn',
-    null
+    () => {
+      // メッセージ確認後にカタログを開き、閉じたらジェネレーター誘導チュートを開始
+      pendingGenMergeTutStart = true;
+      openCatalog();
+    }
   );
 }
 
@@ -4650,7 +4659,6 @@ function renderTutorialPanel() {
         '#event-board .cell[data-index="31"]',
         () => {
           transitionToMainGame();
-          renderGenMergeTutPanel();
         }
       );
     });
