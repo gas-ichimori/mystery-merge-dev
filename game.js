@@ -1993,8 +1993,8 @@ function showToast(msg) {
 // 章完了バナー演出
 // ========================================
 // imgSrc: 表示する画像パス
-// displayMs: 表示時間（ミリ秒、デフォルト 1200ms）
-function showChapterCompleteBanner(imgSrc, displayMs = 1200) {
+// displayMs: 表示時間（ミリ秒、デフォルト 2800ms）
+function showChapterCompleteBanner(imgSrc, displayMs = 2800) {
   // 既存オーバーレイがあれば即削除
   document.getElementById('chapter-complete-overlay')?.remove();
   document.getElementById('chapter-complete-flash')?.remove();
@@ -4724,7 +4724,11 @@ document.getElementById('debug-adv-ch1-play').addEventListener('click', () => {
   const val = document.getElementById('debug-adv-ch1-select').value;
   if (!val) { showToast('シーンを選択してください'); return; }
   document.getElementById('debug-screen').classList.add('hidden');
-  openAdventureScene(val);
+  // scene17（完結）の後に第一章完結バナーを表示
+  const cb = val === 'scene17'
+    ? () => setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png'), 300)
+    : null;
+  openAdventureScene(val, cb);
 });
 
 // デバッグ：アドベンチャーシーン（第二章）
