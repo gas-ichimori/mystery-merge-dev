@@ -5946,6 +5946,13 @@ function openNaviInfoPopup() {
       disc: !!eventState.genDiscovered[`ch3_${idx}`],
       current: idx === ctx.level,
     }));
+  } else if (ctx.type === 'ch4gen') {
+    titleText = '第四章ジェネレーター';
+    items = KEIKAKU_GEN_IMAGES.map((imgSrc, idx) => ({
+      imgSrc, label: `Lv${idx + 1}`,
+      disc: !!eventState.genDiscovered[`ch4_${idx}`],
+      current: idx === ctx.level,
+    }));
   } else if (ctx.type === 'ch1item') {
     titleText = '第一章アイテム';
     items = EVENT_CHAIN.stages.map((emoji, idx) => ({
@@ -5970,6 +5977,15 @@ function openNaviInfoPopup() {
       imgSrc: ch3.stageImages[idx],
       label: `Lv${idx + 1}`,
       disc: !!eventState.kanteDiscovered[idx + 1],
+      current: idx + 1 === ctx.stage,
+    }));
+  } else if (ctx.type === 'ch4item') {
+    titleText = '第四章アイテム';
+    const ch4 = CHAINS[KEIKAKU_CHAIN_ID];
+    items = ch4.stages.map((emoji, idx) => ({
+      imgSrc: ch4.stageImages[idx],
+      label: `Lv${idx + 1}`,
+      disc: !!eventState.keikakuDiscovered[idx + 1],
       current: idx + 1 === ctx.stage,
     }));
   }
@@ -6104,9 +6120,10 @@ function showNaviHintForItem(item, persistent = false) {
     ? `${name}は、最大Lvに達しています`
     : `${name}をマージさせて次のレベルにアップしましょう。`;
   const cid = item.chainId;
-  const itemCtx = cid === undefined       ? { type: 'ch1item', stage: item.stage }
-                : cid === SEIZO_CHAIN_ID   ? { type: 'ch2item', stage: item.stage }
+  const itemCtx = cid === undefined        ? { type: 'ch1item', stage: item.stage }
+                : cid === SEIZO_CHAIN_ID    ? { type: 'ch2item', stage: item.stage }
                 : cid === KANTEITA_CHAIN_ID ? { type: 'ch3item', stage: item.stage }
+                : cid === KEIKAKU_CHAIN_ID  ? { type: 'ch4item', stage: item.stage }
                 : null;
   _showNaviHintPanel(text, false, persistent, itemCtx);
   // Lv1: ゴミ箱ボタン、Lv2以降: コイン獲得ボタン
