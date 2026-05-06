@@ -6673,17 +6673,17 @@ function progressStory(chapter = 1) {
     });
   }
 
-  // ── 第一章ジェネレーター Lv2：第一章 Scene8 終了時（カメラLv8到達より先の場合）
-  if (chapter === 1 && state.ch1Count === 8 && !eventState.genUpTriggered.has('ch1lv2')) {
+  // ── 第一章ジェネレーター Lv3：第一章 Scene8 終了時（カメラLv8到達より先の場合）
+  if (chapter === 1 && state.ch1Count === 8 && !eventState.genUpTriggered.has('ch1lv3')) {
     _chain(() => {
-      if (eventState.genUpTriggered.has('ch1lv2')) return; // アイテムLv8で先に発火済みなら skip
+      if (eventState.genUpTriggered.has('ch1lv3')) return; // アイテムLv8で先に発火済みなら skip
       const ch1Gen = eventState.board.find(
         c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
       );
       if (!ch1Gen) return;
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
       if (genTileCount >= 2) return;
-      eventState.genUpTriggered.add('ch1lv2');
+      eventState.genUpTriggered.add('ch1lv3');
       const eIdx = eventState.board.findIndex(
         c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
       );
@@ -6691,8 +6691,7 @@ function progressStory(chapter = 1) {
       if (slot !== -1) {
         eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel ?? 0 };
         renderEventBoard();
-        hideNaviHint();
-        setTimeout(() => startGenMergeTut(), 400);
+        showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
       }
     });
   }
@@ -7670,11 +7669,11 @@ function doEventMerge(fromIdx, toIdx) {
     discoverEventItem(finalStage);
     if (finalStage !== nextStage) discoverEventItem(nextStage);
 
-    // Lv8（カメラ）初回到達でジェネレーター2枚目タイルを自動出現（第一章Lv2）
-    // ※ 第一章Scene8終了時にも同様に出現（progressStory参照）
+    // Lv4（スニーカー）初回到達でジェネレーター2枚目タイルを自動出現（第一章Lv2）
+    // Lv8（カメラ）初回到達 or Scene8終了でLv3タイルを自動出現（progressStory参照）
     // Lv4タイル（ch1lv4）は第一章Scene12終了時（progressStory参照）
-    if (nextStage === 8 && !eventState.genUpTriggered.has('ch1lv2')) {
-      eventState.genUpTriggered.add('ch1lv2');
+    if (nextStage === 4 && !eventState.genUpTriggered.has(4)) {
+      eventState.genUpTriggered.add(4);
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
       if (genTileCount < 2) {
         const curGenLv  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
@@ -7683,6 +7682,21 @@ function doEventMerge(fromIdx, toIdx) {
           eventState.board[emptyIdx2] = { isEventGen: true, genLevel: curGenLv };
           hideNaviHint();
           setTimeout(() => startGenMergeTut(), 400);
+        }
+      }
+    }
+
+    // Lv8（カメラ）初回到達でジェネレーター2枚目タイルを自動出現（第一章Lv3）
+    // ※ 第一章Scene8終了時にも同様に出現（progressStory参照）
+    if (nextStage === 8 && !eventState.genUpTriggered.has('ch1lv3')) {
+      eventState.genUpTriggered.add('ch1lv3');
+      const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
+      if (genTileCount < 2) {
+        const curGenLv  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
+        const emptyIdx2 = eventState.board.findIndex(c => c === null);
+        if (emptyIdx2 !== -1) {
+          eventState.board[emptyIdx2] = { isEventGen: true, genLevel: curGenLv };
+          showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
         }
       }
     }
