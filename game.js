@@ -1566,10 +1566,16 @@ function startEnergyTimer() {
         state.energy = Math.min(state.maxEnergy, state.energy + 1);
         state.energyTimer = 30;
         renderHeader();
+        renderEventHeader();
       }
-      document.getElementById('energy-timer').textContent = `${state.energyTimer}s`;
+      const timerText = `${state.energyTimer}s`;
+      document.getElementById('energy-timer').textContent = timerText;
+      const evTimer = document.getElementById('ev-energy-timer');
+      if (evTimer) evTimer.textContent = timerText;
     } else {
       document.getElementById('energy-timer').textContent = 'MAX';
+      const evTimer = document.getElementById('ev-energy-timer');
+      if (evTimer) evTimer.textContent = '';
     }
   }, 1000);
 }
@@ -1960,6 +1966,7 @@ function addEnergy(amount, _reason) {
   state.energy += amount;
   showEnergyGain(amount);
   renderHeader();
+  renderEventHeader();
 }
 
 // 24時間残り時間を返す（null = 取得可能）
@@ -2180,7 +2187,7 @@ function showSpecialFixed(text, color) {
   setTimeout(() => div.remove(), 1400);
 }
 
-// 体力回復演出: ⚡が体力表示に向かって飛び込む + オレンジ+N テキスト
+// 体力回復演出: ⚡がボード/ジェネレーター/ボタンから弧を描いて体力表示へ飛び込む
 function showEnergyGain(amount) {
   const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
   const energyEl = eventVisible
@@ -2191,46 +2198,78 @@ function showEnergyGain(amount) {
   // +N テキスト（オレンジ、体力の上に浮かぶ）
   showFloatNearEl(`+${amount}`, '#ff8c00', energyEl);
 
-  // HPアイコンが体力アイコンへ飛び込む（大きめ・多め・ダイナミック）
   const rect = energyEl.getBoundingClientRect();
   const targetX = rect.left + rect.width  / 2;
   const targetY = rect.top  + rect.height / 2;
-  const BOLT_COUNT = 7;
+
+  // 出発源の候補：ボードセル・ジェネレーター・ボタン類
+  const sources = [];
+  const boardSel = eventVisible ? '#event-board .cell' : '#board .cell';
+  document.querySelectorAll(boardSel).forEach(cell => {
+    const r = cell.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight) {
+      sources.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    }
+  });
+  ['story-btn', 'ev-settings-btn', 'ev-catalog-btn', 'daily-mission-btn'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.classList.contains('hidden')) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0) sources.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    }
+  });
+  // フォールバック：ターゲット下方
+  if (sources.length === 0) {
+    sources.push({ x: targetX, y: targetY + 200 });
+  }
+
+  const BOLT_COUNT = 20;
   for (let i = 0; i < BOLT_COUNT; i++) {
     setTimeout(() => {
+      const src = sources[Math.floor(Math.random() * sources.length)];
       const bolt = document.createElement('div');
       bolt.innerHTML = HP_ICON;
-      // 広い範囲からランダムに出現
-      const angle  = (Math.random() * 2 * Math.PI);
-      const radius = 80 + Math.random() * 100;
-      const startX = targetX + Math.cos(angle) * radius;
-      const startY = targetY + 60 + Math.random() * 60;
-      // 最初は大きく、吸い込まれる際に縮小
-      const initScale = 1.4 + Math.random() * 0.6;
       bolt.style.cssText = `
         position: fixed;
-        left: ${startX}px;
-        top: ${startY}px;
-        width: 60px;
-        height: 60px;
+        left: ${src.x}px;
+        top:  ${src.y}px;
+        width: 100px;
+        height: 100px;
         pointer-events: none;
         z-index: 9999;
-        transform: translate(-50%, -50%) scale(${initScale}) rotate(${(Math.random()-0.5)*30}deg);
-        transition: left 0.55s cubic-bezier(0.6,0,1,1),
-                    top  0.55s cubic-bezier(0.6,0,1,1),
-                    opacity 0.45s ease-in,
-                    transform 0.55s cubic-bezier(0.6,0,1,1);
+        transform: translate(-50%, -50%) scale(1);
         opacity: 1;
+        will-change: left, top, transform, opacity;
       `;
       document.body.appendChild(bolt);
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        bolt.style.left      = `${targetX}px`;
-        bolt.style.top       = `${targetY}px`;
-        bolt.style.opacity   = '0';
-        bolt.style.transform = 'translate(-50%, -50%) scale(0.15) rotate(0deg)';
-      }));
-      setTimeout(() => bolt.remove(), 620);
-    }, i * 90);
+
+      // 弧の制御点（出発と到達の中間・やや上方）
+      const cpX = (src.x + targetX) / 2 + (Math.random() - 0.5) * 100;
+      const cpY = Math.min(src.y, targetY) - 60 - Math.random() * 80;
+      const duration = 550 + Math.random() * 200;
+      const startTime = performance.now();
+
+      function animateBolt(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        // ease-in-out
+        const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        // 2次ベジェ曲線
+        const bx = (1 - e) * (1 - e) * src.x + 2 * (1 - e) * e * cpX + e * e * targetX;
+        const by = (1 - e) * (1 - e) * src.y + 2 * (1 - e) * e * cpY + e * e * targetY;
+        const sc = 1 - e * 0.88;
+        const op = t < 0.65 ? 1 : 1 - (t - 0.65) / 0.35;
+        bolt.style.left      = `${bx}px`;
+        bolt.style.top       = `${by}px`;
+        bolt.style.transform = `translate(-50%,-50%) scale(${sc})`;
+        bolt.style.opacity   = `${op}`;
+        if (t < 1) {
+          requestAnimationFrame(animateBolt);
+        } else {
+          bolt.remove();
+        }
+      }
+      requestAnimationFrame(animateBolt);
+    }, i * 55);
   }
 }
 

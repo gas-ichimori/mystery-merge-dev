@@ -1258,6 +1258,12 @@ body {
   gap: 2px;
 }
 
+#ev-energy-timer {
+  font-size: 9px;
+  color: #aaa;
+  margin-left: 1px;
+}
+
 /* ボタン内アイコン画像（設定・アイテムリスト・ストーリー・閉じる等） */
 .navi-icon-img {
   width: 36px;
