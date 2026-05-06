@@ -209,6 +209,30 @@ body {
   box-shadow: inset 0 0 7px rgba(60, 180, 90, 0.4), 0 0 4px rgba(60, 180, 90, 0.3);
 }
 
+/* 蛍光ハイライト中に選択されたセルでも四隅コーナーブラケットを表示 */
+.cell.selected.cell-match-full,
+.cell.selected.cell-match-partial {
+  background-color: rgba(241, 196, 15, 0.12) !important;
+  background-image:
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846),
+    linear-gradient(#f9c846, #f9c846) !important;
+  background-size:
+    30% 2px, 30% 2px, 30% 2px, 30% 2px,
+    2px 30%, 2px 30%, 2px 30%, 2px 30% !important;
+  background-position:
+    0 0, 100% 0, 0 100%, 100% 100%,
+    0 0, 100% 0, 0 100%, 100% 100% !important;
+  background-repeat: no-repeat !important;
+  box-shadow: none !important;
+  animation: corner-bracket-scale 0.28s ease-in-out infinite !important;
+}
+
 .req-item-lv {
   display: none;
 }

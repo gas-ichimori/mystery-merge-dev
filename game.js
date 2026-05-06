@@ -1997,32 +1997,50 @@ function showToast(msg) {
 function showChapterCompleteBanner(imgSrc, displayMs = 2500) {
   // 既存オーバーレイがあれば即削除
   document.getElementById('chapter-complete-overlay')?.remove();
+  document.getElementById('chapter-complete-flash')?.remove();
 
-  const overlay = document.createElement('div');
-  overlay.id = 'chapter-complete-overlay';
-  const img = document.createElement('img');
-  img.className = 'chapter-complete-img';
-  img.src = imgSrc;
-  img.alt = '章完了';
-  overlay.appendChild(img);
-  document.body.appendChild(overlay);
+  // 白フラッシュ
+  const flash = document.createElement('div');
+  flash.id = 'chapter-complete-flash';
+  flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:8999;opacity:0;pointer-events:none;transition:opacity 0.12s ease-in';
+  document.body.appendChild(flash);
+  requestAnimationFrame(() => {
+    flash.style.opacity = '1';
+    setTimeout(() => {
+      flash.style.transition = 'opacity 0.35s ease-out';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 400);
+    }, 120);
+  });
 
-  // フェードイン
-  requestAnimationFrame(() => overlay.classList.add('fade-in'));
+  // バナー本体（フラッシュ少し後に表示）
+  setTimeout(() => {
+    const overlay = document.createElement('div');
+    overlay.id = 'chapter-complete-overlay';
+    const img = document.createElement('img');
+    img.className = 'chapter-complete-img';
+    img.src = imgSrc;
+    img.alt = '章完了';
+    overlay.appendChild(img);
+    document.body.appendChild(overlay);
 
-  // タップで即消去
-  overlay.addEventListener('click', () => dismiss());
+    // フェードイン
+    requestAnimationFrame(() => overlay.classList.add('fade-in'));
 
-  // 自動消去
-  const timer = setTimeout(() => dismiss(), displayMs);
+    // タップで即消去
+    overlay.addEventListener('click', () => dismiss());
 
-  function dismiss() {
-    clearTimeout(timer);
-    overlay.removeEventListener('click', dismiss);
-    overlay.classList.remove('fade-in');
-    overlay.classList.add('fade-out');
-    overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
-  }
+    // 自動消去
+    const timer = setTimeout(() => dismiss(), displayMs);
+
+    function dismiss() {
+      clearTimeout(timer);
+      overlay.removeEventListener('click', dismiss);
+      overlay.classList.remove('fade-in');
+      overlay.classList.add('fade-out');
+      overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+    }
+  }, 80);
 }
 
 // ジェネレータータイルの直上にトーストを表示（ボード満杯などの通知用）
@@ -2171,27 +2189,35 @@ function showEnergyGain(amount) {
   // +N テキスト（オレンジ、体力の上に浮かぶ）
   showFloatNearEl(`+${amount}`, '#ff8c00', energyEl);
 
-  // HPアイコンが体力アイコンへ飛び込む
+  // HPアイコンが体力アイコンへ飛び込む（大きめ・多め・ダイナミック）
   const rect = energyEl.getBoundingClientRect();
   const targetX = rect.left + rect.width  / 2;
   const targetY = rect.top  + rect.height / 2;
-  for (let i = 0; i < 3; i++) {
+  const BOLT_COUNT = 7;
+  for (let i = 0; i < BOLT_COUNT; i++) {
     setTimeout(() => {
       const bolt = document.createElement('div');
       bolt.innerHTML = HP_ICON;
-      const startX = targetX + (Math.random() - 0.5) * 70;
-      const startY = targetY + 45 + Math.random() * 35;
+      // 広い範囲からランダムに出現
+      const angle  = (Math.random() * 2 * Math.PI);
+      const radius = 80 + Math.random() * 100;
+      const startX = targetX + Math.cos(angle) * radius;
+      const startY = targetY + 60 + Math.random() * 60;
+      // 最初は大きく、吸い込まれる際に縮小
+      const initScale = 1.4 + Math.random() * 0.6;
       bolt.style.cssText = `
         position: fixed;
         left: ${startX}px;
         top: ${startY}px;
-        width: 20px;
-        height: 20px;
+        width: 60px;
+        height: 60px;
         pointer-events: none;
         z-index: 9999;
-        transform: translate(-50%, -50%);
-        transition: left 0.4s ease-in, top 0.4s ease-in,
-                    opacity 0.35s ease-in, transform 0.4s ease-in;
+        transform: translate(-50%, -50%) scale(${initScale}) rotate(${(Math.random()-0.5)*30}deg);
+        transition: left 0.55s cubic-bezier(0.6,0,1,1),
+                    top  0.55s cubic-bezier(0.6,0,1,1),
+                    opacity 0.45s ease-in,
+                    transform 0.55s cubic-bezier(0.6,0,1,1);
         opacity: 1;
       `;
       document.body.appendChild(bolt);
@@ -2199,10 +2225,10 @@ function showEnergyGain(amount) {
         bolt.style.left      = `${targetX}px`;
         bolt.style.top       = `${targetY}px`;
         bolt.style.opacity   = '0';
-        bolt.style.transform = 'translate(-50%, -50%) scale(0.2)';
+        bolt.style.transform = 'translate(-50%, -50%) scale(0.15) rotate(0deg)';
       }));
-      setTimeout(() => bolt.remove(), 450);
-    }, i * 130);
+      setTimeout(() => bolt.remove(), 620);
+    }, i * 90);
   }
 }
 
@@ -5394,11 +5420,12 @@ function advanceGuide() {
   _renderGuidePanel();
 }
 
-// 累計獲得コインが2,000以上になったら一度だけストーリー誘導ガイドを表示
+// ストーリーボタンが初めてアクティブになったら一度だけストーリー誘導ガイドを表示
 function checkStoryGuide() {
   if (state.storyGuideShown) return;
-  if (state.totalCoinEarned < 2000) return;
-  if (isTutorialInProgress()) return; // チュートリアル・ガイド中は後回し
+  const cost = getStoryCost(state.playerLevel);
+  if (state.coin < cost) return;          // まだコインが足りない
+  if (isTutorialInProgress()) return;     // チュートリアル・ガイド中は後回し
   state.storyGuideShown = true;
   startGuide([
     '依頼解決で得た報酬で、ストーリーを読むことができます。',
@@ -5410,9 +5437,8 @@ function checkStoryGuide() {
 // ========================================
 // ストーリー選択画面
 // ========================================
-// 第一章シーン一覧（プロローグ＋Ep.01〜16）
+// 第一章シーン一覧（Ep.01〜16）
 const CH1_SCENE_LIST = [
-  { id: 'scene01', label: 'プロローグ' },
   { id: 'scene02', label: 'Ep.01' },
   { id: 'scene03', label: 'Ep.02' },
   { id: 'scene04', label: 'Ep.03' },
@@ -6574,6 +6600,8 @@ function renderPlayerLevel() {
     // ストーリー画面はいつでも開ける（コイン不足でも章選択・見返しは可能）
     storyBtn.disabled = false;
     storyBtn.classList.toggle('story-btn-active', canProgress);
+    // ストーリーボタンが初めてアクティブになった瞬間にガイドを表示
+    if (canProgress) checkStoryGuide();
   }
 }
 
@@ -6642,6 +6670,30 @@ function progressStory(chapter = 1) {
     eventState.ch1BannerShown = true;
     _chain(() => {
       setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2800), 300);
+    });
+  }
+
+  // ── 第一章ジェネレーター Lv2：第一章 Scene8 終了時（カメラLv8到達より先の場合）
+  if (chapter === 1 && state.ch1Count === 8 && !eventState.genUpTriggered.has('ch1lv2')) {
+    _chain(() => {
+      if (eventState.genUpTriggered.has('ch1lv2')) return; // アイテムLv8で先に発火済みなら skip
+      const ch1Gen = eventState.board.find(
+        c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
+      );
+      if (!ch1Gen) return;
+      const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
+      if (genTileCount >= 2) return;
+      eventState.genUpTriggered.add('ch1lv2');
+      const eIdx = eventState.board.findIndex(
+        c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
+      );
+      const slot = findNearestEmptyEventCell(eIdx);
+      if (slot !== -1) {
+        eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel ?? 0 };
+        renderEventBoard();
+        hideNaviHint();
+        setTimeout(() => startGenMergeTut(), 400);
+      }
     });
   }
 
@@ -7618,24 +7670,19 @@ function doEventMerge(fromIdx, toIdx) {
     discoverEventItem(finalStage);
     if (finalStage !== nextStage) discoverEventItem(nextStage);
 
-    // Lv4/8 初回到達でジェネレーター2枚目タイルを自動出現（Lv4=stage4, Lv3=stage8）
-    // Lv4タイル（旧stage10）は第一章Scene12終了時に切り替え（progressStory参照）
-    if ((nextStage === 4 || nextStage === 8) &&
-        !eventState.genUpTriggered.has(nextStage)) {
-      eventState.genUpTriggered.add(nextStage); // 同じステージでは二度と出現しない
+    // Lv8（カメラ）初回到達でジェネレーター2枚目タイルを自動出現（第一章Lv2）
+    // ※ 第一章Scene8終了時にも同様に出現（progressStory参照）
+    // Lv4タイル（ch1lv4）は第一章Scene12終了時（progressStory参照）
+    if (nextStage === 8 && !eventState.genUpTriggered.has('ch1lv2')) {
+      eventState.genUpTriggered.add('ch1lv2');
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
       if (genTileCount < 2) {
         const curGenLv  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
         const emptyIdx2 = eventState.board.findIndex(c => c === null);
         if (emptyIdx2 !== -1) {
           eventState.board[emptyIdx2] = { isEventGen: true, genLevel: curGenLv };
-          // 初回（nextStage===4）のみマージ誘導チュートリアルを起動
-          if (nextStage === 4) {
-            hideNaviHint(); // Lv1×2出現時にナビヒントを消す
-            setTimeout(() => startGenMergeTut(), 400);
-          } else {
-            showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
-          }
+          hideNaviHint();
+          setTimeout(() => startGenMergeTut(), 400);
         }
       }
     }
