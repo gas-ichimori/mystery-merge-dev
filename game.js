@@ -5664,8 +5664,10 @@ const CH1_KANKEI_EDGES = [
 ];
 
 function openKankeiScreen() {
-  renderKankeiBoard();
+  // hidden解除 → その後レンダリングの順で呼ぶことで
+  // アニメーションが display:none 中に消費されるのを防ぐ
   document.getElementById('kankei-screen').classList.remove('hidden');
+  renderKankeiBoard();
 }
 
 function closeKankeiScreen() {
