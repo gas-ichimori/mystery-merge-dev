@@ -1993,54 +1993,56 @@ function showToast(msg) {
 // 章完了バナー演出
 // ========================================
 // imgSrc: 表示する画像パス
-// displayMs: 表示時間（ミリ秒、デフォルト 2500ms）
-function showChapterCompleteBanner(imgSrc, displayMs = 2500) {
+// displayMs: 表示時間（ミリ秒、デフォルト 1200ms）
+function showChapterCompleteBanner(imgSrc, displayMs = 1200) {
   // 既存オーバーレイがあれば即削除
   document.getElementById('chapter-complete-overlay')?.remove();
   document.getElementById('chapter-complete-flash')?.remove();
 
-  // 白フラッシュ
+  // 白背景（バナー表示中ずっと維持）
   const flash = document.createElement('div');
   flash.id = 'chapter-complete-flash';
-  flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:8999;opacity:0;pointer-events:none;transition:opacity 0.12s ease-in';
+  flash.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:8999;opacity:0;pointer-events:none;transition:opacity 0.15s ease-in';
   document.body.appendChild(flash);
+
+  // バナー本体
+  const overlay = document.createElement('div');
+  overlay.id = 'chapter-complete-overlay';
+  overlay.style.zIndex = '9000'; // 白背景の上
+  const img = document.createElement('img');
+  img.className = 'chapter-complete-img';
+  img.src = imgSrc;
+  img.alt = '章完了';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+
+  // 白背景フェードイン → バナースタンプアニメ開始
   requestAnimationFrame(() => {
     flash.style.opacity = '1';
     setTimeout(() => {
-      flash.style.transition = 'opacity 0.35s ease-out';
-      flash.style.opacity = '0';
-      setTimeout(() => flash.remove(), 400);
-    }, 120);
+      requestAnimationFrame(() => overlay.classList.add('fade-in'));
+    }, 150);
   });
 
-  // バナー本体（フラッシュ少し後に表示）
-  setTimeout(() => {
-    const overlay = document.createElement('div');
-    overlay.id = 'chapter-complete-overlay';
-    const img = document.createElement('img');
-    img.className = 'chapter-complete-img';
-    img.src = imgSrc;
-    img.alt = '章完了';
-    overlay.appendChild(img);
-    document.body.appendChild(overlay);
+  // タップで即消去
+  overlay.addEventListener('click', () => dismiss());
 
-    // フェードイン
-    requestAnimationFrame(() => overlay.classList.add('fade-in'));
+  // 自動消去
+  const timer = setTimeout(() => dismiss(), displayMs);
 
-    // タップで即消去
-    overlay.addEventListener('click', () => dismiss());
-
-    // 自動消去
-    const timer = setTimeout(() => dismiss(), displayMs);
-
-    function dismiss() {
-      clearTimeout(timer);
-      overlay.removeEventListener('click', dismiss);
-      overlay.classList.remove('fade-in');
-      overlay.classList.add('fade-out');
-      overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
-    }
-  }, 80);
+  function dismiss() {
+    clearTimeout(timer);
+    overlay.removeEventListener('click', dismiss);
+    // バナーと白背景を同時にフェードアウト
+    overlay.classList.remove('fade-in');
+    overlay.classList.add('fade-out');
+    flash.style.transition = 'opacity 0.4s ease-out';
+    flash.style.opacity = '0';
+    overlay.addEventListener('animationend', () => {
+      overlay.remove();
+      flash.remove();
+    }, { once: true });
+  }
 }
 
 // ジェネレータータイルの直上にトーストを表示（ボード満杯などの通知用）
@@ -6669,7 +6671,7 @@ function progressStory(chapter = 1) {
   if (chapter === 1 && state.ch1Count >= CH1_SCENE_IDS.length && !eventState.ch1BannerShown) {
     eventState.ch1BannerShown = true;
     _chain(() => {
-      setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2800), 300);
+      setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png'), 300);
     });
   }
 
