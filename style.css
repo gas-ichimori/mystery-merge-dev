@@ -2657,3 +2657,46 @@ body {
   font-weight: bold;
   text-align: center;
 }
+
+/* ========================================
+   章完了バナー演出
+======================================== */
+#chapter-complete-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  background: transparent;
+}
+
+#chapter-complete-overlay.fade-in {
+  animation: ch-complete-in 0.6s ease-out forwards;
+}
+#chapter-complete-overlay.fade-out {
+  animation: ch-complete-out 0.5s ease-in forwards;
+}
+
+.chapter-complete-img {
+  width: min(80vw, 520px);
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 4px 18px rgba(0,0,0,0.55));
+  animation: ch-complete-stamp 0.45s cubic-bezier(0.22, 1.6, 0.5, 1) forwards;
+}
+
+@keyframes ch-complete-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes ch-complete-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes ch-complete-stamp {
+  0%   { transform: rotate(-8deg) scale(1.35); opacity: 0; }
+  60%  { transform: rotate(-8deg) scale(0.96); opacity: 1; }
+  80%  { transform: rotate(-8deg) scale(1.04); }
+  100% { transform: rotate(-8deg) scale(1);    opacity: 1; }
+}

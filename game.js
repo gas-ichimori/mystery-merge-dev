@@ -1989,6 +1989,42 @@ function showToast(msg) {
   setTimeout(() => el.remove(), 2000);
 }
 
+// ========================================
+// 章完了バナー演出
+// ========================================
+// imgSrc: 表示する画像パス
+// displayMs: 表示時間（ミリ秒、デフォルト 2500ms）
+function showChapterCompleteBanner(imgSrc, displayMs = 2500) {
+  // 既存オーバーレイがあれば即削除
+  document.getElementById('chapter-complete-overlay')?.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'chapter-complete-overlay';
+  const img = document.createElement('img');
+  img.className = 'chapter-complete-img';
+  img.src = imgSrc;
+  img.alt = '章完了';
+  overlay.appendChild(img);
+  document.body.appendChild(overlay);
+
+  // フェードイン
+  requestAnimationFrame(() => overlay.classList.add('fade-in'));
+
+  // タップで即消去
+  overlay.addEventListener('click', () => dismiss());
+
+  // 自動消去
+  const timer = setTimeout(() => dismiss(), displayMs);
+
+  function dismiss() {
+    clearTimeout(timer);
+    overlay.removeEventListener('click', dismiss);
+    overlay.classList.remove('fade-in');
+    overlay.classList.add('fade-out');
+    overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+  }
+}
+
 // ジェネレータータイルの直上にトーストを表示（ボード満杯などの通知用）
 // パネル要素のすぐ下にトーストを表示（依頼完了など）
 function showToastRed(msg) {
@@ -5054,6 +5090,7 @@ let eventState = {
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
   keikakuLvTriggered: new Set(), // 設計台LvアップのトリガーになったプレイヤーLvSet
+  ch1BannerShown: false,       // 第一章完了バナーを表示済みか
   pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
@@ -5109,6 +5146,7 @@ function initEventMap() {
   eventState.seizoLvTriggered  = new Set();
   eventState.kanteLvTriggered      = new Set();
   eventState.keikakuLvTriggered    = new Set();
+  eventState.ch1BannerShown        = false;
   eventState.pendingGenLvUpNotice  = [];
   eventState.genUpTriggered        = new Set();
   eventState.completedLowStages = new Set();
@@ -6597,6 +6635,14 @@ function progressStory(chapter = 1) {
   function _chain(cb) {
     const prev = postSceneCallback;
     postSceneCallback = prev ? () => { prev(); cb(); } : cb;
+  }
+
+  // ── 第一章完了バナー：第一章最終話終了時に一度だけ表示
+  if (chapter === 1 && state.ch1Count >= CH1_SCENE_IDS.length && !eventState.ch1BannerShown) {
+    eventState.ch1BannerShown = true;
+    _chain(() => {
+      setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2800), 300);
+    });
   }
 
   // ── 第二章ジェネレーター解放：第一章 Scene8 終了時
