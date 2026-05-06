@@ -5705,16 +5705,20 @@ function renderKankeiBoard() {
   filter.appendChild(feDropShadow);
   defs.appendChild(filter);
 
-  // ピンのサークルマーカー（色別）
-  [['pin-white','rgba(240,230,200,0.95)'], ['pin-blue','rgba(100,180,255,0.95)'], ['pin-red','rgba(255,80,80,0.95)']].forEach(([id, fill]) => {
+  // ピン画像マーカー（白ピン・赤ピン）
+  [['pin-white', 'img/UI/image_merge_kankei_pin_white.png'],
+   ['pin-red',   'img/UI/image_merge_kankei_pin_red.png']
+  ].forEach(([id, src]) => {
     const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', id); marker.setAttribute('markerWidth', '4'); marker.setAttribute('markerHeight', '4');
-    marker.setAttribute('refX', '2'); marker.setAttribute('refY', '2'); marker.setAttribute('orient', 'auto');
-    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    circle.setAttribute('cx', '2'); circle.setAttribute('cy', '2'); circle.setAttribute('r', '1.6');
-    circle.setAttribute('fill', fill);
-    circle.setAttribute('stroke', 'rgba(0,0,0,0.4)'); circle.setAttribute('stroke-width', '0.3');
-    marker.appendChild(circle);
+    marker.setAttribute('id', id);
+    marker.setAttribute('markerWidth', '7'); marker.setAttribute('markerHeight', '7');
+    marker.setAttribute('refX', '3.5');     marker.setAttribute('refY', '3.5');
+    marker.setAttribute('orient', 'auto');
+    const imgEl = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    imgEl.setAttribute('href', src);
+    imgEl.setAttribute('x', '0'); imgEl.setAttribute('y', '0');
+    imgEl.setAttribute('width', '7'); imgEl.setAttribute('height', '7');
+    marker.appendChild(imgEl);
     defs.appendChild(marker);
   });
   svg.appendChild(defs);
@@ -5730,7 +5734,7 @@ function renderKankeiBoard() {
       && unlockedNodeIds.has(edge.from) && unlockedNodeIds.has(edge.to);
 
     const lineClass = `kankei-line${unlocked ? ` kankei-line-${edge.type}` : ' kankei-line-locked'}`;
-    const pinId = edge.type === 'family' ? 'pin-blue' : edge.type === 'danger' ? 'pin-red' : 'pin-white';
+    const pinId = edge.type === 'danger' ? 'pin-red' : 'pin-white';
 
     // 線の長さ計算（dasharray アニメ用）
     const dx = toNode.x - fromNode.x, dy = toNode.y - fromNode.y;

@@ -2812,32 +2812,30 @@ body {
   display: inline-block;
   font-family: 'Zen Kurenaido', sans-serif;
   font-size: 7.5px;
-  padding: 1px 4px 2px;
-  border-radius: 2px;
+  padding: 2px 5px 3px;
   white-space: nowrap;
   pointer-events: none;
   line-height: 1.4;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.55);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
-/* ポストイット風：家族 */
-.kankei-edge-label-family  {
-  background: #d4eaf7;
-  color: #1a4a6e;
+/* ポストイット：家族（黄色） */
+.kankei-edge-label-family {
+  background-image: url('img/UI/image_merge_kankei_note_02.png');
+  color: #3a2a00;
   transform: rotate(-1.5deg);
-  display: inline-block;
 }
-/* ポストイット風：危険 */
-.kankei-edge-label-danger  {
-  background: #ffd0d0;
-  color: #7a0000;
+/* ポストイット：危険（赤） */
+.kankei-edge-label-danger {
+  background-image: url('img/UI/image_merge_kankei_note_04.png');
+  color: #5a0000;
   transform: rotate(1.5deg);
-  display: inline-block;
 }
-/* ポストイット風：通常 */
-.kankei-edge-label-normal  {
-  background: #f5f0e0;
-  color: #3a3020;
-  display: inline-block;
+/* ポストイット：通常（クリーム） */
+.kankei-edge-label-normal {
+  background-image: url('img/UI/image_merge_kankei_note_01.png');
+  color: #2a2010;
 }
 
 /* ── キャラノード ── */
@@ -2856,18 +2854,26 @@ body {
   height: 60px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2.5px solid rgba(255,220,120,0.4);
+  border: none;
   background: #2a2010;
   flex-shrink: 0;
+  position: relative;
   box-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
+/* フレーム画像オーバーレイ */
+.kankei-portrait::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: url('img/UI/image_merge_kankei_frame.png') center / contain no-repeat;
+  pointer-events: none;
+  z-index: 2;
+}
 .kankei-node-unlocked .kankei-portrait {
-  border-color: #f9c846;
-  box-shadow: 0 0 10px rgba(249,200,70,0.45), 0 2px 8px rgba(0,0,0,0.6);
+  box-shadow: 0 0 12px rgba(249,200,70,0.5), 0 2px 8px rgba(0,0,0,0.6);
 }
 .kankei-node-locked .kankei-portrait {
-  border-color: rgba(255,255,255,0.1);
-  filter: grayscale(1) brightness(0.4);
+  filter: grayscale(1) brightness(0.35);
 }
 
 .kankei-portrait img {
@@ -2875,6 +2881,8 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  position: relative;
+  z-index: 1;
 }
 
 .kankei-locked-icon {
@@ -2908,42 +2916,43 @@ body {
   gap: 2px;
 }
 
-/* ノードバッジ（ポストイット風） */
+/* ノードバッジ（ポストイット画像背景） */
 .kankei-badge {
   font-family: 'Zen Kurenaido', sans-serif;
   font-size: 8px;
-  padding: 2px 6px 3px;
+  padding: 3px 7px 4px;
   white-space: nowrap;
   text-align: center;
-  max-width: 80px;
+  max-width: 82px;
   overflow: hidden;
   text-overflow: ellipsis;
-  box-shadow: 1px 2px 4px rgba(0,0,0,0.5);
-  border-radius: 2px;
+  box-shadow: 1px 2px 5px rgba(0,0,0,0.55);
   opacity: 0;
   animation: kankei-badge-pop 0.35s cubic-bezier(0.22,1.4,0.5,1) forwards;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 /* クリーム：通常 */
-.kankei-badge-normal   {
-  background: #f5f0e0;
+.kankei-badge-normal {
+  background-image: url('img/UI/image_merge_kankei_note_01.png');
   color: #2a2010;
   transform: rotate(-1deg);
 }
 /* 黄色：警告 */
-.kankei-badge-warning  {
-  background: #ffe84a;
-  color: #3a2a00;
+.kankei-badge-warning {
+  background-image: url('img/UI/image_merge_kankei_note_02.png');
+  color: #3a2000;
   transform: rotate(1.5deg);
 }
 /* オレンジ：危険 */
-.kankei-badge-danger   {
-  background: #ffb347;
-  color: #5a1500;
+.kankei-badge-danger {
+  background-image: url('img/UI/image_merge_kankei_note_03.png');
+  color: #4a1000;
   transform: rotate(-1.5deg);
 }
 /* 暗赤：犯人 */
 .kankei-badge-criminal {
-  background: #b30000;
+  background-image: url('img/UI/image_merge_kankei_note_05.png');
   color: #fff0f0;
   transform: rotate(1deg);
   letter-spacing: 0.04em;
