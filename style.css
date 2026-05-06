@@ -2806,38 +2806,6 @@ body {
   stroke-dasharray: none;
 }
 
-/* エッジラベル（foreignObject内） */
-.kankei-edge-fo { overflow: visible; }
-.kankei-edge-label {
-  display: inline-block;
-  font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 7.5px;
-  padding: 2px 5px 3px;
-  white-space: nowrap;
-  pointer-events: none;
-  line-height: 1.4;
-  box-shadow: 1px 2px 4px rgba(0,0,0,0.55);
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
-}
-/* ポストイット：家族（黄色） */
-.kankei-edge-label-family {
-  background-image: url('img/UI/image_merge_kankei_note_02.png');
-  color: #3a2a00;
-  transform: rotate(-1.5deg);
-}
-/* ポストイット：危険（赤） */
-.kankei-edge-label-danger {
-  background-image: url('img/UI/image_merge_kankei_note_04.png');
-  color: #5a0000;
-  transform: rotate(1.5deg);
-}
-/* ポストイット：通常（クリーム） */
-.kankei-edge-label-normal {
-  background-image: url('img/UI/image_merge_kankei_note_01.png');
-  color: #2a2010;
-}
-
 /* ── キャラノード ── */
 .kankei-node {
   position: absolute;
@@ -2846,31 +2814,40 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  width: 76px;
+  width: 90px;
+}
+
+/* portrait-wrap: frame と portrait を兄弟にして overflow:hidden 外へ */
+.kankei-portrait-wrap {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
 }
 
 .kankei-portrait {
-  width: 60px;
-  height: 60px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   overflow: hidden;
-  border: none;
   background: #2a2010;
-  flex-shrink: 0;
-  position: relative;
   box-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
-/* フレーム画像オーバーレイ */
-.kankei-portrait::after {
-  content: '';
+
+/* フレーム: portrait の兄弟 → クリップされない */
+.kankei-frame {
   position: absolute;
-  inset: -4px;
+  inset: -9px;
   background: url('img/UI/image_merge_kankei_frame.png') center / contain no-repeat;
   pointer-events: none;
   z-index: 2;
 }
+.kankei-frame-locked {
+  filter: grayscale(1) opacity(0.3);
+}
+
 .kankei-node-unlocked .kankei-portrait {
-  box-shadow: 0 0 12px rgba(249,200,70,0.5), 0 2px 8px rgba(0,0,0,0.6);
+  box-shadow: 0 0 14px rgba(249,200,70,0.55), 0 2px 8px rgba(0,0,0,0.6);
 }
 .kankei-node-locked .kankei-portrait {
   filter: grayscale(1) brightness(0.35);
@@ -2881,8 +2858,6 @@ body {
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  position: relative;
-  z-index: 1;
 }
 
 .kankei-locked-icon {
@@ -2897,7 +2872,7 @@ body {
 
 .kankei-name {
   font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 12px;
+  font-size: 14px;
   color: #f5e8c0;
   text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8);
   text-align: center;
@@ -2919,13 +2894,11 @@ body {
 /* ノードバッジ（ポストイット画像背景） */
 .kankei-badge {
   font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 8px;
-  padding: 3px 7px 4px;
+  font-size: 10px;
+  padding: 4px 8px 5px;
   white-space: nowrap;
   text-align: center;
-  max-width: 82px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  max-width: 90px;
   box-shadow: 1px 2px 5px rgba(0,0,0,0.55);
   opacity: 0;
   animation: kankei-badge-pop 0.35s cubic-bezier(0.22,1.4,0.5,1) forwards;

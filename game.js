@@ -5629,11 +5629,11 @@ function closeStoryScreen() {
 // ========================================
 // ヤスは相関図に不要のため除外
 const CH1_KANKEI_NODES = [
-  { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 5  },
-  { id: 'kenichi', name: 'ケンイチ', sub: '34歳', img: 'img/Chapter1/Chara/image_merge_order_chara_03.png',  unlockScene: 'scene04', x: 14, y: 40 },
-  { id: 'nanako',  name: 'ナナコ',  sub: '28歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_02.png',  unlockScene: 'scene06', x: 86, y: 40 },
-  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',  unlockScene: 'scene10', x: 16, y: 78 },
-  { id: 'shinji',  name: 'シンジ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_05a.png', unlockScene: 'scene12', x: 84, y: 78 },
+  { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 14 },
+  { id: 'kenichi', name: 'ケンイチ', sub: '34歳', img: 'img/Chapter1/Chara/image_merge_order_chara_03.png',  unlockScene: 'scene04', x: 14, y: 45 },
+  { id: 'nanako',  name: 'ナナコ',  sub: '28歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_02.png',  unlockScene: 'scene06', x: 86, y: 45 },
+  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',  unlockScene: 'scene10', x: 18, y: 80 },
+  { id: 'shinji',  name: 'シンジ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_05a.png', unlockScene: 'scene12', x: 82, y: 80 },
 ];
 
 // ノードに紐づくラベルバッジ（複数付与可）
@@ -5656,7 +5656,7 @@ const CH1_KANKEI_EDGES = [
   { from: 'miyu',    to: 'kenichi', label: '父と娘',         unlockScene: 'scene04', type: 'family' },
   { from: 'miyu',    to: 'nanako',  label: '母と娘',         unlockScene: 'scene06', type: 'family' },
   { from: 'kenichi', to: 'nanako',  label: '夫と妻',         unlockScene: 'scene06', type: 'family' },
-  { from: 'shinji',  to: 'misaki',  label: '元交際相手',     unlockScene: 'scene13', type: 'danger' },
+  { from: 'shinji',  to: 'misaki',  label: 'ストーカー行為',   unlockScene: 'scene13', type: 'danger' },
   { from: 'misaki',  to: 'kenichi', label: '不倫関係',       unlockScene: 'scene15', type: 'danger' },
   { from: 'shinji',  to: 'nanako',  label: '嫌がらせ',       unlockScene: 'scene16', type: 'danger' },
   { from: 'shinji',  to: 'kenichi', label: '嫌がらせ',       unlockScene: 'scene16', type: 'danger' },
@@ -5670,6 +5670,17 @@ function openKankeiScreen() {
 
 function closeKankeiScreen() {
   document.getElementById('kankei-screen').classList.add('hidden');
+}
+
+// エッジラベルを改行分割（長いラベルを2行に）
+function splitEdgeLabel(label) {
+  if (label.length <= 6) return [label];
+  const dotIdx = label.indexOf('・');
+  if (dotIdx > 0 && dotIdx < label.length - 1) {
+    return [label.slice(0, dotIdx + 1), label.slice(dotIdx + 1)];
+  }
+  const mid = Math.ceil(label.length / 2);
+  return [label.slice(0, mid), label.slice(mid)];
 }
 
 function renderKankeiBoard() {
@@ -5693,10 +5704,8 @@ function renderKankeiBoard() {
     CH1_KANKEI_BADGES.filter(b => seen.includes(b.unlockScene)).length;
   if (progressEl) progressEl.textContent = `${unlockedItems} / ${totalItems} 解明`;
 
-  // SVG defs: プッシュピン用 marker
+  // SVG defs: 線の影フィルターのみ（マーカーは廃止→standalone image使用）
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-
-  // フィルター（線の影）
   const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
   filter.setAttribute('id', 'kankei-line-shadow');
   const feDropShadow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
@@ -5704,27 +5713,22 @@ function renderKankeiBoard() {
   feDropShadow.setAttribute('stdDeviation', '0.4'); feDropShadow.setAttribute('flood-opacity', '0.5');
   filter.appendChild(feDropShadow);
   defs.appendChild(filter);
-
-  // ピン画像マーカー（白ピン・赤ピン）
-  [['pin-white', 'img/UI/image_merge_kankei_pin_white.png'],
-   ['pin-red',   'img/UI/image_merge_kankei_pin_red.png']
-  ].forEach(([id, src]) => {
-    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
-    marker.setAttribute('id', id);
-    marker.setAttribute('markerWidth', '7'); marker.setAttribute('markerHeight', '7');
-    marker.setAttribute('refX', '3.5');     marker.setAttribute('refY', '3.5');
-    marker.setAttribute('orient', 'auto');
-    const imgEl = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    imgEl.setAttribute('href', src);
-    imgEl.setAttribute('x', '0'); imgEl.setAttribute('y', '0');
-    imgEl.setAttribute('width', '7'); imgEl.setAttribute('height', '7');
-    marker.appendChild(imgEl);
-    defs.appendChild(marker);
-  });
   svg.appendChild(defs);
 
-  // ── SVG ライン ─────────────────────────
+  // ── Phase 1: 全ライン ─────────────────────────
+  const NOTE_SRCS = {
+    family:  'img/UI/image_merge_kankei_note_02.png',
+    danger:  'img/UI/image_merge_kankei_note_04.png',
+    normal:  'img/UI/image_merge_kankei_note_01.png',
+    warning: 'img/UI/image_merge_kankei_note_03.png',
+  };
+  const TEXT_COLORS = {
+    family: '#2a1a00', danger: '#5a0000', normal: '#2a2010', warning: '#3a2000',
+  };
+
   let lineDelay = 0;
+  const labelQueue = [];
+
   CH1_KANKEI_EDGES.forEach(edge => {
     const fromNode = CH1_KANKEI_NODES.find(n => n.id === edge.from);
     const toNode   = CH1_KANKEI_NODES.find(n => n.id === edge.to);
@@ -5734,9 +5738,6 @@ function renderKankeiBoard() {
       && unlockedNodeIds.has(edge.from) && unlockedNodeIds.has(edge.to);
 
     const lineClass = `kankei-line${unlocked ? ` kankei-line-${edge.type}` : ' kankei-line-locked'}`;
-    const pinId = edge.type === 'danger' ? 'pin-red' : 'pin-white';
-
-    // 線の長さ計算（dasharray アニメ用）
     const dx = toNode.x - fromNode.x, dy = toNode.y - fromNode.y;
     const len = Math.sqrt(dx*dx + dy*dy);
 
@@ -5745,53 +5746,111 @@ function renderKankeiBoard() {
     line.setAttribute('x2', toNode.x);   line.setAttribute('y2', toNode.y);
     line.setAttribute('class', lineClass);
     if (unlocked) {
-      line.setAttribute('marker-start', `url(#${pinId})`);
-      line.setAttribute('marker-end',   `url(#${pinId})`);
       line.setAttribute('filter', 'url(#kankei-line-shadow)');
-      // 線が描かれるアニメーション
       line.style.strokeDasharray  = len;
       line.style.strokeDashoffset = len;
       line.style.animation = `kankei-line-draw 0.6s ease-out ${lineDelay}ms forwards`;
-      lineDelay += 120;
     }
     svg.appendChild(line);
 
     if (!unlocked) return;
 
-    // ラベル（中間点 foreignObject）
-    const mx = (fromNode.x + toNode.x) / 2;
-    const my = (fromNode.y + toNode.y) / 2;
-    const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-    fo.setAttribute('x', mx - 10); fo.setAttribute('y', my - 5);
-    fo.setAttribute('width', '20'); fo.setAttribute('height', '10');
-    fo.style.opacity = '0';
-    fo.style.animation = `kankei-fade-in 0.4s ease-out ${lineDelay + 100}ms forwards`;
-    const span = document.createElement('span');
-    span.className = `kankei-edge-label kankei-edge-label-${edge.type}`;
-    span.textContent = edge.label;
-    fo.appendChild(span);
-    svg.appendChild(fo);
+    // ── Phase 1.5: ピン（ライン端点に standalone image）
+    const pinSrc  = edge.type === 'danger'
+      ? 'img/UI/image_merge_kankei_pin_red.png'
+      : 'img/UI/image_merge_kankei_pin_white.png';
+    const pinSize = 8; // SVG units ≈ 28px
+    [{ x: fromNode.x, y: fromNode.y }, { x: toNode.x, y: toNode.y }].forEach(pt => {
+      const pin = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+      pin.setAttribute('href', pinSrc);
+      pin.setAttribute('x', pt.x - pinSize / 2);
+      pin.setAttribute('y', pt.y - pinSize / 2);
+      pin.setAttribute('width',  pinSize);
+      pin.setAttribute('height', pinSize);
+      pin.style.opacity = '0';
+      pin.style.animation = `kankei-fade-in 0.3s ease-out ${lineDelay + 60}ms forwards`;
+      svg.appendChild(pin);
+    });
+
+    labelQueue.push({ edge, fromNode, toNode, delay: lineDelay });
+    lineDelay += 130;
   });
 
-  // ── キャラノード ─────────────────────────
+  // ── Phase 2: エッジラベル（全ラインの後に追加 → 上に描画される）
+  labelQueue.forEach(({ edge, fromNode, toNode, delay }) => {
+    const mx = (fromNode.x + toNode.x) / 2;
+    const my = (fromNode.y + toNode.y) / 2;
+    const lines      = splitEdgeLabel(edge.label);
+    const multiLine  = lines.length > 1;
+    const noteW      = Math.max(16, Math.max(...lines.map(l => l.length)) * 3.6);
+    const noteH      = multiLine ? 11 : 7.5;
+    const noteSrc    = NOTE_SRCS[edge.type]  || NOTE_SRCS.normal;
+    const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
+    const labelDelay = delay + 500;
+
+    // ポストイット画像（ライン全部の後に追加）
+    const noteImg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    noteImg.setAttribute('href', noteSrc);
+    noteImg.setAttribute('x', mx - noteW / 2);
+    noteImg.setAttribute('y', my - noteH / 2);
+    noteImg.setAttribute('width',  noteW);
+    noteImg.setAttribute('height', noteH);
+    noteImg.style.opacity  = '0';
+    noteImg.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay}ms forwards`;
+    svg.appendChild(noteImg);
+
+    // テキスト（ポストイットの上）
+    const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    textEl.setAttribute('text-anchor', 'middle');
+    textEl.setAttribute('font-size',   '3.8');
+    textEl.setAttribute('font-family', "'Zen Kurenaido', sans-serif");
+    textEl.setAttribute('fill',        textColor);
+    textEl.setAttribute('pointer-events', 'none');
+    textEl.style.opacity  = '0';
+    textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms forwards`;
+
+    if (multiLine) {
+      textEl.setAttribute('x', mx);
+      textEl.setAttribute('y', my - 1.2);
+      const t1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+      t1.setAttribute('x', mx); t1.setAttribute('dy', '0');
+      t1.textContent = lines[0];
+      const t2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+      t2.setAttribute('x', mx); t2.setAttribute('dy', '4.5');
+      t2.textContent = lines[1];
+      textEl.appendChild(t1);
+      textEl.appendChild(t2);
+    } else {
+      textEl.setAttribute('x', mx);
+      textEl.setAttribute('y', my + 2.6);
+      textEl.textContent = lines[0];
+    }
+    svg.appendChild(textEl);
+  });
+
+  // ── Phase 3: キャラノード（HTML overlay）─────────────────────────
   let nodeDelay = 80;
   CH1_KANKEI_NODES.forEach(node => {
-    const unlocked  = unlockedNodeIds.has(node.id);
+    const unlocked   = unlockedNodeIds.has(node.id);
     const nodeBadges = CH1_KANKEI_BADGES.filter(b => b.nodeId === node.id && seen.includes(b.unlockScene));
 
     const div = document.createElement('div');
     div.className = `kankei-node${unlocked ? ' kankei-node-unlocked' : ' kankei-node-locked'}`;
-    div.style.left = `${node.x}%`;
-    div.style.top  = `${node.y}%`;
+    div.style.left    = `${node.x}%`;
+    div.style.top     = `${node.y}%`;
     div.style.opacity = '0';
     div.style.animation = `kankei-node-appear 0.45s cubic-bezier(0.22,1.4,0.5,1) ${nodeDelay}ms forwards`;
     nodeDelay += 100;
 
+    // portrait-wrap構造: frameはportraitの兄弟 → overflow:hiddenに切られない
     div.innerHTML = `
-      <div class="kankei-portrait">
-        ${unlocked
-          ? `<img src="${node.img}" alt="${node.name}">`
-          : `<div class="kankei-locked-icon">?</div>`}
+      <div class="kankei-portrait-wrap">
+        <div class="kankei-portrait">
+          ${unlocked
+            ? `<img src="${node.img}" alt="${node.name}">`
+            : `<div class="kankei-locked-icon">?</div>`}
+        </div>
+        <div class="kankei-frame${unlocked ? '' : ' kankei-frame-locked'}"></div>
       </div>
       <div class="kankei-name">${unlocked ? node.name : '???'}</div>
       <div class="kankei-badges">
