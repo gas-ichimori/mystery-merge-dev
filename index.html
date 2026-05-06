@@ -229,6 +229,15 @@
               <option value="kante-5">Lv6 証拠鑑定室</option>
               <option value="kante-6">Lv7 完全解析台</option>
             </optgroup>
+            <optgroup label="第四章（設計台）">
+              <option value="keikaku-0">Lv1 設計台</option>
+              <option value="keikaku-1">Lv2 設計台+</option>
+              <option value="keikaku-2">Lv3 精密設計機</option>
+              <option value="keikaku-3">Lv4 計画分析台</option>
+              <option value="keikaku-4">Lv5 都市解析機</option>
+              <option value="keikaku-5">Lv6 証拠設計室</option>
+              <option value="keikaku-6">Lv7 完全解析台</option>
+            </optgroup>
           </select>
           <button id="debug-gen-spawn-btn" class="debug-loop-btn">出現</button>
         </div>
@@ -291,6 +300,28 @@
               <option value="12-18">Lv18 依頼書</option>
               <option value="12-19">Lv19 解決の鍵</option>
               <option value="12-20">Lv20 真相解明ボード</option>
+            </optgroup>
+            <optgroup label="第四章アイテム">
+              <option value="13-1">Lv1 白紙の地図</option>
+              <option value="13-2">Lv2 住宅地図</option>
+              <option value="13-3">Lv3 測量図</option>
+              <option value="13-4">Lv4 土地台帳</option>
+              <option value="13-5">Lv5 都市計画図</option>
+              <option value="13-6">Lv6 建設申請書</option>
+              <option value="13-7">Lv7 改ざんされた申請書</option>
+              <option value="13-8">Lv8 秘密の契約書</option>
+              <option value="13-9">Lv9 内部告発メモ</option>
+              <option value="13-10">Lv10 隠し撮り写真</option>
+              <option value="13-11">Lv11 録音データ</option>
+              <option value="13-12">Lv12 不正送金の明細</option>
+              <option value="13-13">Lv13 証人の供述書</option>
+              <option value="13-14">Lv14 弁護士レター</option>
+              <option value="13-15">Lv15 調査報告書</option>
+              <option value="13-16">Lv16 証拠一式</option>
+              <option value="13-17">Lv17 告発状</option>
+              <option value="13-18">Lv18 逮捕状</option>
+              <option value="13-19">Lv19 判決文</option>
+              <option value="13-20">Lv20 真実のファイル</option>
             </optgroup>
           </select>
           <button id="debug-item-spawn-btn" class="debug-loop-btn">出現</button>
@@ -384,6 +415,43 @@
           </select>
           <button id="debug-adv-ch3-play" class="debug-loop-btn">▶</button>
         </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">第四章</span>
+          <select id="debug-adv-ch4-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <option value="c4s01">Ch4 Scene01（タケシ来訪）</option>
+            <option value="c4s02">Ch4 Scene02（詳細を話す）</option>
+            <option value="c4s03">Ch4 Scene03（開発予定地へ）</option>
+            <option value="c4s04">Ch4 Scene04（ハルカと出会う）</option>
+            <option value="c4s05">Ch4 Scene05（シゲルへの聞き込み）</option>
+            <option value="c4s06">Ch4 Scene06（測量図の矛盾）</option>
+            <option value="c4s07">Ch4 Scene07（レイコと接触）</option>
+            <option value="c4s08">Ch4 Scene08（土地台帳の改ざん）</option>
+            <option value="c4s09">Ch4 Scene09（カズヤに接触）</option>
+            <option value="c4s10">Ch4 Scene10（内部告発メモ）</option>
+            <option value="c4s11">Ch4 Scene11（現場の隠し撮り）</option>
+            <option value="c4s12">Ch4 Scene12（レイコの苦悩）</option>
+            <option value="c4s13">Ch4 Scene13（ハルカが脅迫を打ち明ける）</option>
+            <option value="c4s14">Ch4 Scene14（シゲルの証言）</option>
+            <option value="c4s15">Ch4 Scene15（改ざんの全体像）</option>
+            <option value="c4s16">Ch4 Scene16（録音データを入手）</option>
+            <option value="c4s17">Ch4 Scene17（タケシが姿を消す）</option>
+            <option value="c4s18">Ch4 Scene18（レイコの決意）</option>
+            <option value="c4s19">Ch4 Scene19（カズヤ逃亡の動き）</option>
+            <option value="c4s20">Ch4 Scene20（不正送金の明細）</option>
+            <option value="c4s21">Ch4 Scene21（タケシ保護判明）</option>
+            <option value="c4s22">Ch4 Scene22（カズヤへの尋問）</option>
+            <option value="c4s23">Ch4 Scene23（供述書を作成）</option>
+            <option value="c4s24">Ch4 Scene24（ハルカへの報告）</option>
+            <option value="c4s25">Ch4 Scene25（弁護士への相談）</option>
+            <option value="c4s26">Ch4 Scene26（告発状の提出）</option>
+            <option value="c4s27">Ch4 Scene27（カズヤ逮捕）</option>
+            <option value="c4s28">Ch4 Scene28（レイコの後日談）</option>
+            <option value="c4s29">Ch4 Scene29（ハルカとシゲル）</option>
+            <option value="c4s30">Ch4 Scene30（完結・後日談）</option>
+          </select>
+          <button id="debug-adv-ch4-play" class="debug-loop-btn">▶</button>
+        </div>
       </div>
     </div>
   </div>
@@ -416,7 +484,10 @@
   <div id="navi-hint-panel" class="hidden">
     <div id="navi-hint-char-wrap"><img src="img/UI/image_merge_navi_chara.png" alt="ナビ"></div>
     <div id="navi-hint-body">
-      <div id="navi-hint-text"></div>
+      <div id="navi-hint-text-row">
+        <button id="navi-info-btn" class="hidden" title="アイテムリスト">ⓘ</button>
+        <div id="navi-hint-text"></div>
+      </div>
       <button id="navi-lv-btn" class="hidden">
         <span id="navi-lv-label">1<img class="icon-inline" src="img/UI/image_merge_navi_hp.png" alt="⚡"></span>
         <span id="navi-lv-crown"></span>
@@ -428,6 +499,17 @@
       <button id="navi-coin-btn" class="hidden">
         <span id="navi-coin-label"><img class="icon-inline" src="img/UI/image_merge_icon_coin01.png" alt="💰"> 0</span>
       </button>
+    </div>
+  </div>
+
+  <!-- ナビiボタン用アイテムリストポップアップ -->
+  <div id="navi-info-popup" class="hidden">
+    <div id="navi-info-popup-inner">
+      <div id="navi-info-popup-header">
+        <span id="navi-info-popup-title"></span>
+        <button id="navi-info-popup-close">✕</button>
+      </div>
+      <div id="navi-info-popup-list"></div>
     </div>
   </div>
 
@@ -552,6 +634,19 @@
         <div id="story-ch3-locked" class="story-locked-label hidden"></div>
         <div id="story-ch3-replay-wrap" class="story-replay-wrap hidden">
           <ul id="story-ch3-replay-list" class="story-replay-list"></ul>
+        </div>
+      </div>
+      <!-- 第四章（keikakuGenUnlocked後に表示） -->
+      <div id="story-ch4-block" class="story-chapter-block hidden">
+        <div class="story-chapter-heading">第四章</div>
+        <div id="story-ch4-next-wrap">
+          <button id="story-ch4-next-btn" class="story-read-btn" disabled>ストーリーを読む</button>
+          <div id="story-ch4-cost-label" class="story-cost-label">💰 2,000消費</div>
+        </div>
+        <div id="story-ch4-complete" class="story-complete-label hidden">✅ 第四章クリア！</div>
+        <div id="story-ch4-locked" class="story-locked-label hidden"></div>
+        <div id="story-ch4-replay-wrap" class="story-replay-wrap hidden">
+          <ul id="story-ch4-replay-list" class="story-replay-list"></ul>
         </div>
       </div>
     </div>

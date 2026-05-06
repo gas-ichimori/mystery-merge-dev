@@ -87,6 +87,28 @@ const CHAINS = [
       '家系図','古文書','依頼書','解決の鍵','真相解明ボード',
     ]
   },
+  // チェーン13：第四章（設計台アイテム）
+  { name: '第四章',
+    stages: Array(20).fill('📋'),
+    stageImages: [
+      'img/Chapter4/icon/image_merge_icon4_01.png','img/Chapter4/icon/image_merge_icon4_02.png',
+      'img/Chapter4/icon/image_merge_icon4_03.png','img/Chapter4/icon/image_merge_icon4_04.png',
+      'img/Chapter4/icon/image_merge_icon4_05.png','img/Chapter4/icon/image_merge_icon4_06.png',
+      'img/Chapter4/icon/image_merge_icon4_07.png','img/Chapter4/icon/image_merge_icon4_08.png',
+      'img/Chapter4/icon/image_merge_icon4_09.png','img/Chapter4/icon/image_merge_icon4_10.png',
+      'img/Chapter4/icon/image_merge_icon4_11.png','img/Chapter4/icon/image_merge_icon4_12.png',
+      'img/Chapter4/icon/image_merge_icon4_13.png','img/Chapter4/icon/image_merge_icon4_14.png',
+      'img/Chapter4/icon/image_merge_icon4_15.png','img/Chapter4/icon/image_merge_icon4_16.png',
+      'img/Chapter4/icon/image_merge_icon4_17.png','img/Chapter4/icon/image_merge_icon4_18.png',
+      'img/Chapter4/icon/image_merge_icon4_19.png','img/Chapter4/icon/image_merge_icon4_20.png',
+    ],
+    stageNames: [
+      '白紙の地図','住宅地図','測量図','土地台帳','都市計画図',
+      '建設申請書','改ざんされた申請書','秘密の契約書','内部告発メモ','隠し撮り写真',
+      '録音データ','不正送金の明細','証人の供述書','弁護士レター','調査報告書',
+      '証拠一式','告発状','逮捕状','判決文','真実のファイル',
+    ]
+  },
 ];
 
 // 出力上限（stage 5 まで、6以降は出力不可）
@@ -221,6 +243,7 @@ let state = {
   ch1Count: 0,      // 第一章既読シーン数（0-16）
   ch2Count: 0,      // 第二章既読シーン数（0-21）
   ch3Count: 0,      // 第三章既読シーン数（0-26）
+  ch4Count: 0,      // 第四章既読シーン数（0-30）
   pendingUse: null,
   // 発見済みアイテム管理: discovered[chainId][stage] = true
   discovered: {},
@@ -1215,6 +1238,12 @@ const REQUESTERS = [
   { id: 15, name: 'ミドリ',   img: 'img/Chapter3/chara/image_merge_order_chara_19.png' },
   { id: 16, name: 'リョウタ', img: 'img/Chapter3/chara/image_merge_order_chara_20.png' },
   { id: 17, name: 'アキラ',   img: 'img/Chapter3/chara/image_merge_order_chara_21.png' },
+  // 第四章（id: 18-22）
+  { id: 18, name: 'タケシ',   img: 'img/Chapter4/chara/image_merge_order_chara_22.png' },
+  { id: 19, name: 'レイコ',   img: 'img/Chapter4/chara/image_merge_order_chara_23.png' },
+  { id: 20, name: 'カズヤ',   img: 'img/Chapter4/chara/image_merge_order_chara_24.png' },
+  { id: 21, name: 'ハルカ',   img: 'img/Chapter4/chara/image_merge_order_chara_25.png' },
+  { id: 22, name: 'シゲル',   img: 'img/Chapter4/chara/image_merge_order_chara_26.png' },
 ];
 
 const STAGE_RANGE = [
@@ -1628,6 +1657,12 @@ function discoverKanteItem(stage) {
   updateCatalogBadge();
 }
 
+function discoverKeikakuItem(stage) {
+  if (eventState.keikakuDiscovered[stage]) return;
+  eventState.keikakuDiscovered[stage] = true;
+  updateCatalogBadge();
+}
+
 // ジェネレーターのレベルを発見（初回のみ）
 // genType: 'ch1' / 'ch2', level: 0始まり
 function discoverGen(genType, level) {
@@ -1648,6 +1683,9 @@ function hasUnrevealedItems() {
   for (const s of Object.keys(eventState.kanteDiscovered)) {
     if (eventState.kanteDiscovered[s] && !eventState.kanteRevealed[s]) return true;
   }
+  for (const s of Object.keys(eventState.keikakuDiscovered)) {
+    if (eventState.keikakuDiscovered[s] && !eventState.keikakuRevealed[s]) return true;
+  }
   for (const k of Object.keys(eventState.genDiscovered)) {
     if (eventState.genDiscovered[k] && !eventState.genRevealed[k]) return true;
   }
@@ -1663,7 +1701,7 @@ function updateCatalogBadge() {
 }
 
 // アイテムリスト内の「？」をタップして解放（💎+1）
-// itemType: 'event' | 'seizo' | 'kante' | 'ch1gen' | 'ch2gen' | 'ch3gen'
+// itemType: 'event' | 'seizo' | 'kante' | 'keikaku' | 'ch1gen' | 'ch2gen' | 'ch3gen' | 'ch4gen'
 function revealCatalogItem(itemType, id) {
   if (itemType === 'event') {
     if (!eventState.discovered[id] || eventState.revealed[id]) return;
@@ -1674,6 +1712,9 @@ function revealCatalogItem(itemType, id) {
   } else if (itemType === 'kante') {
     if (!eventState.kanteDiscovered[id] || eventState.kanteRevealed[id]) return;
     eventState.kanteRevealed[id] = true;
+  } else if (itemType === 'keikaku') {
+    if (!eventState.keikakuDiscovered[id] || eventState.keikakuRevealed[id]) return;
+    eventState.keikakuRevealed[id] = true;
   } else if (itemType === 'ch1gen') {
     const k = `ch1_${id}`;
     if (!eventState.genDiscovered[k] || eventState.genRevealed[k]) return;
@@ -1684,6 +1725,10 @@ function revealCatalogItem(itemType, id) {
     eventState.genRevealed[k] = true;
   } else if (itemType === 'ch3gen') {
     const k = `ch3_${id}`;
+    if (!eventState.genDiscovered[k] || eventState.genRevealed[k]) return;
+    eventState.genRevealed[k] = true;
+  } else if (itemType === 'ch4gen') {
+    const k = `ch4_${id}`;
     if (!eventState.genDiscovered[k] || eventState.genRevealed[k]) return;
     eventState.genRevealed[k] = true;
   } else { return; }
@@ -1723,6 +1768,14 @@ function renderCatalog() {
     tab3.textContent = CHAINS[KANTEITA_CHAIN_ID].name;
     tab3.addEventListener('click', () => { catalogCurrentChain = KANTEITA_CHAIN_ID; renderCatalog(); });
     tabsEl.appendChild(tab3);
+  }
+
+  if (eventState.keikakuGenUnlocked) {
+    const tab4 = document.createElement('div');
+    tab4.className = 'catalog-tab' + (catalogCurrentChain === KEIKAKU_CHAIN_ID ? ' active' : '');
+    tab4.textContent = CHAINS[KEIKAKU_CHAIN_ID].name;
+    tab4.addEventListener('click', () => { catalogCurrentChain = KEIKAKU_CHAIN_ID; renderCatalog(); });
+    tabsEl.appendChild(tab4);
   }
 
   const listEl = document.getElementById('catalog-list');
@@ -1859,6 +1912,42 @@ function renderCatalog() {
       const stageName = kChain.stageNames?.[idx] ?? `${kChain.name} Lv${stage}`;
       const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
       const card = makeCard(imgSrc, emoji, `Lv${stage}`, stageName, itemState, () => revealCatalogItem('kante', stage));
+      listEl.appendChild(card);
+    });
+
+  } else if (catalogCurrentChain === KEIKAKU_CHAIN_ID) {
+    // ── ジェネレーター（第四章）
+    const genHeader = document.createElement('div');
+    genHeader.className = 'catalog-section-header';
+    genHeader.textContent = 'ジェネレーター';
+    listEl.appendChild(genHeader);
+
+    KEIKAKU_GEN_IMAGES.forEach((imgSrc, idx) => {
+      const key = `ch4_${idx}`;
+      const disc = !!eventState.genDiscovered[key];
+      const rev  = !!eventState.genRevealed[key];
+      const lvLabel = `Lv${idx + 1}`;
+      const name    = KEIKAKU_GEN_NAMES[idx] ?? lvLabel;
+      const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
+      const card = makeCard(imgSrc, '📐', lvLabel, name, itemState, () => revealCatalogItem('ch4gen', idx));
+      listEl.appendChild(card);
+    });
+
+    // ── マージアイテム（第四章）
+    const itemHeader = document.createElement('div');
+    itemHeader.className = 'catalog-section-header';
+    itemHeader.textContent = 'マージアイテム';
+    listEl.appendChild(itemHeader);
+
+    const kkChain = CHAINS[KEIKAKU_CHAIN_ID];
+    kkChain.stages.forEach((emoji, idx) => {
+      const stage = idx + 1;
+      const disc  = !!eventState.keikakuDiscovered[stage];
+      const rev   = !!eventState.keikakuRevealed[stage];
+      const imgSrc    = kkChain.stageImages?.[idx];
+      const stageName = kkChain.stageNames?.[idx] ?? `${kkChain.name} Lv${stage}`;
+      const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
+      const card = makeCard(imgSrc, emoji, `Lv${stage}`, stageName, itemState, () => revealCatalogItem('keikaku', stage));
       listEl.appendChild(card);
     });
   }
@@ -2162,6 +2251,12 @@ const CHARACTERS = [
   { img: 'img/Chapter3/chara/image_merge_order_chara_19.png', name: 'ミドリ',   age: '52歳', desc: '旅館の番頭' },
   { img: 'img/Chapter3/chara/image_merge_order_chara_20.png', name: 'リョウタ', age: '24歳', desc: '故人の孫' },
   { img: 'img/Chapter3/chara/image_merge_order_chara_21.png', name: 'アキラ',   age: '40歳', desc: '故人の隠し子' },
+  // 第四章
+  { img: 'img/Chapter4/chara/image_merge_order_chara_22.png', name: 'タケシ', age: '35歳', desc: '不動産会社社員・内部告発者' },
+  { img: 'img/Chapter4/chara/image_merge_order_chara_23.png', name: 'レイコ', age: '42歳', desc: '法務担当・被害者' },
+  { img: 'img/Chapter4/chara/image_merge_order_chara_24.png', name: 'カズヤ', age: '55歳', desc: '不動産会社社長' },
+  { img: 'img/Chapter4/chara/image_merge_order_chara_25.png', name: 'ハルカ', age: '28歳', desc: '地権者の娘' },
+  { img: 'img/Chapter4/chara/image_merge_order_chara_26.png', name: 'シゲル', age: '68歳', desc: '地元の古老' },
 ];
 
 function renderCharacters() {
@@ -2169,11 +2264,14 @@ function renderCharacters() {
   list.innerHTML = '';
   const ch2Unlocked = !!eventState.fireGenUnlocked;
   const ch3Unlocked = !!eventState.kanteGenUnlocked;
+  const ch4Unlocked = !!eventState.keikakuGenUnlocked;
   CHARACTERS.forEach((c, idx) => {
     // 第二章キャラクター（idx 6〜10）は製造機解放後のみ表示
     if (idx >= 6 && idx <= 10 && !ch2Unlocked) return;
-    // 第三章キャラクター（idx 11〜）は鑑定台解放後のみ表示
-    if (idx >= 11 && !ch3Unlocked) return;
+    // 第三章キャラクター（idx 11〜17）は鑑定台解放後のみ表示
+    if (idx >= 11 && idx <= 17 && !ch3Unlocked) return;
+    // 第四章キャラクター（idx 18〜）は設計台解放後のみ表示
+    if (idx >= 18 && !ch4Unlocked) return;
     // 章ラベルを挿入
     if (idx === 1) {
       const label = document.createElement('div');
@@ -2189,6 +2287,11 @@ function renderCharacters() {
       const label = document.createElement('div');
       label.className = 'character-chapter-label';
       label.textContent = '第三章';
+      list.appendChild(label);
+    } else if (idx === 18) {
+      const label = document.createElement('div');
+      label.className = 'character-chapter-label';
+      label.textContent = '第四章';
       list.appendChild(label);
     }
     const card = document.createElement('div');
@@ -3437,6 +3540,468 @@ const ADV_SCENES = {
       { speaker: 'ヤス', text: '...さて。次は、どんな依頼が来るでしょうか。', side: 'left' },
     ],
   },
+  // ===== 第四章：土地に眠る嘘 =====
+  // 第四章 Scene01：タケシが事務所を訪れる
+  c4s01: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_22.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'タケシ', text: '...失礼します。ヤスヒコ探偵事務所、ですよね。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ええ。どうぞ、お掛けください。', side: 'left' },
+      { speaker: 'タケシ', text: '...実は、勤めている会社のことで。誰にも言えなくて...。', side: 'right' },
+      { speaker: 'ヤス',   text: '落ち着いて。ここは守秘義務があります。', side: 'left' },
+      { speaker: 'タケシ', text: '会社が...土地の書類を改ざんしているんです。住民が気づかないうちに、土地が奪われていく。', side: 'right' },
+      { speaker: 'ヤス',   text: '...具体的に、聞かせてください。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene02：タケシが詳細を話す
+  c4s02: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_22.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'タケシ', text: '私が担当している地区では、都市計画の名目で古い住宅地の買収が進んでいます。でも、申請書の数字が...実際の土地台帳と一致していないんです。', side: 'right' },
+      { speaker: 'ヤス',   text: 'それは、意図的な改ざんだと？', side: 'left' },
+      { speaker: 'タケシ', text: '上の方から「細かいことは気にするな」と言われました。でも私には...どうしても。', side: 'right' },
+      { speaker: 'ヤス',   text: '証拠はありますか？', side: 'left' },
+      { speaker: 'タケシ', text: '...コピーを取っておきました。', side: 'right', showCenter: 'img/Chapter4/icon/image_merge_icon4_06.png' },
+      { speaker: 'ヤス',   text: '...これは。調査してみましょう。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene03：開発予定地へ
+  c4s03: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_old_town.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '...これが、開発予定地か。', side: 'left' },
+      { speaker: 'ヤス', text: '（古い住宅地図と現地を見比べる）...番地がずれている。地図上の区画と、実際の境界線が違う。', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_02.png' },
+      { speaker: 'ヤス', text: '...これは確かに、意図的に変えなければこうはならない。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene04：ハルカと出会う
+  c4s04: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_25.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_field.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ハルカ', text: 'あの...ここで何をされているんですか？', side: 'right' },
+      { speaker: 'ヤス',   text: 'この土地について、少し調べているんです。失礼ですが、こちらの地権者の方ですか？', side: 'left' },
+      { speaker: 'ハルカ', text: 'はい...父がこの土地を守ってきました。でも、開発業者から売却を迫られていて。', side: 'right' },
+      { speaker: 'ヤス',   text: '断っているにも関わらず？', side: 'left' },
+      { speaker: 'ハルカ', text: 'ええ。それに...提示された価格が、市場価格より明らかに低くて。でも「これが相場だ」と言われて。', side: 'right' },
+      { speaker: 'ヤス',   text: '...詳しく話を聞かせていただけますか。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene05：シゲルへの聞き込み
+  c4s05: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_26.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_old_town.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'シゲル', text: 'あんた、探偵かね。まあ、お上がりなさい。', side: 'right' },
+      { speaker: 'ヤス',   text: 'この辺りの土地について、昔からご存知だと聞いて。', side: 'left' },
+      { speaker: 'シゲル', text: '五十年以上ここに住んどる。この辺の地図なら頭に入っとる。...何かおかしなことに気づいたかね？', side: 'right' },
+      { speaker: 'ヤス',   text: '境界線が変わっているようです。', side: 'left' },
+      { speaker: 'シゲル', text: 'やっぱりか。三年前から、少しずつ変わっておった。わしが役所に言っても、「測量し直した」の一点張りで。', side: 'right' },
+      { speaker: 'ヤス',   text: '...その測量図、見たことはありますか？', side: 'left' },
+    ],
+  },
+  // 第四章 Scene06：測量図の矛盾を発見
+  c4s06: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（公的な測量図と、会社が使っている測量図を並べる）', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_03.png' },
+      { speaker: 'ヤス', text: '...数値が違う。ハルカさんの土地が、会社の図では八十坪少なくなっている。', side: 'left' },
+      { speaker: 'ヤス', text: '...しかも、その分は隣接する会社所有地に加算されている。これは明らかな...。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene07：レイコと接触
+  c4s07: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_23.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_lobby.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'レイコ', text: '...探偵さん、ですか。アポなしでいらっしゃるとは。', side: 'right' },
+      { speaker: 'ヤス',   text: '御社の土地取引について、少々確認したいことがありまして。', side: 'left' },
+      { speaker: 'レイコ', text: '法務担当の私への質問なら、お受けする前に理由をお聞かせください。', side: 'right' },
+      { speaker: 'ヤス',   text: '測量図と土地台帳の数値に、不一致があります。', side: 'left' },
+      { speaker: 'レイコ', text: '...（わずかに表情が変わる）...それは、確認します。今日のところは。', side: 'right' },
+      { speaker: 'ヤス',   text: '（何かを知っている。でも言えない——）', side: 'left' },
+    ],
+  },
+  // 第四章 Scene08：土地台帳の改ざんを確認
+  c4s08: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（役所で土地台帳の閲覧を請求する）', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_04.png' },
+      { speaker: 'ヤス', text: '...ここだ。三年前の更新記録。登録変更の欄に、本来あるはずの地権者の署名がない。', side: 'left' },
+      { speaker: 'ヤス', text: '...代わりに押されているのは、会社のゴム印だけ。こんなことが通ってしまったのか。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene09：カズヤに接触
+  c4s09: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_24.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_company.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'カズヤ', text: '...探偵？どのような御用件でしょうか。', side: 'right' },
+      { speaker: 'ヤス',   text: '御社が進めている開発計画について、確認したいことがあります。土地の境界線に関して。', side: 'left' },
+      { speaker: 'カズヤ', text: '（わずかに笑みを浮かべて）すべて適法に行っております。問題があれば、弁護士を通していただけますか。', side: 'right' },
+      { speaker: 'ヤス',   text: '弁護士を通す前に、直接確認したかったので。', side: 'left' },
+      { speaker: 'カズヤ', text: '...我々は法律の範囲内で動いています。それ以上でも以下でもない。', side: 'right' },
+      { speaker: 'ヤス',   text: '（この余裕は、証拠を持たれても大丈夫という自信か——）', side: 'left' },
+    ],
+  },
+  // 第四章 Scene10：タケシが内部告発メモを提出
+  c4s10: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_22.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'タケシ', text: 'これを...社内で密かにメモしていたものです。', side: 'right', showCenter: 'img/Chapter4/icon/image_merge_icon4_09.png' },
+      { speaker: 'ヤス',   text: '（受け取って読む）...日付、金額、指示を出した人物の名前まで記録されている。', side: 'left' },
+      { speaker: 'タケシ', text: '社長のカズヤさんが直接、部下に「数字を合わせろ」と言うのを聞いた時から書き始めました。', side: 'right' },
+      { speaker: 'ヤス',   text: 'これは、重要な証拠になります。身の安全には気をつけてください。', side: 'left' },
+      { speaker: 'タケシ', text: '...わかっています。でも、もう引けない。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene11：現場の隠し撮り
+  c4s11: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_construction.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（建設現場の外から観察する）...境界線を示す杭の位置が、公的な測量図と明らかに違う。', side: 'left' },
+      { speaker: 'ヤス', text: '（写真を撮る）...現時点での境界杭の位置、記録しておく。', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_10.png' },
+      { speaker: 'ヤス', text: '...後から言い訳できないように、GPS座標も記録した。これは動かぬ証拠になる。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene12：レイコの苦悩
+  c4s12: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_23.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_lobby.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'レイコ', text: '...先日は、失礼しました。少し、話せますか。', side: 'right' },
+      { speaker: 'ヤス',   text: 'もちろんです。', side: 'left' },
+      { speaker: 'レイコ', text: '私は...書類の不備に気づいていました。でも、指摘するたびに上から圧力がかかって。「問題ない」「気にするな」と。', side: 'right' },
+      { speaker: 'ヤス',   text: 'それを黙認させられていた、と。', side: 'left' },
+      { speaker: 'レイコ', text: '私も...被害者なんです。でも証拠を出せば、私も共犯と見られる。どうすれば。', side: 'right' },
+      { speaker: 'ヤス',   text: '...話してくれたことで、状況は変わります。一緒に考えましょう。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene13：ハルカが脅迫を打ち明ける
+  c4s13: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_25.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_field.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ハルカ', text: '実は...先週、見知らぬ人に声をかけられました。「売らないと困ることになる」と。', side: 'right' },
+      { speaker: 'ヤス',   text: 'それは脅迫です。警察に——', side: 'left' },
+      { speaker: 'ハルカ', text: '父は体が弱くて。もし何かあったら、と思うと...届けられなくて。', side: 'right' },
+      { speaker: 'ヤス',   text: 'わかりました。私が動きます。ハルカさんとお父様を、必ず守ります。', side: 'left' },
+      { speaker: 'ハルカ', text: '...お願いします。この土地は、父が一生かけて守ってきたものなんです。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene14：シゲルの証言
+  c4s14: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_26.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_old_town.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'シゲル', text: '...あの会社が来る前、この辺りで起きた昔の話をしよう。三十年前、似たような開発話があった。その時も、土地の値段をごまかされた人がいてな。', side: 'right' },
+      { speaker: 'ヤス',   text: 'その時の話を、詳しく聞かせてもらえますか。', side: 'left' },
+      { speaker: 'シゲル', text: '当時の開発会社の社長が...今のカズヤの父親だったんじゃ。親子二代で、同じことをやっとる。', side: 'right' },
+      { speaker: 'ヤス',   text: '...（それは手がかりになる）記録や証人は残っていますか？', side: 'left' },
+      { speaker: 'シゲル', text: 'わしが覚えとる。それと...当時の書類がこの家のどこかにあるはずじゃ。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene15：改ざんの全体像が見えてくる
+  c4s15: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（都市計画図と申請書を並べて比較する）', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_05.png' },
+      { speaker: 'ヤス', text: '...段階的に変えている。都市計画図を先に変更し、それに合わせて申請書を作る。役所も騙されてきた。', side: 'left' },
+      { speaker: 'ヤス', text: '...これは一人でできることじゃない。組織的な犯罪だ。しかも、相当長い時間をかけて準備されている。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene16：録音データを入手
+  c4s16: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_22.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'タケシ', text: 'これを...社長が部下に指示を出している場面を、録音しました。', side: 'right', showCenter: 'img/Chapter4/icon/image_merge_icon4_11.png' },
+      { speaker: 'ヤス',   text: '（再生して聴く）...「あの土地は数字を合わせておけ、後はこっちで処理する」。これは...。', side: 'left' },
+      { speaker: 'タケシ', text: '社長の声です。間違いない。', side: 'right' },
+      { speaker: 'ヤス',   text: 'よく、これを。危険な目に遭いませんでしたか。', side: 'left' },
+      { speaker: 'タケシ', text: '...社用携帯を持って会議室に入っただけです。でも、これで証拠になりますよね。', side: 'right' },
+      { speaker: 'ヤス',   text: '十分です。大切にしてください。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene17：タケシが姿を消す
+  c4s17: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（タケシへの電話がつながらない）...昨日まで連絡が取れていたのに。', side: 'left' },
+      { speaker: 'ヤス', text: '自宅を訪ねてみたが、すでに引っ越した形跡がある。それも、急いで。', side: 'left' },
+      { speaker: 'ヤス', text: '...消された？いや——保護されている可能性もある。とにかく、動きを確認しなければ。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene18：レイコの決意
+  c4s18: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_23.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_lobby.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'レイコ', text: '...タケシさんが消えたことは知っています。私も、もう限界です。', side: 'right' },
+      { speaker: 'ヤス',   text: 'レイコさん、無理はしないでください。', side: 'left' },
+      { speaker: 'レイコ', text: 'でも...このまま黙っていたら、ハルカさんたちの土地が奪われる。私が知っていることを、全部話します。', side: 'right' },
+      { speaker: 'ヤス',   text: 'あなたの証言は、重要な意味を持ちます。でも、身の安全を最優先に。', side: 'left' },
+      { speaker: 'レイコ', text: '...もう怖くはありません。怖いのは、何もしなかったという後悔の方が。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene19：カズヤが逃げようとしている
+  c4s19: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_parking_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（深夜の駐車場でカズヤを尾行する）...大きな荷物を持っている。', side: 'left' },
+      { speaker: 'ヤス', text: '（電話で話す声が聞こえる）...「手を打っておけ。明日には出る」...逃げるつもりか。', side: 'left' },
+      { speaker: 'ヤス', text: '...（急いで動かなければ。証拠を固める前に消えられたら——）', side: 'left' },
+    ],
+  },
+  // 第四章 Scene20：不正送金の明細を発見
+  c4s20: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_23.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'レイコ', text: '...これが、私が保管していた送金記録です。', side: 'right', showCenter: 'img/Chapter4/icon/image_merge_icon4_12.png' },
+      { speaker: 'ヤス',   text: '（見る）...市の担当官への振り込みがある。これは収賄の証拠です。', side: 'left' },
+      { speaker: 'レイコ', text: 'はい。土地台帳の変更が通ったのは、こういう裏取引があったからです。', side: 'right' },
+      { speaker: 'ヤス',   text: 'よく、これを保管していてくれました。', side: 'left' },
+      { speaker: 'レイコ', text: '...いつか必要になると思っていました。こういう日のために。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene21：タケシが保護されていたと判明
+  c4s21: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_22.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'タケシ', text: '...ご心配をかけました。警察の方に保護してもらっていました。', side: 'right' },
+      { speaker: 'ヤス',   text: 'よかった。無事でしたか。', side: 'left' },
+      { speaker: 'タケシ', text: '社内で、自分が調べていることがバレたようで。でも...録音データと内部メモ、ちゃんと渡してあります。', side: 'right' },
+      { speaker: 'ヤス',   text: '証拠は揃っています。あとは、正式に告発状を出す段階です。', side: 'left' },
+      { speaker: 'タケシ', text: '...私が、証言します。怖いけど。でも、ここまで来たら。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene22：カズヤへの最後の尋問
+  c4s22: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_24.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_company.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '録音データがあります。送金記録もある。測量図の改ざん証拠も。', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_16.png' },
+      { speaker: 'カズヤ', text: '...（初めて余裕が崩れる）それは。', side: 'right' },
+      { speaker: 'ヤス',   text: '土地台帳の変更も、市の担当官への贈賄も。すべて記録されています。', side: 'left' },
+      { speaker: 'カズヤ', text: '...証拠があったとして、私が実際に指示したという確証は——', side: 'right' },
+      { speaker: 'ヤス',   text: 'あなたの声で、直接指示を出しています。録音で。', side: 'left' },
+      { speaker: 'カズヤ', text: '...（沈黙）', side: 'right' },
+    ],
+  },
+  // 第四章 Scene23：証人の供述書を作成
+  c4s23: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_26.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'シゲル', text: '三十年前の話も、わしが証言する。親子二代でやってきたことの証言にもなるじゃろ。', side: 'right' },
+      { speaker: 'ヤス',   text: 'ありがとうございます。供述書として正式に記録させてください。', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_13.png' },
+      { speaker: 'シゲル', text: 'こんな歳になって、わしに出番が来るとは思わなかったわい。でも...この土地は守らんといかん。', side: 'right' },
+      { speaker: 'ヤス',   text: 'シゲルさんの証言が、すべてをつなげる鍵になります。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene24：ハルカへの報告
+  c4s24: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_25.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_field.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '証拠が揃いました。告発状を当局に提出します。この土地の境界は、正式な測量図に基づいて回復されるはずです。', side: 'left' },
+      { speaker: 'ハルカ', text: '...本当に、ですか。', side: 'right' },
+      { speaker: 'ヤス',   text: 'タケシさん、レイコさん、シゲルさん、みなさんが証言してくれます。', side: 'left' },
+      { speaker: 'ハルカ', text: '...（涙をこらえながら）父に、報告できます。ありがとうございます。本当に、ありがとうございます。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene25：弁護士への相談
+  c4s25: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（弁護士からの意見書を受け取る）', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_14.png' },
+      { speaker: 'ヤス', text: '...「収集された証拠は、詐欺・公文書偽造・収賄の容疑を立証するに十分なものと判断される」。', side: 'left' },
+      { speaker: 'ヤス', text: '...あとは、当局に動いてもらうだけだ。長かったが——ようやくここまで来た。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene26：告発状の提出
+  c4s26: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_22.png',
+    bg: 'img/bg/image_merge_bg_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'タケシ', text: '...出しました。告発状、受理されました。', side: 'right', showCenter: 'img/Chapter4/icon/image_merge_icon4_17.png' },
+      { speaker: 'ヤス',   text: 'お疲れ様でした。ここからは、当局が動く番です。', side: 'left' },
+      { speaker: 'タケシ', text: '...会社には、もう戻れないかもしれない。でも、それでよかったと思っています。', side: 'right' },
+      { speaker: 'ヤス',   text: 'あなたが動いたから、土地が守られる。それは、変わらない事実です。', side: 'left' },
+      { speaker: 'タケシ', text: '...ありがとうございました。あなたに頼んで、正解でした。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene27：カズヤ逮捕
+  c4s27: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（ニュースを見ている）...不動産会社社長、公文書偽造・収賄の疑いで逮捕。', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_18.png' },
+      { speaker: 'ヤス', text: '...関与した市の職員も複数名が聴取を受けているとのこと。', side: 'left' },
+      { speaker: 'ヤス', text: '...タケシさんが動かなければ、これはずっと闇に埋もれていたはずだ。', side: 'left' },
+    ],
+  },
+  // 第四章 Scene28：レイコの後日談
+  c4s28: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_23.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_lobby.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'レイコ', text: '...私は、会社を離れることになりました。でも、後悔はしていません。', side: 'right' },
+      { speaker: 'ヤス',   text: '次は、どうされるんですか。', side: 'left' },
+      { speaker: 'レイコ', text: '不動産の適正な取引を支援するNPOに関わろうと思っています。同じことが起きないように。', side: 'right' },
+      { speaker: 'ヤス',   text: 'それは...あなたらしい選択ですね。', side: 'left' },
+      { speaker: 'レイコ', text: 'ありがとうございました。あなたが背中を押してくれたから、動けました。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene29：ハルカとシゲル、土地にて
+  c4s29: {
+    title: '',
+    leftImg:  'img/Chapter4/chara/image_merge_order_chara_25.png',
+    rightImg: 'img/Chapter4/chara/image_merge_order_chara_26.png',
+    bg: 'img/Chapter4/bg/image_merge_bg_ch4_field.png',
+    leftEntrance: 'fade', flipLeft: false,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ハルカ', text: 'シゲルさん...この景色、変わらずにありますね。', side: 'left' },
+      { speaker: 'シゲル', text: 'ああ。変わらんのが一番じゃ。あんた、よく頑張ったな。', side: 'right' },
+      { speaker: 'ハルカ', text: '父が...退院したら、一緒にここを歩こうと約束しました。', side: 'left' },
+      { speaker: 'シゲル', text: '...いい話じゃ。この土地は、次の世代にも残っていく。それでいい。', side: 'right' },
+      { speaker: 'ハルカ', text: 'ありがとうございます、シゲルさん。あなたの証言がなかったら。', side: 'left' },
+      { speaker: 'シゲル', text: 'お互い様じゃ。長生きするもんじゃなあ。', side: 'right' },
+    ],
+  },
+  // 第四章 Scene30：ヤスの独白・完結
+  c4s30: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '土地は、元の境界線に戻された。タケシさんは、新しい職場で働き始めた。レイコさんは、NPOの活動を続けている。', side: 'left' },
+      { speaker: 'ヤス', text: 'シゲルさんはいつも通り、あの古い家で過ごしている。ハルカさんのお父様は、回復に向かっているとのこと。', side: 'left' },
+      { speaker: 'ヤス', text: '...判決は、下された。', side: 'left', showCenter: 'img/Chapter4/icon/image_merge_icon4_19.png' },
+      { speaker: 'ヤス', text: '...それでも、まだ終わっていないことがある気がした。', side: 'left' },
+      { sound: '...', autoAdvance: true, advanceDelay: 1500 },
+      { speaker: 'ヤス', text: '...さて。次は、どんな依頼が来るでしょうか。', side: 'left' },
+    ],
+  },
   // ===== 第一章スライド01（2,000コインで解放）=====
   scene02: {
     title:         '',
@@ -4045,6 +4610,10 @@ document.getElementById('story-ch3-next-btn').addEventListener('click', () => {
   closeStoryScreen();
   progressStory(3);
 });
+document.getElementById('story-ch4-next-btn')?.addEventListener('click', () => {
+  closeStoryScreen();
+  progressStory(4);
+});
 
 // デバッグ：ジェネレーター出現
 document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
@@ -4063,6 +4632,9 @@ document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
   } else if (type === 'kante') {
     eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: lv };
     showToast(`第三章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'keikaku') {
+    eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: lv };
+    showToast(`第四章ジェネレーター Lv${lv + 1} を出現`);
   }
   renderEventBoard();
 });
@@ -4102,6 +4674,14 @@ document.getElementById('debug-adv-ch2-play').addEventListener('click', () => {
 // デバッグ：アドベンチャーシーン（第三章）
 document.getElementById('debug-adv-ch3-play').addEventListener('click', () => {
   const val = document.getElementById('debug-adv-ch3-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
+  document.getElementById('debug-screen').classList.add('hidden');
+  openAdventureScene(val);
+});
+
+// デバッグ：アドベンチャーシーン（第四章）
+document.getElementById('debug-adv-ch4-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch4-select').value;
   if (!val) { showToast('シーンを選択してください'); return; }
   document.getElementById('debug-screen').classList.add('hidden');
   openAdventureScene(val);
@@ -4331,6 +4911,21 @@ const KANTEITA_GEN_IMAGES = [
 ];
 const KANTEITA_GEN_NAMES = ['鑑定台', '鑑定台+', '精密鑑定機', '解析装置', '真相分析機', '証拠鑑定室', '完全解析台'];
 
+// 第四章チェーンID
+const KEIKAKU_CHAIN_ID = 13;
+
+// 第四章ジェネレーター画像（Lv1〜7）- 設計台
+const KEIKAKU_GEN_IMAGES = [
+  'img/Chapter4/icon/image_merge_gene4_01.png', // Lv1
+  'img/Chapter4/icon/image_merge_gene4_02.png', // Lv2
+  'img/Chapter4/icon/image_merge_gene4_03.png', // Lv3
+  'img/Chapter4/icon/image_merge_gene4_04.png', // Lv4
+  'img/Chapter4/icon/image_merge_gene4_05.png', // Lv5
+  'img/Chapter4/icon/image_merge_gene4_06.png', // Lv6
+  'img/Chapter4/icon/image_merge_gene4_07.png', // Lv7
+];
+const KEIKAKU_GEN_NAMES = ['設計台', '設計台+', '精密設計機', '計画分析台', '都市解析機', '証拠設計室', '完全解析台'];
+
 // 第二章ジェネレーター Lvボタン別出力設定（Lucky/PowerはLUCKY_CONFIG/GEN_POWER_BONUSを使用）
 const FIRE_POWER_CONFIG = [
   { outStage: 1 }, // Lv1ボタン ⚡1
@@ -4452,8 +5047,13 @@ let eventState = {
   kanteGenLevel: 0,        // 鑑定台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
   kanteDiscovered: {},     // 発見済み鑑定台アイテム { stage: true }
   kanteRevealed: {},       // 第三章アイテム: stage→true（ダイヤ取得済み）
+  keikakuGenUnlocked: false, // 設計台ジェネレーター解放済み（第四章）
+  keikakuGenLevel: 0,        // 設計台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
+  keikakuDiscovered: {},     // 発見済み設計台アイテム { stage: true }
+  keikakuRevealed: {},       // 第四章アイテム: stage→true（ダイヤ取得済み）
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
+  keikakuLvTriggered: new Set(), // 設計台LvアップのトリガーになったプレイヤーLvSet
   pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
   completedLowStages: new Set(), // 一度解決したLv1-5のステージキー（永久に再出現しない）
@@ -4502,8 +5102,13 @@ function initEventMap() {
   eventState.kanteGenLevel     = 0;
   eventState.kanteDiscovered   = {};
   eventState.kanteRevealed     = {};
+  eventState.keikakuGenUnlocked    = false;
+  eventState.keikakuGenLevel       = 0;
+  eventState.keikakuDiscovered     = {};
+  eventState.keikakuRevealed       = {};
   eventState.seizoLvTriggered  = new Set();
   eventState.kanteLvTriggered      = new Set();
+  eventState.keikakuLvTriggered    = new Set();
   eventState.pendingGenLvUpNotice  = [];
   eventState.genUpTriggered        = new Set();
   eventState.completedLowStages = new Set();
@@ -4843,6 +5448,40 @@ const CH3_SCENE_LIST = [
   { id: 'c3s26', label: 'Ep.26（後日談）' },
 ];
 
+// 第四章シーン一覧（c4s01〜c4s30）
+const CH4_SCENE_LIST = [
+  { id: 'c4s01', label: 'Ep.01' },
+  { id: 'c4s02', label: 'Ep.02' },
+  { id: 'c4s03', label: 'Ep.03' },
+  { id: 'c4s04', label: 'Ep.04' },
+  { id: 'c4s05', label: 'Ep.05' },
+  { id: 'c4s06', label: 'Ep.06' },
+  { id: 'c4s07', label: 'Ep.07' },
+  { id: 'c4s08', label: 'Ep.08' },
+  { id: 'c4s09', label: 'Ep.09' },
+  { id: 'c4s10', label: 'Ep.10' },
+  { id: 'c4s11', label: 'Ep.11' },
+  { id: 'c4s12', label: 'Ep.12' },
+  { id: 'c4s13', label: 'Ep.13' },
+  { id: 'c4s14', label: 'Ep.14' },
+  { id: 'c4s15', label: 'Ep.15' },
+  { id: 'c4s16', label: 'Ep.16' },
+  { id: 'c4s17', label: 'Ep.17' },
+  { id: 'c4s18', label: 'Ep.18' },
+  { id: 'c4s19', label: 'Ep.19' },
+  { id: 'c4s20', label: 'Ep.20' },
+  { id: 'c4s21', label: 'Ep.21' },
+  { id: 'c4s22', label: 'Ep.22' },
+  { id: 'c4s23', label: 'Ep.23' },
+  { id: 'c4s24', label: 'Ep.24' },
+  { id: 'c4s25', label: 'Ep.25' },
+  { id: 'c4s26', label: 'Ep.26' },
+  { id: 'c4s27', label: 'Ep.27' },
+  { id: 'c4s28', label: 'Ep.28' },
+  { id: 'c4s29', label: 'Ep.29（完結）' },
+  { id: 'c4s30', label: 'Ep.30（後日談）' },
+];
+
 function openStoryScreen() {
   hideNaviHint();
   renderStoryScreen();
@@ -4999,6 +5638,43 @@ function renderStoryScreen() {
   } else {
     ch3Block?.classList.add('hidden');
   }
+
+  // ── 第四章 ──
+  const ch4Unlocked = eventState.keikakuGenUnlocked;
+  const ch4Complete = state.ch4Count >= CH4_SCENE_IDS.length;
+  const ch4Block     = document.getElementById('story-ch4-block');
+  const ch4NextWrap  = document.getElementById('story-ch4-next-wrap');
+  const ch4NextBtn   = document.getElementById('story-ch4-next-btn');
+  const ch4CostLbl   = document.getElementById('story-ch4-cost-label');
+  const ch4Complete_ = document.getElementById('story-ch4-complete');
+  const ch4LockedLbl = document.getElementById('story-ch4-locked');
+
+  if (ch4Unlocked) {
+    ch4Block?.classList.remove('hidden');
+    ch4LockedLbl?.classList.add('hidden');
+    if (ch4Complete) {
+      ch4NextWrap?.classList.add('hidden');
+      ch4Complete_?.classList.remove('hidden');
+    } else {
+      ch4NextWrap?.classList.remove('hidden');
+      ch4Complete_?.classList.add('hidden');
+      if (ch4NextBtn) ch4NextBtn.disabled = !canAfford;
+      if (ch4CostLbl) ch4CostLbl.innerHTML = costLabel;
+    }
+    // 既読シーンがあれば章完了前でも見返し可能
+    {
+      const seenCh4 = (state.seenScenes ?? []).some(id => CH4_SCENE_LIST.some(s => s.id === id));
+      const ch4ReplayWrap = document.getElementById('story-ch4-replay-wrap');
+      if (seenCh4) {
+        ch4ReplayWrap?.classList.remove('hidden');
+        renderCh4ReplayList();
+      } else {
+        ch4ReplayWrap?.classList.add('hidden');
+      }
+    }
+  } else {
+    ch4Block?.classList.add('hidden');
+  }
 }
 
 function renderCh3ReplayList() {
@@ -5011,6 +5687,31 @@ function renderCh3ReplayList() {
     const li = document.createElement('li');
     li.className = 'story-replay-item';
     li.textContent = `第三章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
+  }
+}
+
+function renderCh4ReplayList() {
+  const list = document.getElementById('story-ch4-replay-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH4_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第四章 ${s.label}`;
     li.addEventListener('click', () => {
       closeStoryScreen();
       openAdventureScene(s.id);
@@ -5208,8 +5909,97 @@ function updateFireNaviLvBtn(seizoLevel) {
 // ========================================
 let naviHintTimer = null;
 let naviHintPersistent = false; // 持続表示中フラグ
+let naviInfoContext = null;     // iボタン用コンテキスト { type, level/stage }
 let lastCoinTapTime = 0;
 let lastCoinTapIdx  = -1;
+
+function openNaviInfoPopup() {
+  const ctx = naviInfoContext;
+  if (!ctx) return;
+  const popup = document.getElementById('navi-info-popup');
+  const list  = document.getElementById('navi-info-popup-list');
+  const title = document.getElementById('navi-info-popup-title');
+  if (!popup || !list) return;
+  list.innerHTML = '';
+
+  let items = [];
+  let titleText = '';
+
+  if (ctx.type === 'ch1gen') {
+    titleText = '第一章ジェネレーター';
+    items = EVENT_GEN_IMAGES.map((imgSrc, idx) => ({
+      imgSrc, label: `Lv${idx + 1}`,
+      disc: !!eventState.genDiscovered[`ch1_${idx}`],
+      current: idx === ctx.level,
+    }));
+  } else if (ctx.type === 'ch2gen') {
+    titleText = '第二章ジェネレーター';
+    items = SEIZO_GEN_IMAGES.map((imgSrc, idx) => ({
+      imgSrc, label: `Lv${idx + 1}`,
+      disc: !!eventState.genDiscovered[`ch2_${idx}`],
+      current: idx === ctx.level,
+    }));
+  } else if (ctx.type === 'ch3gen') {
+    titleText = '第三章ジェネレーター';
+    items = KANTEITA_GEN_IMAGES.map((imgSrc, idx) => ({
+      imgSrc, label: `Lv${idx + 1}`,
+      disc: !!eventState.genDiscovered[`ch3_${idx}`],
+      current: idx === ctx.level,
+    }));
+  } else if (ctx.type === 'ch1item') {
+    titleText = '第一章アイテム';
+    items = EVENT_CHAIN.stages.map((emoji, idx) => ({
+      imgSrc: EVENT_CHAIN.stageImages[idx],
+      label: `Lv${idx + 1}`,
+      disc: !!eventState.discovered[idx + 1],
+      current: idx + 1 === ctx.stage,
+    }));
+  } else if (ctx.type === 'ch2item') {
+    titleText = '第二章アイテム';
+    const ch2 = CHAINS[SEIZO_CHAIN_ID];
+    items = ch2.stages.map((emoji, idx) => ({
+      imgSrc: ch2.stageImages[idx],
+      label: `Lv${idx + 1}`,
+      disc: !!eventState.seizoDiscovered[idx + 1],
+      current: idx + 1 === ctx.stage,
+    }));
+  } else if (ctx.type === 'ch3item') {
+    titleText = '第三章アイテム';
+    const ch3 = CHAINS[KANTEITA_CHAIN_ID];
+    items = ch3.stages.map((emoji, idx) => ({
+      imgSrc: ch3.stageImages[idx],
+      label: `Lv${idx + 1}`,
+      disc: !!eventState.kanteDiscovered[idx + 1],
+      current: idx + 1 === ctx.stage,
+    }));
+  }
+
+  title.textContent = titleText;
+  items.forEach(it => {
+    const card = document.createElement('div');
+    card.className = 'navi-info-card' + (it.current ? ' navi-info-current' : '');
+    if (it.disc && it.imgSrc) {
+      card.innerHTML = `<img src="${it.imgSrc}" alt="${it.label}">`;
+    } else {
+      card.innerHTML = `<span class="navi-info-q">？</span>`;
+    }
+    card.innerHTML += `<span class="navi-info-lv">${it.label}</span>`;
+    list.appendChild(card);
+  });
+
+  popup.classList.remove('hidden');
+}
+
+document.getElementById('navi-info-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  openNaviInfoPopup();
+});
+document.getElementById('navi-info-popup-close').addEventListener('click', () => {
+  document.getElementById('navi-info-popup').classList.add('hidden');
+});
+document.getElementById('navi-info-popup').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.add('hidden');
+});
 
 function hideNaviHint() {
   if (naviHintTimer) { clearTimeout(naviHintTimer); naviHintTimer = null; }
@@ -5220,7 +6010,7 @@ function hideNaviHint() {
   document.getElementById('navi-coin-btn')?.classList.add('hidden');
 }
 
-function _showNaviHintPanel(text, showLvBtn, persistent = false) {
+function _showNaviHintPanel(text, showLvBtn, persistent = false, infoContext = null) {
   const panel  = document.getElementById('navi-hint-panel');
   const textEl = document.getElementById('navi-hint-text');
   const lvBtn  = document.getElementById('navi-lv-btn');
@@ -5231,6 +6021,9 @@ function _showNaviHintPanel(text, showLvBtn, persistent = false) {
   if (tutPanel && !tutPanel.classList.contains('hidden')) return;
   // 持続表示中（ジェネレーター選択など）は非持続の呼び出しを無視
   if (naviHintPersistent && !persistent) return;
+  naviInfoContext = infoContext;
+  const infoBtn = document.getElementById('navi-info-btn');
+  if (infoBtn) infoBtn.classList.toggle('hidden', !infoContext);
   textEl.innerHTML = text;
   if (lvBtn) lvBtn.classList.toggle('hidden', !showLvBtn);
   document.getElementById('navi-diamond-btn')?.classList.add('hidden');
@@ -5267,7 +6060,7 @@ function showNaviHintForGen(genLevel, persistent = false) {
     ? '第一章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第一章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   if (!isMaxGen) updateNaviLvBtn(genLevel);
-  _showNaviHintPanel(text, !isMaxGen, persistent);
+  _showNaviHintPanel(text, !isMaxGen, persistent, { type: 'ch1gen', level: genLevel });
 }
 
 function showNaviHintForFireGen(item, persistent = false) {
@@ -5278,7 +6071,7 @@ function showNaviHintForFireGen(item, persistent = false) {
     ? '第二章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第二章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   if (!isMax) updateFireNaviLvBtn(sLv);
-  _showNaviHintPanel(text, !isMax, persistent);
+  _showNaviHintPanel(text, !isMax, persistent, { type: 'ch2gen', level: sLv });
 }
 
 function showNaviHintForKanteGen(item, persistent = false) {
@@ -5288,7 +6081,18 @@ function showNaviHintForKanteGen(item, persistent = false) {
   const text = isMax
     ? '第三章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第三章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
-  _showNaviHintPanel(text, false, persistent);
+  const _kLv2 = item.kanteLevel ?? 0;
+  _showNaviHintPanel(text, false, persistent, { type: 'ch3gen', level: _kLv2 });
+}
+
+function showNaviHintForKeikakuGen(item, persistent = false) {
+  const kkLv = item.keikakuLevel ?? 0;
+  const maxKkLv = KEIKAKU_GEN_IMAGES.length - 1;
+  const isMax = kkLv >= maxKkLv;
+  const text = isMax
+    ? '第四章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
+    : '第四章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
+  _showNaviHintPanel(text, false, persistent, { type: 'ch4gen', level: kkLv });
 }
 
 function showNaviHintForItem(item, persistent = false) {
@@ -5299,7 +6103,12 @@ function showNaviHintForItem(item, persistent = false) {
   const text = isMax
     ? `${name}は、最大Lvに達しています`
     : `${name}をマージさせて次のレベルにアップしましょう。`;
-  _showNaviHintPanel(text, false, persistent);
+  const cid = item.chainId;
+  const itemCtx = cid === undefined       ? { type: 'ch1item', stage: item.stage }
+                : cid === SEIZO_CHAIN_ID   ? { type: 'ch2item', stage: item.stage }
+                : cid === KANTEITA_CHAIN_ID ? { type: 'ch3item', stage: item.stage }
+                : null;
+  _showNaviHintPanel(text, false, persistent, itemCtx);
   // Lv1: ゴミ箱ボタン、Lv2以降: コイン獲得ボタン
   const trashBtn = document.getElementById('navi-trash-btn');
   const coinBtn  = document.getElementById('navi-coin-btn');
@@ -5526,6 +6335,26 @@ function renderEventBoard() {
           if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
           cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
           cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
+        } else if (item.isKeikakuGen) {
+          // 設計台ジェネレーター（第四章）
+          cell.id = 'keikaku-gen-tile';
+          const kkLv  = item.keikakuLevel ?? 0;
+          const kkImg = KEIKAKU_GEN_IMAGES[Math.min(kkLv, KEIKAKU_GEN_IMAGES.length - 1)];
+          cell.innerHTML = `
+            <img class="item-img item-img-lg" src="${kkImg}" alt="設計台">
+            <div class="gen-stars">${starsHtml}</div>
+            <span class="gen-energy-badge">${HP_ICON}</span>
+          `;
+          if (!step) {
+            if (i === eventState.selectedCell) cell.classList.add('selected');
+            if (selItem && selItem.isKeikakuGen && i !== eventState.selectedCell &&
+                (selItem.keikakuLevel ?? 0) === kkLv) {
+              cell.classList.add('merge-target');
+            }
+          }
+          if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
+          cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
+          cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
         } else {
           // メモ帳ジェネレーター
           cell.innerHTML = `
@@ -5697,6 +6526,7 @@ function renderPlayerLevel() {
 const CH1_SCENE_IDS = ['scene02','scene03','scene04','scene05','scene06','scene07','scene08','scene09','scene10','scene11','scene12','scene13','scene14','scene15','scene16','scene17'];
 const CH2_SCENE_IDS = ['c2s01','c2s02','c2s03','c2s04','c2s05','c2s06','c2s07','c2s08','c2s09','c2s10','c2s11','c2s12','c2s13','c2s14','c2s15','c2s15b','c2s16','c2s17','c2s18','c2s19','c2s20'];
 const CH3_SCENE_IDS = ['c3s01','c3s02','c3s03','c3s04','c3s05','c3s06','c3s07','c3s08','c3s09','c3s10','c3s11','c3s12','c3s13','c3s14','c3s15','c3s16','c3s17','c3s18','c3s19','c3s20','c3s21','c3s22','c3s23','c3s24','c3s25','c3s26'];
+const CH4_SCENE_IDS = ['c4s01','c4s02','c4s03','c4s04','c4s05','c4s06','c4s07','c4s08','c4s09','c4s10','c4s11','c4s12','c4s13','c4s14','c4s15','c4s16','c4s17','c4s18','c4s19','c4s20','c4s21','c4s22','c4s23','c4s24','c4s25','c4s26','c4s27','c4s28','c4s29','c4s30'];
 
 // ストーリー進行処理（chapter: 1/2/3）
 function progressStory(chapter = 1) {
@@ -5714,14 +6544,16 @@ function progressStory(chapter = 1) {
   } else if (chapter === 2) {
     sceneId = CH2_SCENE_IDS[state.ch2Count] ?? CH2_SCENE_IDS[CH2_SCENE_IDS.length - 1];
     state.ch2Count = Math.min(state.ch2Count + 1, CH2_SCENE_IDS.length);
-  } else {
+  } else if (chapter === 3) {
     sceneId = CH3_SCENE_IDS[state.ch3Count] ?? CH3_SCENE_IDS[CH3_SCENE_IDS.length - 1];
     state.ch3Count = Math.min(state.ch3Count + 1, CH3_SCENE_IDS.length);
+  } else {
+    sceneId = CH4_SCENE_IDS[state.ch4Count] ?? CH4_SCENE_IDS[CH4_SCENE_IDS.length - 1];
+    state.ch4Count = Math.min(state.ch4Count + 1, CH4_SCENE_IDS.length);
   }
 
   // レベルアップ判定（複数回上がる場合も対応）
   let leveledUp = false;
-  const prevPlayerLevel = state.playerLevel;
   while (state.playerXP >= getLevelUpXP(state.playerLevel)) {
     state.playerXP -= getLevelUpXP(state.playerLevel);
     state.playerLevel++;
@@ -5734,11 +6566,6 @@ function progressStory(chapter = 1) {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
     }
-    // ジェネレーターLvアップ（プレイヤーLvトリガー）
-    for (let lv = prevPlayerLevel + 1; lv <= state.playerLevel; lv++) {
-      checkSeizoGenLevelUpByPlayerLevel(lv);
-      checkKanteGenLevelUpByPlayerLevel(lv);
-    }
   }
 
   renderEventHeader();
@@ -5747,12 +6574,17 @@ function progressStory(chapter = 1) {
   if (!state.seenScenes) state.seenScenes = [];
   if (!state.seenScenes.includes(sceneId)) state.seenScenes.push(sceneId);
 
-  // シーン終了後コールバックを構築（複数条件を順次実行）
+  // ── シーン終了後コールバックを構築 ──────────────────────────────
+  // 複数の条件が同時に成立する場合は chain で順次実行
   let postSceneCallback = null;
+  function _chain(cb) {
+    const prev = postSceneCallback;
+    postSceneCallback = prev ? () => { prev(); cb(); } : cb;
+  }
 
-  // 第二章ジェネレーター解放：プレイヤーLv3以上かつ未解放のシーン終了後
-  if (!eventState.fireGenUnlocked && state.playerLevel >= 3) {
-    postSceneCallback = () => {
+  // ── 第二章ジェネレーター解放：第一章 Scene8 終了時
+  if (chapter === 1 && state.ch1Count === 8 && !eventState.fireGenUnlocked) {
+    _chain(() => {
       unlockFireGenerator();
       requestAnimationFrame(() => {
         startGuide([
@@ -5760,14 +6592,42 @@ function progressStory(chapter = 1) {
           '別の章のストーリーも見ることができます。',
         ], '#fire-gen-tile', null);
       });
-    };
+    });
   }
 
-  // 第三章ジェネレーター解放：Ch2シーン8読了後（c2s08）
-  if (chapter === 2 && state.ch2Count === 8) {
-    const prev = postSceneCallback;
-    postSceneCallback = () => {
-      if (prev) prev();
+  // ── 第一章ジェネレーター Lv4：第一章 Scene12 終了時（Lv3以上が存在する場合のみ）
+  if (chapter === 1 && state.ch1Count === 12 && !eventState.genUpTriggered.has('ch1lv4')) {
+    _chain(() => {
+      const ch1Gen = eventState.board.find(
+        c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
+      );
+      if (ch1Gen && (ch1Gen.genLevel ?? 0) >= 2) {
+        eventState.genUpTriggered.add('ch1lv4');
+        const eIdx = eventState.board.findIndex(
+          c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
+        );
+        const slot = findNearestEmptyEventCell(eIdx);
+        if (slot !== -1) {
+          eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel };
+          showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
+          renderEventBoard();
+        }
+      }
+    });
+  }
+
+  // ── 第二章ジェネレーター LvUp タイル：Scene5/7/9/11/13 終了時
+  if (chapter === 2 && eventState.fireGenUnlocked) {
+    const CH2_LVUP_SCENES = [5, 7, 9, 11, 13];
+    if (CH2_LVUP_SCENES.includes(state.ch2Count) && !eventState.seizoLvTriggered.has(state.ch2Count)) {
+      const t = state.ch2Count;
+      _chain(() => _spawnChGenLvUpTile(2, t, eventState.seizoLvTriggered));
+    }
+  }
+
+  // ── 第三章ジェネレーター解放：第二章 Scene8 終了時
+  if (chapter === 2 && state.ch2Count === 8 && !eventState.kanteGenUnlocked) {
+    _chain(() => {
       unlockKanteGenerator();
       requestAnimationFrame(() => {
         startGuide([
@@ -5775,7 +6635,42 @@ function progressStory(chapter = 1) {
           '新たな事件の幕が上がります。',
         ], '#kante-gen-tile', null);
       });
-    };
+    });
+  }
+
+  // ── 第三章ジェネレーター LvUp タイル：Scene5/7/9/11/13 終了時
+  if (chapter === 3 && eventState.kanteGenUnlocked) {
+    const CH3_LVUP_SCENES = [5, 7, 9, 11, 13];
+    if (CH3_LVUP_SCENES.includes(state.ch3Count) && !eventState.kanteLvTriggered.has(state.ch3Count)) {
+      const t = state.ch3Count;
+      _chain(() => _spawnChGenLvUpTile(3, t, eventState.kanteLvTriggered));
+    }
+  }
+
+  // ── 第四章ジェネレーター解放：第三章 Scene8 終了時 かつ 第一章全話完了済み
+  //    ※ どちらが先に満たされても対応（両条件を都度チェック）
+  const ch4Unlockable = state.ch3Count >= 8 &&
+                        state.ch1Count >= CH1_SCENE_IDS.length &&
+                        !eventState.keikakuGenUnlocked;
+  if (ch4Unlockable && (chapter === 3 || chapter === 1)) {
+    _chain(() => {
+      unlockKeikakuGenerator();
+      requestAnimationFrame(() => {
+        startGuide([
+          '第四章が解放されました。',
+          '新たな事件の調査が始まります。',
+        ], '#keikaku-gen-tile', null);
+      });
+    });
+  }
+
+  // ── 第四章ジェネレーター LvUp タイル：Scene5/7/9/11/13 終了時
+  if (chapter === 4 && eventState.keikakuGenUnlocked) {
+    const CH4_LVUP_SCENES = [5, 7, 9, 11, 13];
+    if (CH4_LVUP_SCENES.includes(state.ch4Count) && !eventState.keikakuLvTriggered.has(state.ch4Count)) {
+      const t = state.ch4Count;
+      _chain(() => _spawnChGenLvUpTile(4, t, eventState.keikakuLvTriggered));
+    }
   }
 
   openAdventureScene(sceneId, postSceneCallback || undefined);
@@ -5945,14 +6840,18 @@ function fillEventRequests() {
   const ch1StoryDone = state.ch1Count >= CH1_SCENE_IDS.length;
   const ch2StoryDone = state.ch2Count >= CH2_SCENE_IDS.length;
   const ch3StoryDone = state.ch3Count >= CH3_SCENE_IDS.length;
-  const seizoAvailable = eventState.fireGenUnlocked  && !ch2StoryDone;
-  const kanteAvailable = eventState.kanteGenUnlocked && !ch3StoryDone;
+  const ch4StoryDone = state.ch4Count >= CH4_SCENE_IDS.length;
+  const seizoAvailable   = eventState.fireGenUnlocked    && !ch2StoryDone;
+  const kanteAvailable   = eventState.kanteGenUnlocked   && !ch3StoryDone;
+  const keikakuAvailable = eventState.keikakuGenUnlocked && !ch4StoryDone;
 
-  // Ch2・Ch3のステージ上限（ジェネレーターLvに応じて拡大）
+  // Ch2・Ch3・Ch4のステージ上限（ジェネレーターLvに応じて拡大）
   const ch2StageMax = Math.min(CHAINS[SEIZO_CHAIN_ID].stages.length,
     Math.max(3, (eventState.seizoGenLevel + 1) * 2 + 2));
   const ch3StageMax = Math.min(CHAINS[KANTEITA_CHAIN_ID].stages.length,
     Math.max(3, (eventState.kanteGenLevel + 1) * 2 + 2));
+  const ch4StageMax = Math.min(CHAINS[KEIKAKU_CHAIN_ID].stages.length,
+    Math.max(3, (eventState.keikakuGenLevel + 1) * 2 + 2));
 
   // 既存依頼で使用済みのステージキー（重複防止）
   const usedStageKeys = new Set(
@@ -5964,10 +6863,11 @@ function fillEventRequests() {
 
   const tutDone = eventState.tutorialStep >= TUTORIAL_STEPS.length;
 
-  // アイテムの章番号を返す（1=Ch1, 2=Ch2, 3=Ch3）
+  // アイテムの章番号を返す（1=Ch1, 2=Ch2, 3=Ch3, 4=Ch4）
   function getItemChapter(item) {
     if (item.chainId === SEIZO_CHAIN_ID)    return 2;
     if (item.chainId === KANTEITA_CHAIN_ID) return 3;
+    if (item.chainId === KEIKAKU_CHAIN_ID)  return 4;
     return 1;
   }
 
@@ -5979,7 +6879,7 @@ function fillEventRequests() {
 
     if (chapters.length === 1) {
       const ch = chapters[0];
-      const [minId, maxId] = ch === 1 ? [0, 5] : ch === 2 ? [6, 10] : [11, 17];
+      const [minId, maxId] = ch === 1 ? [0, 5] : ch === 2 ? [6, 10] : ch === 3 ? [11, 17] : [18, 22];
       const singleCh = REQUESTERS.filter(r =>
         r.id >= minId && r.id <= maxId &&
         !usedCharIds.has(r.id) &&
@@ -5992,7 +6892,8 @@ function fillEventRequests() {
     return REQUESTERS.filter(r => {
       if (r.id <= 5)  return true; // Ch1
       if (r.id <= 10) return !!eventState.fireGenUnlocked;
-      return !!eventState.kanteGenUnlocked;
+      if (r.id <= 17) return !!eventState.kanteGenUnlocked;
+      return !!eventState.keikakuGenUnlocked;
     }).filter(r =>
       !usedCharIds.has(r.id) &&
       !(tutDone && r.id === 1)
@@ -6009,8 +6910,9 @@ function fillEventRequests() {
       // 解放済みプールを均等抽選
       const pools = [];
       if (!ch1StoryDone) pools.push('ch1');
-      if (seizoAvailable) pools.push('ch2');
-      if (kanteAvailable) pools.push('ch3');
+      if (seizoAvailable)   pools.push('ch2');
+      if (kanteAvailable)   pools.push('ch3');
+      if (keikakuAvailable) pools.push('ch4');
       if (pools.length === 0) return null;
       const pool = pools[Math.floor(Math.random() * pools.length)];
 
@@ -6020,6 +6922,9 @@ function fillEventRequests() {
       } else if (pool === 'ch3') {
         const stage = Math.floor(Math.random() * ch3StageMax) + 1;
         item = { chainId: KANTEITA_CHAIN_ID, stage };
+      } else if (pool === 'ch4') {
+        const stage = Math.floor(Math.random() * ch4StageMax) + 1;
+        item = { chainId: KEIKAKU_CHAIN_ID, stage };
       } else {
         // Ch1
         if (ch1StageMin > ch1StageMax) continue;
@@ -6255,12 +7160,19 @@ function handleAnyGenTap(i) {
         eventState.selectedCell = null;
         return;
       }
+      if (item.isKeikakuGen && selItem.isKeikakuGen &&
+          (selItem.keikakuLevel ?? 0) === (item.keikakuLevel ?? 0)) {
+        mergeKeikakuGenerators(eventState.selectedCell, i);
+        eventState.selectedCell = null;
+        return;
+      }
     }
     // 種類違い or レベル違いなら選択切替
     eventState.selectedCell = i;
-    if (isFireGen)          showNaviHintForFireGen(item, true);
-    else if (item.isKanteGen) showNaviHintForKanteGen(item, true);
-    else                    showNaviHintForGen(item.genLevel ?? 0, true);
+    if (isFireGen)              showNaviHintForFireGen(item, true);
+    else if (item.isKanteGen)   showNaviHintForKanteGen(item, true);
+    else if (item.isKeikakuGen) showNaviHintForKeikakuGen(item, true);
+    else                        showNaviHintForGen(item.genLevel ?? 0, true);
     renderEventBoard();
     return;
   }
@@ -6268,14 +7180,16 @@ function handleAnyGenTap(i) {
   // 2タップ：選択中→生成（選択・ナビヒント維持） / 未選択→選択
   if (eventState.selectedCell === i) {
     // 選択はそのまま・ナビヒントも維持して生成
-    if (isFireGen)          onEventFireGenTap(i);
-    else if (item.isKanteGen) onEventKanteGenTap(i);
-    else                    onEventGenTap(i);
+    if (isFireGen)              onEventFireGenTap(i);
+    else if (item.isKanteGen)   onEventKanteGenTap(i);
+    else if (item.isKeikakuGen) onEventKeikakuGenTap(i);
+    else                        onEventGenTap(i);
   } else {
     eventState.selectedCell = i;
-    if (isFireGen)          showNaviHintForFireGen(item, true);
-    else if (item.isKanteGen) showNaviHintForKanteGen(item, true);
-    else                    showNaviHintForGen(item.genLevel ?? 0, true);
+    if (isFireGen)              showNaviHintForFireGen(item, true);
+    else if (item.isKanteGen)   showNaviHintForKanteGen(item, true);
+    else if (item.isKeikakuGen) showNaviHintForKeikakuGen(item, true);
+    else                        showNaviHintForGen(item.genLevel ?? 0, true);
     renderEventBoard();
   }
 }
@@ -6641,8 +7555,9 @@ function doEventMerge(fromIdx, toIdx) {
     discoverEventItem(finalStage);
     if (finalStage !== nextStage) discoverEventItem(nextStage);
 
-    // Lv4/8/12 初回到達でジェネレーター2枚目タイルを自動出現（ベースnextStageで判定）
-    if ((nextStage === 4 || nextStage === 8 || nextStage === 10) &&
+    // Lv4/8 初回到達でジェネレーター2枚目タイルを自動出現（Lv4=stage4, Lv3=stage8）
+    // Lv4タイル（旧stage10）は第一章Scene12終了時に切り替え（progressStory参照）
+    if ((nextStage === 4 || nextStage === 8) &&
         !eventState.genUpTriggered.has(nextStage)) {
       eventState.genUpTriggered.add(nextStage); // 同じステージでは二度と出現しない
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
@@ -6667,7 +7582,11 @@ function doEventMerge(fromIdx, toIdx) {
 
   // 製造機アイテム（第二章）の発見トラッキングとLvアップ判定
   if (chainId === SEIZO_CHAIN_ID) {
-    discoverSeizoItem(finalStage); // 内部で checkSeizoGenLevelUp も呼ぶ
+    discoverSeizoItem(finalStage);
+  } else if (chainId === KANTEITA_CHAIN_ID) {
+    discoverKanteItem(finalStage);
+  } else if (chainId === KEIKAKU_CHAIN_ID) {
+    discoverKeikakuItem(finalStage);
   }
 
   // 5%の確率でしゃぼん玉アイテムを追加出現（Lv1/チュートリアル/霧マージは除外）
@@ -6779,8 +7698,48 @@ function unlockKanteGenerator() {
   renderEventRequest();
 }
 
-// 製造機ジェネレーターLvアップ判定：プレイヤーLvベース
-// playerLevel 4/6/8/10/12/14 到達時にマージ用タイルを追加配置
+// ========================================
+// 章ジェネレーター LvUp タイル出現ヘルパー（シーン話数ベース）
+// chapter: 2=製造機 / 3=鑑定台 / 4=設計台
+// triggerKey: シーン話数（5/7/9/11/13）
+// triggeredSet: 重複防止用 Set（eventState.seizoLvTriggered 等）
+// ========================================
+function _spawnChGenLvUpTile(chapter, triggerKey, triggeredSet) {
+  let existingIdx, newTile, chName;
+  if (chapter === 2) {
+    existingIdx = eventState.board.findIndex(c => c && c.isFireGen);
+    if (existingIdx === -1) return;
+    const lv = eventState.board[existingIdx].seizoLevel ?? 0;
+    newTile  = { isEventGen: true, isFireGen: true, seizoLevel: lv };
+    chName   = '第二章';
+  } else if (chapter === 3) {
+    existingIdx = eventState.board.findIndex(c => c && c.isKanteGen);
+    if (existingIdx === -1) return;
+    const lv = eventState.board[existingIdx].kanteLevel ?? 0;
+    newTile  = { isEventGen: true, isKanteGen: true, kanteLevel: lv };
+    chName   = '第三章';
+  } else if (chapter === 4) {
+    existingIdx = eventState.board.findIndex(c => c && c.isKeikakuGen);
+    if (existingIdx === -1) return;
+    const lv = eventState.board[existingIdx].keikakuLevel ?? 0;
+    newTile  = { isEventGen: true, isKeikakuGen: true, keikakuLevel: lv };
+    chName   = '第四章';
+  } else { return; }
+
+  const emptyIdx = findNearestEmptyEventCell(existingIdx);
+  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
+  eventState.board[emptyIdx] = newTile;
+  triggeredSet.add(triggerKey);
+  eventState.pendingGenLvUpNotice.push({
+    idx: emptyIdx,
+    msg: `${chName}ジェネレータータイルが増えた！\nマージしてLvアップ！`,
+  });
+  showToast(`${chName}ジェネレータータイルが増えた！マージしてLvアップ！`);
+  renderEventBoard();
+}
+
+// 製造機ジェネレーターLvアップ判定：プレイヤーLvベース（旧ロジック・未使用）
+// ※ シーン話数ベースに移行済み。関数は互換のため残存。
 const SEIZO_GEN_PLAYERLV_TRIGGERS = new Set([4, 6, 8, 10, 12, 14]);
 function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
   if (!SEIZO_GEN_PLAYERLV_TRIGGERS.has(playerLevel)) return;
@@ -6798,8 +7757,8 @@ function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
   renderEventBoard();
 }
 
-// 鑑定台ジェネレーターLvアップ判定：プレイヤーLvベース
-// playerLevel 8/10/12/14/16/18 到達時にマージ用タイルを追加配置
+// 鑑定台ジェネレーターLvアップ判定：プレイヤーLvベース（旧ロジック・未使用）
+// ※ シーン話数ベースに移行済み（progressStory 内 _spawnChGenLvUpTile 参照）
 const KANTE_GEN_PLAYERLV_TRIGGERS = new Set([8, 10, 12, 14, 16, 18]);
 function checkKanteGenLevelUpByPlayerLevel(playerLevel) {
   if (!KANTE_GEN_PLAYERLV_TRIGGERS.has(playerLevel)) return;
@@ -7003,6 +7962,123 @@ function onEventKanteGenTap(tappedCellIdx = null) {
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
   eventState.board[emptyIdx] = { chainId: KANTEITA_CHAIN_ID, stage: finalStage };
   discoverKanteItem(finalStage);
+
+  const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
+  const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  if (isPower) showPowerOnCell(genShowIdx, 'event-board');
+  else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
+
+  renderEventHeader();
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// ========================================
+// 第四章：設計台ジェネレーター
+// ========================================
+
+// 設計台ジェネレーター解放（第一章完了時）
+function unlockKeikakuGenerator() {
+  eventState.keikakuGenUnlocked = true;
+  eventState.keikakuGenLevel    = 0;
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showToast('ボードが満杯で第四章ジェネレーターを配置できません'); return; }
+  eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: 0 };
+  discoverGen('ch4', 0);
+  showToast('第四章ジェネレーター解放！');
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// 設計台ジェネレーターLvアップ判定：プレイヤーLvベース
+// playerLevel 10/12/14/16/18/20 到達時にマージ用タイルを追加配置
+const KEIKAKU_GEN_PLAYERLV_TRIGGERS = new Set([10, 12, 14, 16, 18, 20]);
+function checkKeikakuGenLevelUpByPlayerLevel(playerLevel) {
+  if (!KEIKAKU_GEN_PLAYERLV_TRIGGERS.has(playerLevel)) return;
+  if (!eventState.keikakuGenUnlocked) return;
+  if (eventState.keikakuLvTriggered.has(playerLevel)) return;
+  const existingIdx = eventState.board.findIndex(c => c && c.isKeikakuGen);
+  if (existingIdx === -1) return;
+  const currentLv = eventState.board[existingIdx].keikakuLevel ?? 0;
+  const emptyIdx = findNearestEmptyEventCell(existingIdx);
+  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
+  eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: currentLv };
+  eventState.keikakuLvTriggered.add(playerLevel);
+  eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第四章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
+  showToast('第四章ジェネレータータイルが増えた！マージしてLvアップ！');
+  renderEventBoard();
+}
+
+// 設計台ジェネレータータイル同士のマージ（Lvアップ）
+function mergeKeikakuGenerators(fromIdx, toIdx) {
+  const toItem   = eventState.board[toIdx];
+  const newLevel = (toItem.keikakuLevel ?? 0) + 1;
+  const maxLevel = KEIKAKU_GEN_IMAGES.length - 1;
+  if (newLevel > maxLevel) { showToast('第四章ジェネレーターは最大レベルです'); return; }
+  eventState.board[toIdx]   = { isEventGen: true, isKeikakuGen: true, keikakuLevel: newLevel };
+  eventState.board[fromIdx] = null;
+  eventState.selectedCell   = null;
+  eventState.keikakuGenLevel = Math.max(eventState.keikakuGenLevel, newLevel);
+  discoverGen('ch4', newLevel);
+  const name = KEIKAKU_GEN_NAMES[Math.min(newLevel, KEIKAKU_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
+  addEnergy(25, '第四章ジェネレーターLvアップボーナス！');
+
+  fillEventRequests();
+  renderEventBoard();
+  renderEventRequest();
+  renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
+}
+
+// 設計台ジェネレータータップ → KEIKAKU_CHAINアイテムを生成
+function onEventKeikakuGenTap(tappedCellIdx = null) {
+  const powerLv    = eventState.genPowerLevel;
+  const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
+  const outStage   = cfg.startStage;
+  const energyCost = POWER_COSTS[powerLv] ?? 1;
+
+  if (!debugState.infiniteEnergy && state.energy < energyCost) {
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide([
+        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+      ], '#ev-energy', null);
+    } else {
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isKeikakuGen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
+    }
+    return;
+  }
+
+  const animFrom = tappedCellIdx !== null
+    ? tappedCellIdx
+    : eventState.board.findIndex(c => c && c.isEventGen && c.isKeikakuGen);
+
+  const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
+
+  const chain = CHAINS[KEIKAKU_CHAIN_ID];
+  let finalStage = outStage;
+  let isLucky = false, isPower = false;
+
+  const powerStage = rollPower(powerLv, chain.stages.length);
+  if (powerStage !== null) {
+    finalStage = powerStage;
+    isPower = true;
+  } else if (outStage >= 2) {
+    const luckyMult = rollLucky(powerLv);
+    if (luckyMult !== null) {
+      const ls = Math.min(Math.floor(outStage * luckyMult), chain.stages.length);
+      if (ls > outStage) { finalStage = ls; isLucky = true; }
+    }
+  }
+
+  if (!debugState.infiniteEnergy) state.energy -= energyCost;
+  eventState.board[emptyIdx] = { chainId: KEIKAKU_CHAIN_ID, stage: finalStage };
+  discoverKeikakuItem(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
