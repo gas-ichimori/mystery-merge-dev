@@ -452,6 +452,13 @@
           </select>
           <button id="debug-adv-ch4-play" class="debug-loop-btn">▶</button>
         </div>
+        <!-- 相関図デバッグ -->
+        <div class="debug-row">
+          <span class="debug-label">相関図</span>
+          <button id="debug-kankei-open" class="debug-loop-btn">🕵️ 開く</button>
+          <button id="debug-kankei-reset" class="debug-loop-btn">🔄 リセット</button>
+          <button id="debug-kankei-all" class="debug-loop-btn">✅ 全解放</button>
+        </div>
       </div>
     </div>
   </div>
@@ -590,6 +597,7 @@
     <div class="story-screen-panel">
       <div class="story-screen-header">
         <h2>📖 ストーリー</h2>
+        <button id="kankei-open-btn" title="相関図">🕵️ 相関図</button>
         <button id="story-screen-close-btn"><img class="navi-icon-img" src="img/UI/image_merge_navi_close.png" alt="閉じる"></button>
       </div>
       <!-- 第一章 -->
@@ -650,6 +658,20 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 相関図画面 -->
+  <div id="kankei-screen" class="hidden">
+    <div id="kankei-header">
+      <button id="kankei-close-btn">✕ 閉じる</button>
+      <span id="kankei-title">第一章　相関図</span>
+      <span id="kankei-progress"></span>
+    </div>
+    <div id="kankei-board-wrap">
+      <svg id="kankei-svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+      <div id="kankei-nodes"></div>
+    </div>
+    <div id="kankei-hint">ストーリーを読むと相関図が解明されていきます</div>
   </div>
 
   <!-- タイトル画面 -->

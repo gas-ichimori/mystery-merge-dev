@@ -4794,6 +4794,27 @@ document.getElementById('debug-adv-ch4-play').addEventListener('click', () => {
   openAdventureScene(val);
 });
 
+// デバッグ：相関図
+document.getElementById('debug-kankei-open').addEventListener('click', () => {
+  document.getElementById('debug-screen').classList.add('hidden');
+  openKankeiScreen();
+});
+document.getElementById('debug-kankei-reset').addEventListener('click', () => {
+  // seenScenes をクリア（相関図リセット確認用）
+  state.seenScenes = [];
+  showToast('相関図をリセットしました');
+});
+document.getElementById('debug-kankei-all').addEventListener('click', () => {
+  // 第一章全シーンを既読にして全解放確認
+  if (!state.seenScenes) state.seenScenes = [];
+  CH1_KANKEI_NODES.forEach(n => { if (!state.seenScenes.includes(n.unlockScene)) state.seenScenes.push(n.unlockScene); });
+  CH1_KANKEI_EDGES.forEach(e => { if (!state.seenScenes.includes(e.unlockScene)) state.seenScenes.push(e.unlockScene); });
+  CH1_KANKEI_BADGES.forEach(b => { if (!state.seenScenes.includes(b.unlockScene)) state.seenScenes.push(b.unlockScene); });
+  document.getElementById('debug-screen').classList.add('hidden');
+  openKankeiScreen();
+  showToast('相関図を全解放しました');
+});
+
 document.getElementById('story-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   openStoryScreen();
@@ -5602,6 +5623,144 @@ function closeStoryScreen() {
   // ストーリー中に追加されたジェネレータータイルを赤字ポップアップで通知
   _showPendingGenLvUpNotices();
 }
+
+// ========================================
+// 相関図システム（第一章）
+// ========================================
+const CH1_KANKEI_NODES = [
+  { id: 'yasu',    name: 'ヤス',    sub: '探偵',   img: 'img/Chapter1/Chara/image_merge_order_chara_00.png',   unlockScene: 'scene02', x: 50, y: 4  },
+  { id: 'miyu',    name: 'ミユ',    sub: '9歳',    img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png',  unlockScene: 'scene02', x: 8,  y: 28 },
+  { id: 'kenichi', name: 'ケンイチ', sub: '34歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_03.png',   unlockScene: 'scene04', x: 46, y: 52 },
+  { id: 'nanako',  name: 'ナナコ',  sub: '28歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_02.png',   unlockScene: 'scene06', x: 84, y: 28 },
+  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',   unlockScene: 'scene10', x: 10, y: 74 },
+  { id: 'shinji',  name: 'シンジ',  sub: '27歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_05aa.png', unlockScene: 'scene12', x: 80, y: 74 },
+];
+
+// ノードに紐づくラベルバッジ（複数付与可）
+const CH1_KANKEI_BADGES = [
+  { nodeId: 'miyu',    label: '依頼人',           unlockScene: 'scene02', type: 'normal'  },
+  { nodeId: 'kenichi', label: '父親',              unlockScene: 'scene04', type: 'normal'  },
+  { nodeId: 'nanako',  label: '妻',                unlockScene: 'scene06', type: 'normal'  },
+  { nodeId: 'nanako',  label: '不審な荷物',        unlockScene: 'scene08', type: 'warning' },
+  { nodeId: 'misaki',  label: 'ストーカー被害者',  unlockScene: 'scene10', type: 'warning' },
+  { nodeId: 'shinji',  label: '配達員',            unlockScene: 'scene12', type: 'normal'  },
+  { nodeId: 'shinji',  label: 'ストーカー',        unlockScene: 'scene13', type: 'danger'  },
+  { nodeId: 'miyu',    label: '嫌がらせ被害',      unlockScene: 'scene16', type: 'danger'  },
+  { nodeId: 'nanako',  label: '嫌がらせ被害',      unlockScene: 'scene16', type: 'danger'  },
+  { nodeId: 'kenichi', label: '嫌がらせ被害',      unlockScene: 'scene16', type: 'danger'  },
+  { nodeId: 'shinji',  label: '犯人・逃亡',        unlockScene: 'scene17', type: 'criminal'},
+];
+
+// ノード間の接続線
+const CH1_KANKEI_EDGES = [
+  { from: 'miyu',    to: 'yasu',    label: '依頼人',     unlockScene: 'scene02', type: 'normal' },
+  { from: 'miyu',    to: 'kenichi', label: '父と娘',     unlockScene: 'scene04', type: 'family' },
+  { from: 'kenichi', to: 'nanako',  label: '夫と妻',     unlockScene: 'scene06', type: 'family' },
+  { from: 'shinji',  to: 'misaki',  label: '元交際相手', unlockScene: 'scene13', type: 'danger' },
+  { from: 'misaki',  to: 'kenichi', label: '不倫関係',   unlockScene: 'scene15', type: 'danger' },
+];
+
+function openKankeiScreen() {
+  renderKankeiBoard();
+  document.getElementById('kankei-screen').classList.remove('hidden');
+}
+
+function closeKankeiScreen() {
+  document.getElementById('kankei-screen').classList.add('hidden');
+}
+
+function renderKankeiBoard() {
+  const seen = state.seenScenes ?? [];
+  const svg       = document.getElementById('kankei-svg');
+  const nodesWrap = document.getElementById('kankei-nodes');
+  const progressEl = document.getElementById('kankei-progress');
+  svg.innerHTML       = '';
+  nodesWrap.innerHTML = '';
+
+  // 解放済みノードマップ
+  const unlockedNodeIds = new Set(
+    CH1_KANKEI_NODES.filter(n => seen.includes(n.unlockScene)).map(n => n.id)
+  );
+
+  // 進捗カウント（ノード + エッジ）
+  const totalItems    = CH1_KANKEI_NODES.length + CH1_KANKEI_EDGES.length + CH1_KANKEI_BADGES.length;
+  const unlockedItems =
+    CH1_KANKEI_NODES.filter(n => seen.includes(n.unlockScene)).length +
+    CH1_KANKEI_EDGES.filter(e => seen.includes(e.unlockScene)).length +
+    CH1_KANKEI_BADGES.filter(b => seen.includes(b.unlockScene)).length;
+  if (progressEl) progressEl.textContent = `${unlockedItems} / ${totalItems} 解明`;
+
+  // ── SVG ライン描画 ──────────────────────
+  CH1_KANKEI_EDGES.forEach(edge => {
+    const fromNode = CH1_KANKEI_NODES.find(n => n.id === edge.from);
+    const toNode   = CH1_KANKEI_NODES.find(n => n.id === edge.to);
+    if (!fromNode || !toNode) return;
+
+    const unlocked = seen.includes(edge.unlockScene)
+      && unlockedNodeIds.has(edge.from)
+      && unlockedNodeIds.has(edge.to);
+
+    // 線
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', fromNode.x);
+    line.setAttribute('y1', fromNode.y);
+    line.setAttribute('x2', toNode.x);
+    line.setAttribute('y2', toNode.y);
+    line.setAttribute('class', `kankei-line${unlocked ? ` kankei-line-${edge.type}` : ' kankei-line-locked'}`);
+    svg.appendChild(line);
+
+    if (!unlocked) return;
+
+    // ラベル背景＋テキスト（中間点）
+    const mx = (fromNode.x + toNode.x) / 2;
+    const my = (fromNode.y + toNode.y) / 2;
+    const fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    fo.setAttribute('x', mx - 8);
+    fo.setAttribute('y', my - 4);
+    fo.setAttribute('width', '16');
+    fo.setAttribute('height', '8');
+    fo.setAttribute('class', 'kankei-edge-fo');
+    const span = document.createElement('span');
+    span.className = `kankei-edge-label kankei-edge-label-${edge.type}`;
+    span.textContent = edge.label;
+    fo.appendChild(span);
+    svg.appendChild(fo);
+  });
+
+  // ── キャラノード描画 ─────────────────────
+  CH1_KANKEI_NODES.forEach(node => {
+    const unlocked = unlockedNodeIds.has(node.id);
+    const nodeBadges = CH1_KANKEI_BADGES.filter(
+      b => b.nodeId === node.id && seen.includes(b.unlockScene)
+    );
+
+    const div = document.createElement('div');
+    div.className = `kankei-node${unlocked ? ' kankei-node-unlocked' : ' kankei-node-locked'}`;
+    div.style.left = `${node.x}%`;
+    div.style.top  = `${node.y}%`;
+
+    div.innerHTML = `
+      <div class="kankei-portrait">
+        ${unlocked
+          ? `<img src="${node.img}" alt="${node.name}">`
+          : `<div class="kankei-locked-icon">?</div>`}
+      </div>
+      <div class="kankei-name">${unlocked ? node.name : '???'}</div>
+      ${nodeBadges.map(b =>
+        `<div class="kankei-badge kankei-badge-${b.type}">${b.label}</div>`
+      ).join('')}
+    `;
+    nodesWrap.appendChild(div);
+  });
+}
+
+// イベント登録
+document.getElementById('kankei-open-btn').addEventListener('click', () => {
+  openKankeiScreen();
+});
+document.getElementById('kankei-close-btn').addEventListener('click', () => {
+  closeKankeiScreen();
+});
 
 // ストーリー閲覧中に追加されたジェネレータータイルの通知を赤字ポップアップで表示
 function _showPendingGenLvUpNotices() {
