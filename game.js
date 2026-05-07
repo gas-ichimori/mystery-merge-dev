@@ -2463,9 +2463,15 @@ document.getElementById('dbf-diamond').addEventListener('change', function() {
 // フロートの 🕵️全解放 ボタン
 document.getElementById('dbf-kankei').addEventListener('click', () => {
   if (!state.seenScenes) state.seenScenes = [];
-  CH1_KANKEI_NODES.forEach(n => { if (!state.seenScenes.includes(n.unlockScene)) state.seenScenes.push(n.unlockScene); });
-  CH1_KANKEI_EDGES.forEach(e => { if (!state.seenScenes.includes(e.unlockScene)) state.seenScenes.push(e.unlockScene); });
-  CH1_KANKEI_BADGES.forEach(b => { if (!state.seenScenes.includes(b.unlockScene)) state.seenScenes.push(b.unlockScene); });
+  const allKankei = [
+    ...CH1_KANKEI_NODES, ...CH1_KANKEI_EDGES, ...CH1_KANKEI_BADGES,
+    ...CH2_KANKEI_NODES, ...CH2_KANKEI_EDGES, ...CH2_KANKEI_BADGES,
+  ];
+  allKankei.forEach(item => {
+    if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
+  });
+  // 第二章プルダウンを表示するため解放フラグもオン
+  eventState.fireGenUnlocked = true;
   openKankeiScreen();
 });
 
