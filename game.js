@@ -5653,7 +5653,7 @@ const CH2_KANKEI_NODES = [
   { id: 'tatsuo', name: 'タツオ', sub: '44歳', img: 'img/Chapter2/Chara/image_merge_order_chara_10.png',  unlockScene: 'c2s03', x: 78, y: 75 },
   { id: 'yuu',    name: 'ユウ',   sub: '10歳', img: 'img/Chapter2/Chara/image_merge_order_chara_08.png',  unlockScene: 'c2s05', x: 22, y: 68 },
   { id: 'haruto', name: 'ハルト', sub: '20歳', img: 'img/Chapter2/Chara/image_merge_order_chara_09a.png', unlockScene: 'c2s07', x: 78, y: 20 },
-  { id: 'jin',    name: 'ジン',   sub: '39歳', img: 'img/Chapter2/Chara/image_merge_order_chara_06.png',  unlockScene: 'c2s09', x: 50, y: 46 },
+  { id: 'jin',    name: 'ジン',   sub: '39歳', img: 'img/Chapter2/Chara/image_merge_order_chara_06a.png', unlockScene: 'c2s09', x: 50, y: 46 },
 ];
 
 const CH2_KANKEI_BADGES = [
@@ -5667,7 +5667,7 @@ const CH2_KANKEI_BADGES = [
 
 const CH2_KANKEI_EDGES = [
   { from: 'yuu',    to: 'rina',   label: '母と息子', unlockScene: 'c2s05', type: 'family'   },
-  { from: 'tatsuo', to: 'jin',    label: '脅迫',     unlockScene: 'c2s12', type: 'criminal' },
+  { from: 'tatsuo', to: 'jin',    label: '脅迫',     unlockScene: 'c2s12', type: 'danger'   },
   { from: 'haruto', to: 'jin',    label: '強制命令', unlockScene: 'c2s13', type: 'danger'   },
   { from: 'jin',    to: 'rina',   label: '嫌がらせ', unlockScene: 'c2s14', type: 'danger'   },
   { from: 'jin',    to: 'yuu',    label: '嫌がらせ', unlockScene: 'c2s14', type: 'danger'   },

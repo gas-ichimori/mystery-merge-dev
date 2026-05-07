@@ -2885,6 +2885,13 @@ body {
   stroke-width: 0.95;
   opacity: 0.95;
 }
+/* 犯罪線 */
+.kankei-line-criminal {
+  stroke: #ff2222;
+  stroke-width: 1.1;
+  opacity: 0.95;
+  stroke-dasharray: 3 2;
+}
 /* 通常線 */
 .kankei-line-normal {
   stroke: rgba(220,210,180,0.85);
