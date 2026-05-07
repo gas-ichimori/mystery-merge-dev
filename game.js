@@ -5662,7 +5662,7 @@ const CH2_KANKEI_BADGES = [
   { nodeId: 'rina',   label: '母',           unlockScene: 'c2s05', type: 'normal'   },
   { nodeId: 'haruto', label: '学生',         unlockScene: 'c2s07', type: 'normal'   },
   { nodeId: 'jin',    label: '不動産管理人', unlockScene: 'c2s09', type: 'normal'   },
-  { nodeId: 'jin',    label: 'ハルトの上司', unlockScene: 'c2s09', type: 'warning'  },
+  { nodeId: 'jin',    label: '犯人・逃亡',   unlockScene: 'c2s19', type: 'criminal' },
 ];
 
 const CH2_KANKEI_EDGES = [
