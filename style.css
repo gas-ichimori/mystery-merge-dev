@@ -1940,14 +1940,66 @@ body {
   cursor: pointer;
   min-width: 0;
 }
-#debug-btn {
-  background: rgba(60,20,20,0.7);
-  color: #f0e070;
-  border: 1px solid rgba(200,150,50,0.5);
-  border-radius: 6px;
-  padding: 3px 8px;
-  font-size: 14px;
+/* ── デバッグフロートパネル（常時左下表示） ── */
+#debug-float {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 3000;
+  background: rgba(5, 15, 40, 0.38);
+  border: 1px solid rgba(100, 170, 255, 0.22);
+  border-radius: 10px;
+  padding: 6px 8px 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0.28;
+  transition: opacity 0.2s;
+  font-size: 10px;
+  color: rgba(190, 220, 255, 0.92);
+  backdrop-filter: blur(3px);
+  user-select: none;
+  -webkit-user-select: none;
+}
+#debug-float:active,
+#debug-float:focus-within {
+  opacity: 1;
+}
+.dbf-title {
+  font-size: 9px;
+  text-align: center;
+  letter-spacing: 0.06em;
+  color: rgba(150, 200, 255, 0.7);
+  margin-bottom: 1px;
+}
+.dbf-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   cursor: pointer;
+  line-height: 1.2;
+}
+.dbf-check input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+  accent-color: #60b0ff;
+  flex-shrink: 0;
+}
+.dbf-btn {
+  background: rgba(40, 80, 160, 0.5);
+  border: 1px solid rgba(80, 140, 240, 0.4);
+  border-radius: 5px;
+  color: rgba(190, 220, 255, 0.9);
+  font-size: 9px;
+  padding: 3px 5px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  line-height: 1.2;
+}
+.dbf-btn:active {
+  background: rgba(60, 110, 200, 0.7);
 }
 
 /* ===== タイトル画面 ===== */
@@ -2781,29 +2833,29 @@ body {
 .kankei-line {
   fill: none;
   stroke-width: 0.5;
-  stroke-dasharray: 2.5 2;
+  /* stroke-dasharray はJS側で制御（locked→点線、unlocked→実線） */
 }
-.kankei-line-locked { stroke: rgba(255,255,255,0.1); }
+.kankei-line-locked {
+  stroke: rgba(255,255,255,0.18);
+  stroke-dasharray: 2 2;
+}
 
 /* 家族線：青みがかった糸 */
 .kankei-line-family {
   stroke: #8ecfff;
-  stroke-width: 0.8;
-  stroke-dasharray: none;
-  opacity: 0.85;
+  stroke-width: 0.9;
+  opacity: 0.9;
 }
 /* 危険線：赤い糸 */
 .kankei-line-danger {
   stroke: #ff5858;
-  stroke-width: 0.85;
-  stroke-dasharray: none;
-  opacity: 0.9;
+  stroke-width: 0.95;
+  opacity: 0.95;
 }
 /* 通常線 */
 .kankei-line-normal {
-  stroke: rgba(220,210,180,0.8);
-  stroke-width: 0.7;
-  stroke-dasharray: none;
+  stroke: rgba(220,210,180,0.85);
+  stroke-width: 0.75;
 }
 
 /* ── キャラノード ── */
@@ -2834,10 +2886,10 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
 
-/* フレーム: portrait の兄弟 → クリップされない */
+/* フレーム: portrait の兄弟 → クリップされない（-9px の 2.5倍 = -22px） */
 .kankei-frame {
   position: absolute;
-  inset: -9px;
+  inset: -22px;
   background: url('img/UI/image_merge_kankei_frame.png') center / contain no-repeat;
   pointer-events: none;
   z-index: 2;
@@ -2891,14 +2943,14 @@ body {
   gap: 2px;
 }
 
-/* ノードバッジ（ポストイット画像背景） */
+/* ノードバッジ（ポストイット画像背景）：名前と同じ14pxフォント */
 .kankei-badge {
   font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 10px;
-  padding: 4px 8px 5px;
+  font-size: 14px;
+  padding: 4px 9px 6px;
   white-space: nowrap;
   text-align: center;
-  max-width: 90px;
+  max-width: 100px;
   box-shadow: 1px 2px 5px rgba(0,0,0,0.55);
   opacity: 0;
   animation: kankei-badge-pop 0.35s cubic-bezier(0.22,1.4,0.5,1) forwards;

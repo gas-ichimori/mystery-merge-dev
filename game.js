@@ -2439,24 +2439,34 @@ const debugState = {
   infiniteDiamond: false,
 };
 
-document.getElementById('debug-btn').addEventListener('click', () => {
+// デバッグフロート（常時左下表示）
+document.getElementById('dbf-open').addEventListener('click', () => {
   document.getElementById('debug-screen').classList.remove('hidden');
 });
 document.getElementById('debug-close').addEventListener('click', () => {
   document.getElementById('debug-screen').classList.add('hidden');
 });
 
-document.getElementById('debug-infinite-energy').addEventListener('change', function() {
+document.getElementById('dbf-energy').addEventListener('change', function() {
   debugState.infiniteEnergy = this.checked;
   if (this.checked) { state.energy = 99999; state.maxEnergy = 99999; renderEventHeader(); }
 });
-document.getElementById('debug-infinite-coin').addEventListener('change', function() {
+document.getElementById('dbf-coin').addEventListener('change', function() {
   debugState.infiniteCoin = this.checked;
   if (this.checked) { state.coin = 9999999; renderEventHeader(); }
 });
-document.getElementById('debug-infinite-diamond').addEventListener('change', function() {
+document.getElementById('dbf-diamond').addEventListener('change', function() {
   debugState.infiniteDiamond = this.checked;
   if (this.checked) { state.diamond = 9999999; renderEventHeader(); }
+});
+
+// フロートの 🕵️全解放 ボタン
+document.getElementById('dbf-kankei').addEventListener('click', () => {
+  if (!state.seenScenes) state.seenScenes = [];
+  CH1_KANKEI_NODES.forEach(n => { if (!state.seenScenes.includes(n.unlockScene)) state.seenScenes.push(n.unlockScene); });
+  CH1_KANKEI_EDGES.forEach(e => { if (!state.seenScenes.includes(e.unlockScene)) state.seenScenes.push(e.unlockScene); });
+  CH1_KANKEI_BADGES.forEach(b => { if (!state.seenScenes.includes(b.unlockScene)) state.seenScenes.push(b.unlockScene); });
+  openKankeiScreen();
 });
 
 document.getElementById('debug-gen-lv-up').addEventListener('click', () => {
@@ -5440,10 +5450,9 @@ let guideState = null; // null=非アクティブ
 
 function isGuideInProgress() { return guideState !== null; }
 
-// デバッグ画面を開いているか、いずれかのデバッグフラグが有効なら true
+// いずれかのデバッグフラグが有効なら true
 function isDebugModeActive() {
-  return !document.getElementById('debug-screen').classList.contains('hidden') ||
-    debugState.infiniteEnergy || debugState.infiniteCoin || debugState.infiniteDiamond;
+  return debugState.infiniteEnergy || debugState.infiniteCoin || debugState.infiniteDiamond;
 }
 
 function startGuide(messages, attentionSelector, onDone) {
@@ -5749,9 +5758,9 @@ function renderKankeiBoard() {
     line.setAttribute('class', lineClass);
     if (unlocked) {
       line.setAttribute('filter', 'url(#kankei-line-shadow)');
-      line.style.strokeDasharray  = len;
-      line.style.strokeDashoffset = len;
-      line.style.animation = `kankei-line-draw 0.6s ease-out ${lineDelay}ms forwards`;
+      // opacity フェードイン（stroke-dasharray競合を回避するため）
+      line.style.opacity = '0';
+      line.style.animation = `kankei-fade-in 0.8s ease-out ${lineDelay}ms forwards`;
     }
     svg.appendChild(line);
 
@@ -5784,8 +5793,9 @@ function renderKankeiBoard() {
     const my = (fromNode.y + toNode.y) / 2;
     const lines      = splitEdgeLabel(edge.label);
     const multiLine  = lines.length > 1;
-    const noteW      = Math.max(16, Math.max(...lines.map(l => l.length)) * 3.6);
-    const noteH      = multiLine ? 11 : 7.5;
+    // バッジと同サイズ（font-size 4.5 SVG units ≈ 14px）
+    const noteW      = Math.max(22, Math.max(...lines.map(l => l.length)) * 4.5 + 4);
+    const noteH      = multiLine ? 14 : 8.5;
     const noteSrc    = NOTE_SRCS[edge.type]  || NOTE_SRCS.normal;
     const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
     const labelDelay = delay + 500;
@@ -5804,7 +5814,7 @@ function renderKankeiBoard() {
     // テキスト（ポストイットの上）
     const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     textEl.setAttribute('text-anchor', 'middle');
-    textEl.setAttribute('font-size',   '3.8');
+    textEl.setAttribute('font-size',   '4.5');
     textEl.setAttribute('font-family', "'Zen Kurenaido', sans-serif");
     textEl.setAttribute('fill',        textColor);
     textEl.setAttribute('pointer-events', 'none');
@@ -5813,18 +5823,18 @@ function renderKankeiBoard() {
 
     if (multiLine) {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my - 1.2);
+      textEl.setAttribute('y', my - 2.0);
       const t1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
       t1.setAttribute('x', mx); t1.setAttribute('dy', '0');
       t1.textContent = lines[0];
       const t2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-      t2.setAttribute('x', mx); t2.setAttribute('dy', '4.5');
+      t2.setAttribute('x', mx); t2.setAttribute('dy', '5.5');
       t2.textContent = lines[1];
       textEl.appendChild(t1);
       textEl.appendChild(t2);
     } else {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my + 2.6);
+      textEl.setAttribute('y', my + 3.2);
       textEl.textContent = lines[0];
     }
     svg.appendChild(textEl);

@@ -83,10 +83,6 @@
         <span class="settings-icon-emoji">👥</span>
         <span class="settings-icon-label">登場人物</span>
       </button>
-      <button class="settings-icon-btn" id="debug-btn">
-        <span class="settings-icon-emoji">🐛</span>
-        <span class="settings-icon-label">デバッグ</span>
-      </button>
     </div>
   </div>
 
@@ -125,18 +121,6 @@
       <span id="debug-title">🐛 デバッグモード</span>
     </div>
     <div id="debug-body">
-      <label class="debug-toggle-row">
-        <span>体力を無制限にする</span>
-        <input type="checkbox" id="debug-infinite-energy">
-      </label>
-      <label class="debug-toggle-row">
-        <span>お金を無制限にする</span>
-        <input type="checkbox" id="debug-infinite-coin">
-      </label>
-      <label class="debug-toggle-row">
-        <span>ダイヤを無制限にする</span>
-        <input type="checkbox" id="debug-infinite-diamond">
-      </label>
       <div class="debug-section-label">ポップアップ文字確認</div>
       <div id="debug-gen-level-row">
         <div class="debug-gen-row">
@@ -464,6 +448,16 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 常時表示デバッグフロート（左下固定・薄い） -->
+  <div id="debug-float">
+    <div class="dbf-title">🐛 DEBUG</div>
+    <label class="dbf-check"><input type="checkbox" id="dbf-energy"><span>⚡∞</span></label>
+    <label class="dbf-check"><input type="checkbox" id="dbf-coin"><span>💰∞</span></label>
+    <label class="dbf-check"><input type="checkbox" id="dbf-diamond"><span>💎∞</span></label>
+    <button id="dbf-kankei" class="dbf-btn">🕵️全解放</button>
+    <button id="dbf-open" class="dbf-btn">詳細▶</button>
   </div>
 
   <!-- アイテム使用モーダル -->
