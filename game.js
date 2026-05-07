@@ -2466,12 +2466,14 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
   const allKankei = [
     ...CH1_KANKEI_NODES, ...CH1_KANKEI_EDGES, ...CH1_KANKEI_BADGES,
     ...CH2_KANKEI_NODES, ...CH2_KANKEI_EDGES, ...CH2_KANKEI_BADGES,
+    ...CH3_KANKEI_NODES, ...CH3_KANKEI_EDGES, ...CH3_KANKEI_BADGES,
   ];
   allKankei.forEach(item => {
     if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
   });
-  // 第二章プルダウンを表示するため解放フラグもオン
-  eventState.fireGenUnlocked = true;
+  // 各章プルダウンを表示するため解放フラグもオン
+  eventState.fireGenUnlocked  = true;
+  eventState.kanteGenUnlocked = true;
   openKankeiScreen();
 });
 
@@ -5673,6 +5675,54 @@ const CH2_KANKEI_EDGES = [
   { from: 'jin',    to: 'yuu',    label: '嫌がらせ', unlockScene: 'c2s14', type: 'danger'   },
 ];
 
+// ── 第三章データ ──
+const CH3_KANKEI_NODES = [
+  { id: 'keisuke', name: 'ケイスケ', sub: '故人',  noImg: true, unlockScene: 'c3s01', x: 50, y: 10 },
+  { id: 'fumiko',  name: 'フミコ',   sub: '71歳',  img: 'img/Chapter3/chara/image_merge_order_chara_15.png', unlockScene: 'c3s01', x: 18, y: 35 },
+  { id: 'kouji',   name: 'コウジ',   sub: '47歳',  img: 'img/Chapter3/chara/image_merge_order_chara_16.png', unlockScene: 'c3s03', x: 25, y: 60 },
+  { id: 'sachiko', name: 'サチコ',   sub: '44歳',  img: 'img/Chapter3/chara/image_merge_order_chara_17.png', unlockScene: 'c3s04', x: 65, y: 60 },
+  { id: 'midori',  name: 'ミドリ',   sub: '52歳',  img: 'img/Chapter3/chara/image_merge_order_chara_19.png', unlockScene: 'c3s05', x: 68, y: 82 },
+  { id: 'ryota',   name: 'リョウタ', sub: '24歳',  img: 'img/Chapter3/chara/image_merge_order_chara_20.png', unlockScene: 'c3s06', x: 12, y: 82 },
+  { id: 'nobuo',   name: 'ノブオ',   sub: '67歳',  img: 'img/Chapter3/chara/image_merge_order_chara_18.png', unlockScene: 'c3s08', x: 46, y: 82 },
+  { id: 'akira',   name: 'アキラ',   sub: '40歳',  img: 'img/Chapter3/chara/image_merge_order_chara_21.png', unlockScene: 'c3s09', x: 82, y: 35 },
+];
+
+const CH3_KANKEI_BADGES = [
+  { nodeId: 'fumiko',  label: '依頼人',      unlockScene: 'c3s01', type: 'normal'   },
+  { nodeId: 'fumiko',  label: '故人の妻',    unlockScene: 'c3s01', type: 'normal'   },
+  { nodeId: 'keisuke', label: '故人',        unlockScene: 'c3s01', type: 'normal'   },
+  { nodeId: 'kouji',   label: '長男',        unlockScene: 'c3s03', type: 'normal'   },
+  { nodeId: 'kouji',   label: '故人の長男',  unlockScene: 'c3s03', type: 'normal'   },
+  { nodeId: 'sachiko', label: '長女',        unlockScene: 'c3s04', type: 'normal'   },
+  { nodeId: 'sachiko', label: '故人の長女',  unlockScene: 'c3s04', type: 'normal'   },
+  { nodeId: 'midori',  label: '番頭',        unlockScene: 'c3s05', type: 'normal'   },
+  { nodeId: 'ryota',   label: '息子',        unlockScene: 'c3s06', type: 'normal'   },
+  { nodeId: 'ryota',   label: '故人の孫',    unlockScene: 'c3s06', type: 'normal'   },
+  { nodeId: 'nobuo',   label: '弁護士',      unlockScene: 'c3s08', type: 'normal'   },
+  { nodeId: 'akira',   label: '次男？',      unlockScene: 'c3s09', type: 'warning',  hideIfScene: 'c3s20' },
+  { nodeId: 'akira',   label: '故人の次男？',unlockScene: 'c3s09', type: 'warning',  hideIfScene: 'c3s20' },
+  { nodeId: 'akira',   label: '次男',        unlockScene: 'c3s20', type: 'normal'   },
+  { nodeId: 'akira',   label: '故人の次男',  unlockScene: 'c3s20', type: 'normal'   },
+  { nodeId: 'akira',   label: '隠し子',      unlockScene: 'c3s20', type: 'warning'  },
+  { nodeId: 'nobuo',   label: '犯人',        unlockScene: 'c3s22', type: 'criminal' },
+];
+
+const CH3_KANKEI_EDGES = [
+  { from: 'fumiko',  to: 'keisuke', label: '夫婦',         unlockScene: 'c3s01', type: 'family'   },
+  { from: 'fumiko',  to: 'kouji',   label: '母と息子',     unlockScene: 'c3s03', type: 'family'   },
+  { from: 'keisuke', to: 'kouji',   label: '父と息子',     unlockScene: 'c3s03', type: 'family'   },
+  { from: 'fumiko',  to: 'sachiko', label: '母と娘',       unlockScene: 'c3s04', type: 'family'   },
+  { from: 'kouji',   to: 'sachiko', label: '兄妹',         unlockScene: 'c3s04', type: 'family'   },
+  { from: 'keisuke', to: 'sachiko', label: '父と娘',       unlockScene: 'c3s04', type: 'family'   },
+  { from: 'kouji',   to: 'ryota',   label: '父と息子',     unlockScene: 'c3s06', type: 'family'   },
+  { from: 'fumiko',  to: 'ryota',   label: '祖母と孫',     unlockScene: 'c3s06', type: 'family'   },
+  { from: 'nobuo',   to: 'keisuke', label: '依頼',         unlockScene: 'c3s08', type: 'normal',   hideIfScene: 'c3s21' },
+  { from: 'nobuo',   to: 'midori',  label: '脅迫',         unlockScene: 'c3s17', type: 'danger'   },
+  { from: 'nobuo',   to: 'keisuke', label: '脅迫',         unlockScene: 'c3s21', type: 'criminal' },
+  { from: 'nobuo',   to: 'kouji',   label: '共犯',         unlockScene: 'c3s23', type: 'danger'   },
+  { from: 'keisuke', to: 'midori',  label: '遺言を預かる', unlockScene: 'c3s24', type: 'normal'   },
+];
+
 // ヤスは相関図に不要のため除外
 const CH1_KANKEI_NODES = [
   { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 14 },
@@ -5722,11 +5772,19 @@ function updateKankeiChapterSelect() {
   const sel = document.getElementById('kankei-chapter-select');
   if (!sel) return;
   const has2 = eventState.fireGenUnlocked;
+  const has3 = eventState.kanteGenUnlocked;
   // 第二章オプションの有無を同期
   if (has2 && !sel.querySelector('[value="2"]')) {
     const opt = document.createElement('option');
     opt.value = '2';
     opt.textContent = '第二章　相関図';
+    sel.appendChild(opt);
+  }
+  // 第三章オプションの有無を同期
+  if (has3 && !sel.querySelector('[value="3"]')) {
+    const opt = document.createElement('option');
+    opt.value = '3';
+    opt.textContent = '第三章　相関図';
     sel.appendChild(opt);
   }
   sel.value = String(currentKankeiChapter);
@@ -5743,6 +5801,9 @@ function updateKankeiAttention() {
     ...CH2_KANKEI_NODES.map(n => n.unlockScene),
     ...CH2_KANKEI_EDGES.map(e => e.unlockScene),
     ...CH2_KANKEI_BADGES.map(b => b.unlockScene),
+    ...CH3_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH3_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH3_KANKEI_BADGES.map(b => b.unlockScene),
   ];
   const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
   const btn = document.getElementById('kankei-open-btn');
@@ -5773,9 +5834,9 @@ function renderKankeiBoard() {
   nodesWrap.innerHTML = '';
 
   // 章に応じてデータを切り替え
-  const NODES  = currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
-  const EDGES  = currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
-  const BADGES = currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
+  const NODES  = currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
+  const EDGES  = currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
+  const BADGES = currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
 
   // 解放済みノードセット
   const unlockedNodeIds = new Set(
@@ -5816,6 +5877,7 @@ function renderKankeiBoard() {
     if (!fromNode || !toNode) return;
 
     const unlocked = seen.includes(edge.unlockScene)
+      && !(edge.hideIfScene && seen.includes(edge.hideIfScene))
       && unlockedNodeIds.has(edge.from) && unlockedNodeIds.has(edge.to);
 
     const lineClass = `kankei-line${unlocked ? ` kankei-line-${edge.type}` : ' kankei-line-locked'}`;
@@ -5901,7 +5963,11 @@ function renderKankeiBoard() {
   let nodeDelay = 80;
   NODES.forEach(node => {
     const unlocked   = unlockedNodeIds.has(node.id);
-    const nodeBadges = BADGES.filter(b => b.nodeId === node.id && seen.includes(b.unlockScene));
+    const nodeBadges = BADGES.filter(b =>
+      b.nodeId === node.id &&
+      seen.includes(b.unlockScene) &&
+      !(b.hideIfScene && seen.includes(b.hideIfScene))
+    );
 
     const div = document.createElement('div');
     div.className = `kankei-node${unlocked ? ' kankei-node-unlocked' : ' kankei-node-locked'}`;
@@ -5918,13 +5984,16 @@ function renderKankeiBoard() {
           : 'img/Chapter1/Chara/image_merge_order_chara_05.png')
       : node.img;
 
+    // portrait内コンテンツ（noImg=true は顔写真なし・故人プレースホルダー）
+    const portraitInner = unlocked
+      ? (node.noImg ? `<div class="kankei-no-photo">故人</div>` : `<img src="${nodeImg}" alt="${node.name}">`)
+      : `<div class="kankei-locked-icon">?</div>`;
+
     // portrait-wrap構造: frameはportraitの兄弟 → overflow:hiddenに切られない
     div.innerHTML = `
       <div class="kankei-portrait-wrap">
         <div class="kankei-portrait">
-          ${unlocked
-            ? `<img src="${nodeImg}" alt="${node.name}">`
-            : `<div class="kankei-locked-icon">?</div>`}
+          ${portraitInner}
         </div>
         <div class="kankei-frame${unlocked ? '' : ' kankei-frame-locked'}"></div>
       </div>
