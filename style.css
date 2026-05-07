@@ -2397,7 +2397,7 @@ body {
 #story-screen.hidden { display: none; }
 
 .story-screen-panel {
-  background: url('img/UI/image_merge_story_bg.png') center / cover no-repeat,
+  background: url('img/UI/image_merge_story_bg.png') top center / 100% 900px no-repeat,
               rgba(8, 16, 52, 0.97);
   border: 1px solid rgba(100, 150, 255, 0.35);
   border-radius: 16px;
@@ -2452,7 +2452,8 @@ body {
   border: none;
   padding: 0;
   cursor: pointer;
-  display: block;
+  display: flex;
+  justify-content: center;
   transition: opacity 0.18s, transform 0.12s;
 }
 .story-read-btn-img {
@@ -2496,6 +2497,7 @@ body {
   color: #a0c4ff;
   cursor: pointer;
   font-size: 12px;
+  text-align: center;
   padding: 4px 0;
   user-select: none;
   list-style: none;
