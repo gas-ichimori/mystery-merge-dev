@@ -5781,10 +5781,10 @@ function renderKankeiBoard() {
     const my = (fromNode.y + toNode.y) / 2;
     const lines      = splitEdgeLabel(edge.label);
     const multiLine  = lines.length > 1;
-    // 10px CSSフォントに合わせたサイズ計算
-    // SVGはpreserveAspectRatio=none: x方向≈3.6px/unit, y方向≈5.2px/unit
-    const noteW      = Math.max(14, Math.max(...lines.map(l => l.length)) * 2.9 + 3);
-    const noteH      = multiLine ? 6.5 : 3.8;
+    // フォントサイズはSVG units（font-size="2"）に合わせたサイズ計算
+    // 1文字 ≈ 2 SVG units 幅（全角日本語）
+    const noteW      = Math.max(12, Math.max(...lines.map(l => l.length)) * 2.2 + 2);
+    const noteH      = multiLine ? 6.0 : 3.4;
     const noteSrc    = NOTE_SRCS[edge.type]  || NOTE_SRCS.normal;
     const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
     const labelDelay = delay + 500;
@@ -5804,25 +5804,25 @@ function renderKankeiBoard() {
     textEl.setAttribute('text-anchor', 'middle');
     textEl.setAttribute('font-family', "'Zen Kurenaido', sans-serif");
     textEl.setAttribute('fill',        textColor);
-    textEl.setAttribute('stroke',      'none');   // 透明な縁取りを防ぐ
+    textEl.setAttribute('stroke',        'none');      // 透明な縁取りを防ぐ
     textEl.setAttribute('pointer-events', 'none');
-    textEl.style.fontSize  = '10px';              // 線上ラベルは10px
+    textEl.setAttribute('font-size',      '2');         // SVG units（画面サイズに追従）
     textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms both`;
 
     if (multiLine) {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my - 0.5);
+      textEl.setAttribute('y', my - 0.4);
       const t1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
       t1.setAttribute('x', mx); t1.setAttribute('dy', '0');
       t1.textContent = lines[0];
       const t2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-      t2.setAttribute('x', mx); t2.setAttribute('dy', '2.3');
+      t2.setAttribute('x', mx); t2.setAttribute('dy', '2.2');
       t2.textContent = lines[1];
       textEl.appendChild(t1);
       textEl.appendChild(t2);
     } else {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my + 0.7);
+      textEl.setAttribute('y', my + 0.6);
       textEl.textContent = lines[0];
     }
     svg.appendChild(textEl);
