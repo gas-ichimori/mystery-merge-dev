@@ -2796,22 +2796,33 @@ body {
 }
 
 #kankei-close-btn {
-  background: rgba(255,255,255,0.12);
-  color: #eee;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 13px;
-  font-family: 'Zen Kurenaido', sans-serif;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  padding: 3px;
+  flex-shrink: 0;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+#kankei-close-btn:active { background: rgba(255,255,255,0.1); }
 
-#kankei-title {
+#kankei-chapter-select {
   flex: 1;
   text-align: center;
+  background: rgba(0,0,0,0.4);
   color: #f9e4a0;
-  font-size: 16px;
-  letter-spacing: 0.12em;
+  font-size: 15px;
+  font-family: 'Zen Kurenaido', sans-serif;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(255,220,120,0.35);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  outline: none;
 }
 
 #kankei-progress {

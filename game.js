@@ -5637,8 +5637,15 @@ function closeStoryScreen() {
 }
 
 // ========================================
-// 相関図システム（第一章）
+// 相関図システム
 // ========================================
+let currentKankeiChapter = 1; // 現在表示中の章
+
+// ── 第二章データ（未実装：キャラ追加時に追記）──
+const CH2_KANKEI_NODES  = [];
+const CH2_KANKEI_BADGES = [];
+const CH2_KANKEI_EDGES  = [];
+
 // ヤスは相関図に不要のため除外
 const CH1_KANKEI_NODES = [
   { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 14 },
@@ -5675,13 +5682,27 @@ const CH1_KANKEI_EDGES = [
 ];
 
 function openKankeiScreen() {
-  // hidden解除 → その後レンダリングの順で呼ぶことで
-  // アニメーションが display:none 中に消費されるのを防ぐ
   document.getElementById('kankei-screen').classList.remove('hidden');
+  updateKankeiChapterSelect();
   renderKankeiBoard();
   // 閲覧済みとしてマーク → アテンションバッジを消す
   eventState.kankeiViewedScenes = [...(state.seenScenes ?? [])];
   updateKankeiAttention();
+}
+
+// 章セレクトの選択肢を更新（第二章解放後に追加）
+function updateKankeiChapterSelect() {
+  const sel = document.getElementById('kankei-chapter-select');
+  if (!sel) return;
+  const has2 = eventState.fireGenUnlocked;
+  // 第二章オプションの有無を同期
+  if (has2 && !sel.querySelector('[value="2"]')) {
+    const opt = document.createElement('option');
+    opt.value = '2';
+    opt.textContent = '第二章　相関図';
+    sel.appendChild(opt);
+  }
+  sel.value = String(currentKankeiChapter);
 }
 
 // 相関図の更新アテンション: 新アイテム解放時に kankei-open-btn に赤バッジを表示
@@ -5721,17 +5742,22 @@ function renderKankeiBoard() {
   svg.innerHTML       = '';
   nodesWrap.innerHTML = '';
 
+  // 章に応じてデータを切り替え
+  const NODES  = currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
+  const EDGES  = currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
+  const BADGES = currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
+
   // 解放済みノードセット
   const unlockedNodeIds = new Set(
-    CH1_KANKEI_NODES.filter(n => seen.includes(n.unlockScene)).map(n => n.id)
+    NODES.filter(n => seen.includes(n.unlockScene)).map(n => n.id)
   );
 
   // 進捗
-  const totalItems    = CH1_KANKEI_NODES.length + CH1_KANKEI_EDGES.length + CH1_KANKEI_BADGES.length;
+  const totalItems    = NODES.length + EDGES.length + BADGES.length;
   const unlockedItems =
-    CH1_KANKEI_NODES.filter(n => seen.includes(n.unlockScene)).length +
-    CH1_KANKEI_EDGES.filter(e => seen.includes(e.unlockScene)).length +
-    CH1_KANKEI_BADGES.filter(b => seen.includes(b.unlockScene)).length;
+    NODES.filter(n => seen.includes(n.unlockScene)).length +
+    EDGES.filter(e => seen.includes(e.unlockScene)).length +
+    BADGES.filter(b => seen.includes(b.unlockScene)).length;
   if (progressEl) progressEl.textContent = `${unlockedItems} / ${totalItems} 解明`;
 
   // SVG defs: 不要（filterは水平線でbounding box高さ0になりレンダリング失敗するため廃止）
@@ -5754,9 +5780,9 @@ function renderKankeiBoard() {
   let lineDelay = 0;
   const labelQueue = [];
 
-  CH1_KANKEI_EDGES.forEach(edge => {
-    const fromNode = CH1_KANKEI_NODES.find(n => n.id === edge.from);
-    const toNode   = CH1_KANKEI_NODES.find(n => n.id === edge.to);
+  EDGES.forEach(edge => {
+    const fromNode = NODES.find(n => n.id === edge.from);
+    const toNode   = NODES.find(n => n.id === edge.to);
     if (!fromNode || !toNode) return;
 
     const unlocked = seen.includes(edge.unlockScene)
@@ -5843,9 +5869,9 @@ function renderKankeiBoard() {
 
   // ── Phase 3: キャラノード（HTML overlay）─────────────────────────
   let nodeDelay = 80;
-  CH1_KANKEI_NODES.forEach(node => {
+  NODES.forEach(node => {
     const unlocked   = unlockedNodeIds.has(node.id);
-    const nodeBadges = CH1_KANKEI_BADGES.filter(b => b.nodeId === node.id && seen.includes(b.unlockScene));
+    const nodeBadges = BADGES.filter(b => b.nodeId === node.id && seen.includes(b.unlockScene));
 
     const div = document.createElement('div');
     div.className = `kankei-node${unlocked ? ' kankei-node-unlocked' : ' kankei-node-locked'}`;
@@ -5889,6 +5915,10 @@ document.getElementById('kankei-open-btn').addEventListener('click', () => {
 });
 document.getElementById('kankei-close-btn').addEventListener('click', () => {
   closeKankeiScreen();
+});
+document.getElementById('kankei-chapter-select').addEventListener('change', (e) => {
+  currentKankeiChapter = Number(e.target.value);
+  renderKankeiBoard();
 });
 
 // ストーリー閲覧中に追加されたジェネレータータイルの通知を赤字ポップアップで表示
