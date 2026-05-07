@@ -5843,13 +5843,11 @@ function renderKankeiBoard() {
         <div class="kankei-frame${unlocked ? '' : ' kankei-frame-locked'}"></div>
       </div>
       <div class="kankei-name">${unlocked ? node.name : '???'}</div>
-      <!-- バッジ（関係フォント）は現在非表示
       <div class="kankei-badges">
         ${nodeBadges.map((b, bi) =>
           `<div class="kankei-badge kankei-badge-${b.type}" style="animation-delay:${nodeDelay + bi*60}ms">${b.label}</div>`
         ).join('')}
       </div>
-      -->
     `;
     nodesWrap.appendChild(div);
   });
