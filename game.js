@@ -5711,7 +5711,7 @@ const CH3_KANKEI_EDGES = [
   { from: 'fumiko',  to: 'keisuke', label: '夫婦',         unlockScene: 'c3s01', type: 'family'   },
   { from: 'fumiko',  to: 'kouji',   label: '母と息子',     unlockScene: 'c3s03', type: 'family'   },
   { from: 'keisuke', to: 'kouji',   label: '父と息子',     unlockScene: 'c3s03', type: 'family'   },
-  { from: 'fumiko',  to: 'sachiko', label: '母と娘',       unlockScene: 'c3s04', type: 'family'   },
+  { from: 'fumiko',  to: 'sachiko', label: '母と娘',       unlockScene: 'c3s04', type: 'family',  labelPos: 0.85 },
   { from: 'kouji',   to: 'sachiko', label: '兄妹',         unlockScene: 'c3s04', type: 'family'   },
   { from: 'keisuke', to: 'sachiko', label: '父と娘',       unlockScene: 'c3s04', type: 'family'   },
   { from: 'kouji',   to: 'ryota',   label: '父と息子',     unlockScene: 'c3s06', type: 'family'   },
@@ -5720,11 +5720,11 @@ const CH3_KANKEI_EDGES = [
   { from: 'keisuke', to: 'akira',  label: '父と息子？',   unlockScene: 'c3s09', type: 'warning',  hideIfScene: 'c3s20' },
   { from: 'nobuo',   to: 'midori',  label: '脅迫',         unlockScene: 'c3s17', type: 'danger'   },
   { from: 'keisuke', to: 'akira',  label: '父と息子',     unlockScene: 'c3s20', type: 'family'   },
-  { from: 'kouji',   to: 'akira',  label: '異母兄弟',     unlockScene: 'c3s20', type: 'family'   },
+  { from: 'kouji',   to: 'akira',  label: '異母兄弟',     unlockScene: 'c3s20', type: 'family',  labelPos: 0.55 },
   { from: 'sachiko', to: 'akira',  label: '異母姉弟',     unlockScene: 'c3s20', type: 'family'   },
   { from: 'nobuo',   to: 'keisuke', label: '脅迫',         unlockScene: 'c3s21', type: 'criminal' },
   { from: 'nobuo',   to: 'kouji',   label: '共犯',         unlockScene: 'c3s23', type: 'danger'   },
-  { from: 'keisuke', to: 'midori',  label: '遺言を預かる', unlockScene: 'c3s24', type: 'normal',  labelPos: 0.72 },
+  { from: 'keisuke', to: 'midori',  label: '遺言を預かる', unlockScene: 'c3s24', type: 'normal',  labelPos: 0.85 },
 ];
 
 // ヤスは相関図に不要のため除外
