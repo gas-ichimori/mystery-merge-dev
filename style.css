@@ -2418,6 +2418,7 @@ body {
   height: 32px;
   width: auto;
   object-fit: contain;
+  margin-left: 8px;
 }
 #story-screen-close-btn {
   background: none;
@@ -2429,6 +2430,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-right: 8px;
 }
 #story-screen-close-btn:active { background: rgba(255,255,255,0.1); }
 
