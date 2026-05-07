@@ -2823,6 +2823,11 @@ body {
   height: 100%;
   overflow: visible;
 }
+/* SVGテキストに stroke が継承されるのを防ぐ（透明枠の除去） */
+#kankei-svg text {
+  stroke: none;
+  stroke-width: 0;
+}
 
 #kankei-nodes {
   position: absolute;
@@ -2886,10 +2891,10 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
 
-/* フレーム: portrait の兄弟 → クリップされない（-9px の 2.5倍 = -22px） */
+/* フレーム: portrait の兄弟 → クリップされない（-22px × 1.25 = -28px） */
 .kankei-frame {
   position: absolute;
-  inset: -22px;
+  inset: -28px;
   background: url('img/UI/image_merge_kankei_frame.png') center / contain no-repeat;
   pointer-events: none;
   z-index: 2;
@@ -2926,7 +2931,10 @@ body {
   font-family: 'Zen Kurenaido', sans-serif;
   font-size: 14px;
   color: #f5e8c0;
-  text-shadow: 0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.8);
+  text-shadow: none;             /* 透明な枠に見える shadow を除去 */
+  background: rgba(0,0,0,0.45);
+  border-radius: 4px;
+  padding: 2px 6px 3px;
   text-align: center;
   white-space: nowrap;
   letter-spacing: 0.05em;
@@ -2943,15 +2951,15 @@ body {
   gap: 2px;
 }
 
-/* ノードバッジ（ポストイット画像背景）：名前と同じ14pxフォント */
+/* ノードバッジ（ポストイット画像背景）：2.5倍 = 35px */
 .kankei-badge {
   font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 14px;
-  padding: 4px 9px 6px;
+  font-size: 35px;
+  padding: 6px 14px 9px;
   white-space: nowrap;
   text-align: center;
-  max-width: 100px;
-  box-shadow: 1px 2px 5px rgba(0,0,0,0.55);
+  max-width: 160px;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.6);
   opacity: 0;
   animation: kankei-badge-pop 0.35s cubic-bezier(0.22,1.4,0.5,1) forwards;
   background-size: 100% 100%;

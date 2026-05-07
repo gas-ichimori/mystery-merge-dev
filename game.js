@@ -5758,9 +5758,9 @@ function renderKankeiBoard() {
     line.setAttribute('class', lineClass);
     if (unlocked) {
       line.setAttribute('filter', 'url(#kankei-line-shadow)');
-      // opacity フェードイン（stroke-dasharray競合を回避するため）
-      line.style.opacity = '0';
-      line.style.animation = `kankei-fade-in 0.8s ease-out ${lineDelay}ms forwards`;
+      // 'both' = 遅延中は from(opacity:0) を適用し、終了後も維持
+      // inline opacity を使わないことでアニメーション上書き問題を回避
+      line.style.animation = `kankei-fade-in 0.8s ease-out ${lineDelay}ms both`;
     }
     svg.appendChild(line);
 
@@ -5778,8 +5778,7 @@ function renderKankeiBoard() {
       pin.setAttribute('y', pt.y - pinSize / 2);
       pin.setAttribute('width',  pinSize);
       pin.setAttribute('height', pinSize);
-      pin.style.opacity = '0';
-      pin.style.animation = `kankei-fade-in 0.3s ease-out ${lineDelay + 60}ms forwards`;
+      pin.style.animation = `kankei-fade-in 0.3s ease-out ${lineDelay + 60}ms both`;
       svg.appendChild(pin);
     });
 
@@ -5793,9 +5792,10 @@ function renderKankeiBoard() {
     const my = (fromNode.y + toNode.y) / 2;
     const lines      = splitEdgeLabel(edge.label);
     const multiLine  = lines.length > 1;
-    // バッジと同サイズ（font-size 4.5 SVG units ≈ 14px）
-    const noteW      = Math.max(22, Math.max(...lines.map(l => l.length)) * 4.5 + 4);
-    const noteH      = multiLine ? 14 : 8.5;
+    // 14px CSSフォントに合わせたサイズ計算
+    // SVGはpreserveAspectRatio=none: x方向≈3.6px/unit, y方向≈5.2px/unit
+    const noteW      = Math.max(20, Math.max(...lines.map(l => l.length)) * 4.0 + 4);
+    const noteH      = multiLine ? 9.0 : 5.0;
     const noteSrc    = NOTE_SRCS[edge.type]  || NOTE_SRCS.normal;
     const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
     const labelDelay = delay + 500;
@@ -5807,34 +5807,33 @@ function renderKankeiBoard() {
     noteImg.setAttribute('y', my - noteH / 2);
     noteImg.setAttribute('width',  noteW);
     noteImg.setAttribute('height', noteH);
-    noteImg.style.opacity  = '0';
-    noteImg.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay}ms forwards`;
+    noteImg.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay}ms both`;
     svg.appendChild(noteImg);
 
     // テキスト（ポストイットの上）
     const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     textEl.setAttribute('text-anchor', 'middle');
-    textEl.setAttribute('font-size',   '4.5');
     textEl.setAttribute('font-family', "'Zen Kurenaido', sans-serif");
     textEl.setAttribute('fill',        textColor);
+    textEl.setAttribute('stroke',      'none');   // 透明な縁取りを防ぐ
     textEl.setAttribute('pointer-events', 'none');
-    textEl.style.opacity  = '0';
-    textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms forwards`;
+    textEl.style.fontSize  = '14px';              // CSSピクセルで統一
+    textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms both`;
 
     if (multiLine) {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my - 2.0);
+      textEl.setAttribute('y', my - 1.1);
       const t1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
       t1.setAttribute('x', mx); t1.setAttribute('dy', '0');
       t1.textContent = lines[0];
       const t2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-      t2.setAttribute('x', mx); t2.setAttribute('dy', '5.5');
+      t2.setAttribute('x', mx); t2.setAttribute('dy', '3.7');
       t2.textContent = lines[1];
       textEl.appendChild(t1);
       textEl.appendChild(t2);
     } else {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my + 3.2);
+      textEl.setAttribute('y', my + 1.0);
       textEl.textContent = lines[0];
     }
     svg.appendChild(textEl);
@@ -5850,8 +5849,8 @@ function renderKankeiBoard() {
     div.className = `kankei-node${unlocked ? ' kankei-node-unlocked' : ' kankei-node-locked'}`;
     div.style.left    = `${node.x}%`;
     div.style.top     = `${node.y}%`;
-    div.style.opacity = '0';
-    div.style.animation = `kankei-node-appear 0.45s cubic-bezier(0.22,1.4,0.5,1) ${nodeDelay}ms forwards`;
+    // inline opacity は設定しない → animation 'both' で制御
+    div.style.animation = `kankei-node-appear 0.45s cubic-bezier(0.22,1.4,0.5,1) ${nodeDelay}ms both`;
     nodeDelay += 100;
 
     // portrait-wrap構造: frameはportraitの兄弟 → overflow:hiddenに切られない
