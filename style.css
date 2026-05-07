@@ -2995,6 +2995,7 @@ body {
 
 /* ストーリー画面の相関図ボタン */
 #kankei-open-btn {
+  position: relative;
   background: rgba(249,200,70,0.15);
   color: #f9e4a0;
   border: 1px solid rgba(249,200,70,0.35);
@@ -3005,6 +3006,21 @@ body {
   cursor: pointer;
   white-space: nowrap;
   letter-spacing: 0.05em;
+}
+/* 相関図更新アテンション: 赤い点滅バッジ */
+#kankei-open-btn.kankei-has-new::after {
+  content: '';
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 10px; height: 10px;
+  background: #ff3333;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.5);
+  animation: kankei-attention-pulse 1.4s ease-in-out infinite;
+}
+@keyframes kankei-attention-pulse {
+  0%, 100% { transform: scale(1);   opacity: 1; }
+  50%       { transform: scale(1.3); opacity: 0.6; }
 }
 
 /* ========================================

@@ -2750,8 +2750,8 @@ const ADV_SCENES = {
       { speaker: 'ヤス', text: 'ナナコさんへ届けられた荷物...中に入っていたのは、漬物石のような大きな石だった。', side: 'left' },
       // 謎の石を中央表示（※石のアイコン画像が必要。現在は仮置き）
       { showCenter: 'img/Chapter1/Icon/image_merge_icon1_07.png' },
-      { speaker: 'ヤス', text: '差出人不明。そして、配達のタイミングでミケが姿を消した。', side: 'left' },
-      { speaker: 'ヤス', text: '...荷物を届けると同時に、猫を連れ去った。そういうことです。', side: 'left' },
+      { speaker: 'ヤス', text: '差出人不明...そして配達のタイミングで猫のミケちゃんが姿を消した...', side: 'left' },
+      { speaker: 'ヤス', text: '...荷物を届けると同時に、猫のミケちゃんを連れ去った...なるほど....そういうことですね...', side: 'left' },
       { speaker: 'ヤス', text: 'それから、ミサキさんへのストーカー行為。配達ルートを使い、行動を把握していた。', side: 'left' },
       { speaker: 'ヤス', text: 'ケンイチさんへの嫌がらせも、配達の仕事を装って近づいていた。', side: 'left' },
       // 謎の石への含み（別章への伏線）
@@ -2779,16 +2779,17 @@ const ADV_SCENES = {
       { speaker: 'ヤス',   text: '差出人はあなたです。配達記録に、あなたの担当便として残っている。', side: 'left' },
       { speaker: 'シンジ', text: '...（沈黙）', side: 'right' },
       // 証拠②：猫の誘拐
-      { speaker: 'ヤス',   text: 'その荷物を届けた日の夜、ミケがいなくなっています。配達ルートの記録と、移動時間が一致している。', side: 'left' },
+      { speaker: 'ヤス',   text: 'その荷物を届けた日の夜、猫のミケちゃんがいなくなっています...配達ルートの記録と、移動時間が一致している...', side: 'left' },
       { speaker: 'シンジ', text: '...それは...たまたまじゃないですか。', side: 'right' },
       // 証拠③：ストーカー
       { speaker: 'ヤス',   text: 'ミサキさんへの接触も、全て配達の仕事に紛れている。同じルートに、週に３回以上。', side: 'left' },
       { speaker: 'シンジ', text: '...（長い沈黙）', side: 'right' },
       // 豹変：表の顔→裏の顔
-      { speaker: 'シンジ', text: '...ハ。', side: 'right', changeRightImg: 'img/Chapter1/Chara/image_merge_order_chara_05b.png' },
-      { speaker: 'シンジ', text: '全部わかってるんですね。...まあ、いいですよ。ミサキが裏切ったのが悪いんで。', side: 'right' },
+      { speaker: 'シンジ', text: '...ハ。', side: 'right', changeRightImg: 'img/Chapter1/Chara/image_merge_order_chara_05a.png' },
+      { speaker: 'シンジ', text: '全部わかってるんですね。...まあ、いいですよ。ミサキが裏切ったのが悪いんで。', side: 'right',
+        changeRightImg: 'img/Chapter1/Chara/image_merge_order_chara_05b.png' },
       { speaker: 'ヤス',   text: 'ケンイチさんの家族まで巻き込んだのは。', side: 'left' },
-      { speaker: 'シンジ', text: 'あの男にも、痛い目を見てもらわないといけなかった。それだけです。', side: 'right' },
+      { speaker: 'シンジ', text: 'あの男にも家族にも、痛い目に合わせたかった...それだけですよ...', side: 'right' },
     ],
   },
   // 第一章スライド16・完結（16回目のコイン支払い時）逃走
@@ -4182,7 +4183,7 @@ const ADV_SCENES = {
       // [8]
       { speaker: 'ナナコ', text: '...何でしょうか？...', side: 'right2' },
       // [9]
-      { speaker: 'ヤス', text: '猫のミケが居なくなったのは、配達の前ですか？後ですか？...', side: 'left' },
+      { speaker: 'ヤス', text: '猫のミケちゃんが居なくなったのは、配達の前ですか？後ですか？...', side: 'left' },
       // [10]
       { speaker: 'ナナコ', text: 'わたしの記憶では...後だったかと思います...', side: 'right2' },
       // [11] 最終
@@ -4248,7 +4249,7 @@ const ADV_SCENES = {
       { speaker: 'ケンイチ', text: '先日は、娘がご迷惑をおかけしました...', side: 'right',
         showRight: true, slideRight: true },
       // [2]
-      { speaker: 'ヤス', text: 'いえ、無事で何よりでした...', side: 'left' },
+      { speaker: 'ヤス', text: 'ミユちゃんのお父様ですね？...猫のミケちゃんも、無事で何よりでした...', side: 'left' },
       // [3]
       { speaker: 'ケンイチ', text: '本当に助かりました...', side: 'right' },
       // [4]
@@ -4291,7 +4292,7 @@ const ADV_SCENES = {
       { speaker: 'ヤス', text: '…おかしいですね。', side: 'left',
         showLeft: true, slideLeft: true, flipLeft: true },
       // [8]
-      { speaker: 'ヤス', text: 'こんな場所まで来れるとは思いませんね。', side: 'left' },
+      { speaker: 'ヤス', text: 'あの様な場所まで来れるとは思いませんね...', side: 'left' },
       // [9]
       { speaker: 'ヤス', text: 'どういうことでしょう。', side: 'left' },
       // [10] 最終
@@ -5192,6 +5193,7 @@ let eventState = {
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
   keikakuLvTriggered: new Set(), // 設計台LvアップのトリガーになったプレイヤーLvSet
+  kankeiViewedScenes: [],      // 相関図を最後に開いた時点のseenScenes（アテンション判定用）
   ch1BannerShown: false,       // 第一章完了バナーを表示済みか
   pendingGenLvUpNotice: [],   // ストーリー中に追加されたジェネレータータイルの通知待ちリスト
   genUpTriggered: new Set(), // Lvアップ用タイル出現済みステージ {4, 8, 12}
@@ -5248,6 +5250,7 @@ function initEventMap() {
   eventState.seizoLvTriggered  = new Set();
   eventState.kanteLvTriggered      = new Set();
   eventState.keikakuLvTriggered    = new Set();
+  eventState.kankeiViewedScenes    = [];
   eventState.ch1BannerShown        = false;
   eventState.pendingGenLvUpNotice  = [];
   eventState.genUpTriggered        = new Set();
@@ -5640,35 +5643,35 @@ function closeStoryScreen() {
 const CH1_KANKEI_NODES = [
   { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 14 },
   { id: 'kenichi', name: 'ケンイチ', sub: '34歳', img: 'img/Chapter1/Chara/image_merge_order_chara_03.png',  unlockScene: 'scene04', x: 14, y: 45 },
-  { id: 'nanako',  name: 'ナナコ',  sub: '28歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_02.png',  unlockScene: 'scene06', x: 86, y: 45 },
-  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',  unlockScene: 'scene10', x: 18, y: 80 },
-  { id: 'shinji',  name: 'シンジ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_05a.png', unlockScene: 'scene12', x: 82, y: 80 },
+  { id: 'nanako',  name: 'ナナコ',  sub: '28歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_02.png',  unlockScene: 'scene05', x: 86, y: 45 },  // Scene4終了で解放
+  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',  unlockScene: 'scene08', x: 18, y: 80 },  // Scene7終了で解放
+  { id: 'shinji',  name: 'シンジ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_05.png',  unlockScene: 'scene08', x: 82, y: 80 },  // Scene7終了・配達員画像(05.png)
 ];
 
 // ノードに紐づくラベルバッジ（複数付与可）
 const CH1_KANKEI_BADGES = [
   { nodeId: 'miyu',    label: '依頼人',         unlockScene: 'scene02', type: 'normal'   },
   { nodeId: 'kenichi', label: '父',             unlockScene: 'scene04', type: 'normal'   },
-  { nodeId: 'kenichi', label: '夫',             unlockScene: 'scene06', type: 'normal'   },
-  { nodeId: 'nanako',  label: '母',             unlockScene: 'scene06', type: 'normal'   },
-  { nodeId: 'nanako',  label: '妻',             unlockScene: 'scene06', type: 'normal'   },
+  { nodeId: 'kenichi', label: '夫',             unlockScene: 'scene05', type: 'normal'   },  // Scene4終了
+  { nodeId: 'nanako',  label: '母',             unlockScene: 'scene05', type: 'normal'   },  // Scene4終了
+  { nodeId: 'nanako',  label: '妻',             unlockScene: 'scene05', type: 'normal'   },  // Scene4終了
   { nodeId: 'nanako',  label: '不審な荷物',     unlockScene: 'scene08', type: 'warning'  },
-  { nodeId: 'misaki',  label: 'ストーカー被害', unlockScene: 'scene10', type: 'warning'  },
-  { nodeId: 'shinji',  label: '配達員',         unlockScene: 'scene12', type: 'normal'   },
-  { nodeId: 'shinji',  label: 'ストーカー',     unlockScene: 'scene13', type: 'danger'   },
+  { nodeId: 'misaki',  label: 'ストーカー被害', unlockScene: 'scene08', type: 'warning'  },  // Scene7終了
+  { nodeId: 'shinji',  label: '配達員',         unlockScene: 'scene08', type: 'normal'   },  // Scene7終了
+  { nodeId: 'shinji',  label: 'ストーカー',     unlockScene: 'scene13', type: 'danger'   },  // Scene12終了後に判明
   { nodeId: 'shinji',  label: '犯人・逃亡',     unlockScene: 'scene17', type: 'criminal' },
 ];
 
 // ノード間の接続線
 const CH1_KANKEI_EDGES = [
-  { from: 'miyu',    to: 'kenichi', label: '父と娘',         unlockScene: 'scene04', type: 'family' },
-  { from: 'miyu',    to: 'nanako',  label: '母と娘',         unlockScene: 'scene06', type: 'family' },
-  { from: 'kenichi', to: 'nanako',  label: '夫と妻',         unlockScene: 'scene06', type: 'family' },
-  { from: 'shinji',  to: 'misaki',  label: 'ストーカー',      unlockScene: 'scene13', type: 'danger' },
-  { from: 'misaki',  to: 'kenichi', label: '不倫関係',       unlockScene: 'scene15', type: 'danger' },
-  { from: 'shinji',  to: 'nanako',  label: '嫌がらせ',       unlockScene: 'scene16', type: 'danger' },
-  { from: 'shinji',  to: 'kenichi', label: '嫌がらせ',       unlockScene: 'scene16', type: 'danger' },
-  { from: 'shinji',  to: 'miyu',    label: '嫌がらせ',           unlockScene: 'scene16', type: 'danger' },
+  { from: 'miyu',    to: 'kenichi', label: '父と娘',   unlockScene: 'scene04', type: 'family' },
+  { from: 'miyu',    to: 'nanako',  label: '母と娘',   unlockScene: 'scene05', type: 'family' },  // Scene4終了
+  { from: 'kenichi', to: 'nanako',  label: '夫と妻',   unlockScene: 'scene05', type: 'family' },  // Scene4終了
+  { from: 'shinji',  to: 'misaki',  label: 'ストーカー', unlockScene: 'scene08', type: 'danger' }, // Scene7終了
+  { from: 'misaki',  to: 'kenichi', label: '不倫関係', unlockScene: 'scene13', type: 'danger' },  // Scene12終了
+  { from: 'shinji',  to: 'nanako',  label: '嫌がらせ', unlockScene: 'scene15', type: 'danger' },  // Scene14終了
+  { from: 'shinji',  to: 'kenichi', label: '嫌がらせ', unlockScene: 'scene15', type: 'danger' },  // Scene14終了
+  { from: 'shinji',  to: 'miyu',    label: '嫌がらせ', unlockScene: 'scene15', type: 'danger' },  // Scene14終了
 ];
 
 function openKankeiScreen() {
@@ -5676,6 +5679,23 @@ function openKankeiScreen() {
   // アニメーションが display:none 中に消費されるのを防ぐ
   document.getElementById('kankei-screen').classList.remove('hidden');
   renderKankeiBoard();
+  // 閲覧済みとしてマーク → アテンションバッジを消す
+  eventState.kankeiViewedScenes = [...(state.seenScenes ?? [])];
+  updateKankeiAttention();
+}
+
+// 相関図の更新アテンション: 新アイテム解放時に kankei-open-btn に赤バッジを表示
+function updateKankeiAttention() {
+  const seen   = state.seenScenes ?? [];
+  const viewed = eventState.kankeiViewedScenes ?? [];
+  const allKankeiScenes = [
+    ...CH1_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH1_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH1_KANKEI_BADGES.map(b => b.unlockScene),
+  ];
+  const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
+  const btn = document.getElementById('kankei-open-btn');
+  if (btn) btn.classList.toggle('kankei-has-new', hasNew);
 }
 
 function closeKankeiScreen() {
@@ -5835,12 +5855,19 @@ function renderKankeiBoard() {
     div.style.animation = `kankei-node-appear 0.45s cubic-bezier(0.22,1.4,0.5,1) ${nodeDelay}ms both`;
     nodeDelay += 100;
 
+    // シンジは scene16終了後に05b.pngに切り替え（Scene15終了 = 豹変確定）
+    const nodeImg = (node.id === 'shinji' && unlocked)
+      ? (seen.includes('scene16')
+          ? 'img/Chapter1/Chara/image_merge_order_chara_05b.png'
+          : 'img/Chapter1/Chara/image_merge_order_chara_05.png')
+      : node.img;
+
     // portrait-wrap構造: frameはportraitの兄弟 → overflow:hiddenに切られない
     div.innerHTML = `
       <div class="kankei-portrait-wrap">
         <div class="kankei-portrait">
           ${unlocked
-            ? `<img src="${node.img}" alt="${node.name}">`
+            ? `<img src="${nodeImg}" alt="${node.name}">`
             : `<div class="kankei-locked-icon">?</div>`}
         </div>
         <div class="kankei-frame${unlocked ? '' : ' kankei-frame-locked'}"></div>
@@ -6962,6 +6989,8 @@ function progressStory(chapter = 1) {
   // 閲覧済みシーン記録
   if (!state.seenScenes) state.seenScenes = [];
   if (!state.seenScenes.includes(sceneId)) state.seenScenes.push(sceneId);
+  // 相関図アテンション更新（新アイテム解放時にバッジ表示）
+  updateKankeiAttention();
 
   // ── シーン終了後コールバックを構築 ──────────────────────────────
   // 複数の条件が同時に成立する場合は chain で順次実行
