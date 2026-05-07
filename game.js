@@ -5806,7 +5806,7 @@ function renderKankeiBoard() {
     textEl.setAttribute('fill',        textColor);
     textEl.setAttribute('stroke',        'none');      // 透明な縁取りを防ぐ
     textEl.setAttribute('pointer-events', 'none');
-    textEl.setAttribute('font-size',      '5');         // 関係線上フォント: 5 SVG units（画面サイズに追従）
+    textEl.setAttribute('font-size',      '3');         // 関係線上フォント: 3 SVG units（画面サイズに追従）
     textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms both`;
 
     if (multiLine) {
