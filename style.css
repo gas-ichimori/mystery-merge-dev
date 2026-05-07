@@ -2823,12 +2823,15 @@ body {
   height: 100%;
   overflow: visible;
 }
-/* SVGテキストの stroke 完全除去（輪郭対策） */
+/* SVGテキスト: stroke除去 + 黒グロー（関係フォントと同スタイル） */
 #kankei-svg text,
 #kankei-svg tspan {
   stroke: none !important;
   stroke-width: 0 !important;
   paint-order: fill;
+  filter: drop-shadow(0 0 3px rgba(0,0,0,0.95))
+          drop-shadow(0 0 6px rgba(0,0,0,0.85))
+          drop-shadow(0 0 10px rgba(0,0,0,0.7));
 }
 
 #kankei-nodes {

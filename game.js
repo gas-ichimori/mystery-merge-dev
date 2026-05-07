@@ -5725,7 +5725,11 @@ function renderKankeiBoard() {
     warning: 'img/UI/image_merge_kankei_note_03.png',
   };
   const TEXT_COLORS = {
-    family: '#2a1a00', danger: '#5a0000', normal: '#2a2010', warning: '#3a2000',
+    normal:   '#f5e8c0',
+    family:   '#f5e8c0',
+    warning:  '#ffe066',
+    danger:   '#ff9966',
+    criminal: '#ff6666',
   };
 
   let lineDelay = 0;
