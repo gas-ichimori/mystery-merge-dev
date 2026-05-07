@@ -2823,10 +2823,12 @@ body {
   height: 100%;
   overflow: visible;
 }
-/* SVGテキストに stroke が継承されるのを防ぐ（透明枠の除去） */
-#kankei-svg text {
-  stroke: none;
-  stroke-width: 0;
+/* SVGテキストの stroke 完全除去（輪郭対策） */
+#kankei-svg text,
+#kankei-svg tspan {
+  stroke: none !important;
+  stroke-width: 0 !important;
+  paint-order: fill;
 }
 
 #kankei-nodes {
@@ -2931,13 +2933,15 @@ body {
   font-family: 'Zen Kurenaido', sans-serif;
   font-size: 14px;
   color: #f5e8c0;
-  text-shadow: none;             /* 透明な枠に見える shadow を除去 */
-  background: rgba(0,0,0,0.45);
-  border-radius: 4px;
-  padding: 2px 6px 3px;
+  /* 四方に均等な黒グロー → 矩形枠に見えないようにする */
+  text-shadow:
+    0 0 4px rgba(0,0,0,0.95),
+    0 0 8px rgba(0,0,0,0.85),
+    0 0 12px rgba(0,0,0,0.7);
   text-align: center;
   white-space: nowrap;
   letter-spacing: 0.05em;
+  -webkit-text-stroke: 0px;
 }
 .kankei-node-locked .kankei-name {
   color: rgba(255,255,255,0.25);
@@ -2964,6 +2968,7 @@ body {
   animation: kankei-badge-pop 0.35s cubic-bezier(0.22,1.4,0.5,1) forwards;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  -webkit-text-stroke: 0px;
 }
 /* クリーム：通常 */
 .kankei-badge-normal {

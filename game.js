@@ -5715,16 +5715,7 @@ function renderKankeiBoard() {
     CH1_KANKEI_BADGES.filter(b => seen.includes(b.unlockScene)).length;
   if (progressEl) progressEl.textContent = `${unlockedItems} / ${totalItems} 解明`;
 
-  // SVG defs: 線の影フィルターのみ（マーカーは廃止→standalone image使用）
-  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-  const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-  filter.setAttribute('id', 'kankei-line-shadow');
-  const feDropShadow = document.createElementNS('http://www.w3.org/2000/svg', 'feDropShadow');
-  feDropShadow.setAttribute('dx', '0.3'); feDropShadow.setAttribute('dy', '0.5');
-  feDropShadow.setAttribute('stdDeviation', '0.4'); feDropShadow.setAttribute('flood-opacity', '0.5');
-  filter.appendChild(feDropShadow);
-  defs.appendChild(filter);
-  svg.appendChild(defs);
+  // SVG defs: 不要（filterは水平線でbounding box高さ0になりレンダリング失敗するため廃止）
 
   // ── Phase 1: 全ライン ─────────────────────────
   const NOTE_SRCS = {
@@ -5757,9 +5748,7 @@ function renderKankeiBoard() {
     line.setAttribute('x2', toNode.x);   line.setAttribute('y2', toNode.y);
     line.setAttribute('class', lineClass);
     if (unlocked) {
-      line.setAttribute('filter', 'url(#kankei-line-shadow)');
-      // 'both' = 遅延中は from(opacity:0) を適用し、終了後も維持
-      // inline opacity を使わないことでアニメーション上書き問題を回避
+      // filter は使わない: 水平線（y1=y2）はbounding box高さ0でfilterがレンダリングを破壊する
       line.style.animation = `kankei-fade-in 0.8s ease-out ${lineDelay}ms both`;
     }
     svg.appendChild(line);
@@ -5792,10 +5781,10 @@ function renderKankeiBoard() {
     const my = (fromNode.y + toNode.y) / 2;
     const lines      = splitEdgeLabel(edge.label);
     const multiLine  = lines.length > 1;
-    // 14px CSSフォントに合わせたサイズ計算
+    // 10px CSSフォントに合わせたサイズ計算
     // SVGはpreserveAspectRatio=none: x方向≈3.6px/unit, y方向≈5.2px/unit
-    const noteW      = Math.max(20, Math.max(...lines.map(l => l.length)) * 4.0 + 4);
-    const noteH      = multiLine ? 9.0 : 5.0;
+    const noteW      = Math.max(14, Math.max(...lines.map(l => l.length)) * 2.9 + 3);
+    const noteH      = multiLine ? 6.5 : 3.8;
     const noteSrc    = NOTE_SRCS[edge.type]  || NOTE_SRCS.normal;
     const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
     const labelDelay = delay + 500;
@@ -5817,23 +5806,23 @@ function renderKankeiBoard() {
     textEl.setAttribute('fill',        textColor);
     textEl.setAttribute('stroke',      'none');   // 透明な縁取りを防ぐ
     textEl.setAttribute('pointer-events', 'none');
-    textEl.style.fontSize  = '14px';              // CSSピクセルで統一
+    textEl.style.fontSize  = '10px';              // 線上ラベルは10px
     textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms both`;
 
     if (multiLine) {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my - 1.1);
+      textEl.setAttribute('y', my - 0.5);
       const t1 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
       t1.setAttribute('x', mx); t1.setAttribute('dy', '0');
       t1.textContent = lines[0];
       const t2 = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-      t2.setAttribute('x', mx); t2.setAttribute('dy', '3.7');
+      t2.setAttribute('x', mx); t2.setAttribute('dy', '2.3');
       t2.textContent = lines[1];
       textEl.appendChild(t1);
       textEl.appendChild(t2);
     } else {
       textEl.setAttribute('x', mx);
-      textEl.setAttribute('y', my + 1.0);
+      textEl.setAttribute('y', my + 0.7);
       textEl.textContent = lines[0];
     }
     svg.appendChild(textEl);
