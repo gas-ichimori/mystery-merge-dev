@@ -5781,32 +5781,22 @@ function renderKankeiBoard() {
     const my = (fromNode.y + toNode.y) / 2;
     const lines      = splitEdgeLabel(edge.label);
     const multiLine  = lines.length > 1;
-    // フォントサイズはSVG units（font-size="2"）に合わせたサイズ計算
-    // 1文字 ≈ 2 SVG units 幅（全角日本語）
-    const noteW      = Math.max(12, Math.max(...lines.map(l => l.length)) * 2.2 + 2);
-    const noteH      = multiLine ? 6.0 : 3.4;
-    const noteSrc    = NOTE_SRCS[edge.type]  || NOTE_SRCS.normal;
     const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
     const labelDelay = delay + 500;
 
-    // ポストイット画像（ライン全部の後に追加）
-    const noteImg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    noteImg.setAttribute('href', noteSrc);
-    noteImg.setAttribute('x', mx - noteW / 2);
-    noteImg.setAttribute('y', my - noteH / 2);
-    noteImg.setAttribute('width',  noteW);
-    noteImg.setAttribute('height', noteH);
-    noteImg.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay}ms both`;
-    svg.appendChild(noteImg);
+    // ラベル画像は現在非表示（復元する場合は noteImg ブロックを追加）
+    // NOTE_SRCS / noteW / noteH はSVG units版に変更する際に再活用
 
-    // テキスト（ポストイットの上）
+    // テキスト（線上）
     const textEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     textEl.setAttribute('text-anchor', 'middle');
     textEl.setAttribute('font-family', "'Zen Kurenaido', sans-serif");
     textEl.setAttribute('fill',        textColor);
     textEl.setAttribute('stroke',        'none');      // 透明な縁取りを防ぐ
     textEl.setAttribute('pointer-events', 'none');
-    textEl.setAttribute('font-size',      '3');         // 関係線上フォント: 3 SVG units（画面サイズに追従）
+    // 関係線上フォント: 現在14px固定（キャラ名フォントと同サイズ）
+    // SVG unitsに戻す場合: textEl.setAttribute('font-size', '3') に変更
+    textEl.style.fontSize = '14px';
     textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms both`;
 
     if (multiLine) {

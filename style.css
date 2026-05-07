@@ -2955,10 +2955,11 @@ body {
   gap: 2px;
 }
 
-/* 関係フォント（ノードバッジ）: 5 SVG units ≈ 5vw */
+/* 関係フォント（ノードバッジ）: キャラ名フォントと同じ14px固定
+   SVG unitsに戻す場合: font-size: 3vw; に変更 */
 .kankei-badge {
   font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 3vw;
+  font-size: 14px;
   padding: 6px 14px 9px;
   white-space: nowrap;
   text-align: center;
