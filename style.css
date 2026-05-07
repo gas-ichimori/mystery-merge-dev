@@ -2397,7 +2397,7 @@ body {
 #story-screen.hidden { display: none; }
 
 .story-screen-panel {
-  background: url('img/UI/image_merge_story_bg.png') top center / 100% 80dvh no-repeat,
+  background: url('img/UI/image_merge_story_bg.png') top center / 100% 100% no-repeat,
               rgba(8, 16, 52, 0.97);
   border: 1px solid rgba(100, 150, 255, 0.35);
   border-radius: 16px;
