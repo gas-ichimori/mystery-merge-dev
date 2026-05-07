@@ -5644,7 +5644,7 @@ const CH1_KANKEI_NODES = [
   { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 14 },
   { id: 'kenichi', name: 'ケンイチ', sub: '34歳', img: 'img/Chapter1/Chara/image_merge_order_chara_03.png',  unlockScene: 'scene04', x: 14, y: 45 },
   { id: 'nanako',  name: 'ナナコ',  sub: '28歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_02.png',  unlockScene: 'scene05', x: 86, y: 45 },  // Scene4終了で解放
-  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',  unlockScene: 'scene08', x: 18, y: 80 },  // Scene7終了で解放
+  { id: 'misaki',  name: 'ミサキ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_04.png',  unlockScene: 'scene09', x: 18, y: 80 },  // Scene8終了で解放
   { id: 'shinji',  name: 'シンジ',  sub: '27歳',  img: 'img/Chapter1/Chara/image_merge_order_chara_05.png',  unlockScene: 'scene08', x: 82, y: 80 },  // Scene7終了・配達員画像(05.png)
 ];
 
@@ -5656,7 +5656,7 @@ const CH1_KANKEI_BADGES = [
   { nodeId: 'nanako',  label: '母',             unlockScene: 'scene05', type: 'normal'   },  // Scene4終了
   { nodeId: 'nanako',  label: '妻',             unlockScene: 'scene05', type: 'normal'   },  // Scene4終了
   { nodeId: 'nanako',  label: '不審な荷物',     unlockScene: 'scene08', type: 'warning'  },
-  { nodeId: 'misaki',  label: 'ストーカー被害', unlockScene: 'scene08', type: 'warning'  },  // Scene7終了
+  { nodeId: 'misaki',  label: 'ストーカー被害', unlockScene: 'scene09', type: 'warning'  },  // Scene8終了
   { nodeId: 'shinji',  label: '配達員',         unlockScene: 'scene08', type: 'normal'   },  // Scene7終了
   { nodeId: 'shinji',  label: 'ストーカー',     unlockScene: 'scene13', type: 'danger'   },  // Scene12終了後に判明
   { nodeId: 'shinji',  label: '犯人・逃亡',     unlockScene: 'scene17', type: 'criminal' },
@@ -5667,7 +5667,7 @@ const CH1_KANKEI_EDGES = [
   { from: 'miyu',    to: 'kenichi', label: '父と娘',   unlockScene: 'scene04', type: 'family' },
   { from: 'miyu',    to: 'nanako',  label: '母と娘',   unlockScene: 'scene05', type: 'family' },  // Scene4終了
   { from: 'kenichi', to: 'nanako',  label: '夫と妻',   unlockScene: 'scene05', type: 'family' },  // Scene4終了
-  { from: 'shinji',  to: 'misaki',  label: 'ストーカー', unlockScene: 'scene08', type: 'danger' }, // Scene7終了
+  { from: 'shinji',  to: 'misaki',  label: 'ストーカー', unlockScene: 'scene09', type: 'danger' }, // Scene8終了
   { from: 'misaki',  to: 'kenichi', label: '不倫関係', unlockScene: 'scene13', type: 'danger' },  // Scene12終了
   { from: 'shinji',  to: 'nanako',  label: '嫌がらせ', unlockScene: 'scene15', type: 'danger' },  // Scene14終了
   { from: 'shinji',  to: 'kenichi', label: '嫌がらせ', unlockScene: 'scene15', type: 'danger' },  // Scene14終了
