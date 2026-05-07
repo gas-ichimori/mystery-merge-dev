@@ -5641,10 +5641,31 @@ function closeStoryScreen() {
 // ========================================
 let currentKankeiChapter = 1; // 現在表示中の章
 
-// ── 第二章データ（未実装：キャラ追加時に追記）──
-const CH2_KANKEI_NODES  = [];
-const CH2_KANKEI_BADGES = [];
-const CH2_KANKEI_EDGES  = [];
+// ── 第二章データ ──
+const CH2_KANKEI_NODES = [
+  { id: 'rina',   name: 'リナ',   sub: '37歳', img: 'img/Chapter2/Chara/image_merge_order_chara_07.png',  unlockScene: 'c2s01', x: 22, y: 20 },
+  { id: 'tatsuo', name: 'タツオ', sub: '44歳', img: 'img/Chapter2/Chara/image_merge_order_chara_10.png',  unlockScene: 'c2s03', x: 78, y: 75 },
+  { id: 'yuu',    name: 'ユウ',   sub: '10歳', img: 'img/Chapter2/Chara/image_merge_order_chara_08.png',  unlockScene: 'c2s05', x: 22, y: 68 },
+  { id: 'haruto', name: 'ハルト', sub: '20歳', img: 'img/Chapter2/Chara/image_merge_order_chara_09a.png', unlockScene: 'c2s07', x: 78, y: 20 },
+  { id: 'jin',    name: 'ジン',   sub: '39歳', img: 'img/Chapter2/Chara/image_merge_order_chara_06.png',  unlockScene: 'c2s09', x: 50, y: 46 },
+];
+
+const CH2_KANKEI_BADGES = [
+  { nodeId: 'rina',   label: '依頼人',       unlockScene: 'c2s01', type: 'normal'   },
+  { nodeId: 'tatsuo', label: '警備員',       unlockScene: 'c2s03', type: 'normal'   },
+  { nodeId: 'rina',   label: '母',           unlockScene: 'c2s05', type: 'normal'   },
+  { nodeId: 'haruto', label: '学生',         unlockScene: 'c2s07', type: 'normal'   },
+  { nodeId: 'jin',    label: '不動産管理人', unlockScene: 'c2s09', type: 'normal'   },
+  { nodeId: 'jin',    label: 'ハルトの上司', unlockScene: 'c2s09', type: 'warning'  },
+];
+
+const CH2_KANKEI_EDGES = [
+  { from: 'yuu',    to: 'rina',   label: '母と息子', unlockScene: 'c2s05', type: 'family'   },
+  { from: 'tatsuo', to: 'jin',    label: '脅迫',     unlockScene: 'c2s12', type: 'criminal' },
+  { from: 'haruto', to: 'jin',    label: '強制命令', unlockScene: 'c2s13', type: 'danger'   },
+  { from: 'jin',    to: 'rina',   label: '嫌がらせ', unlockScene: 'c2s14', type: 'danger'   },
+  { from: 'jin',    to: 'yuu',    label: '嫌がらせ', unlockScene: 'c2s14', type: 'danger'   },
+];
 
 // ヤスは相関図に不要のため除外
 const CH1_KANKEI_NODES = [
@@ -5713,6 +5734,9 @@ function updateKankeiAttention() {
     ...CH1_KANKEI_NODES.map(n => n.unlockScene),
     ...CH1_KANKEI_EDGES.map(e => e.unlockScene),
     ...CH1_KANKEI_BADGES.map(b => b.unlockScene),
+    ...CH2_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH2_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH2_KANKEI_BADGES.map(b => b.unlockScene),
   ];
   const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
   const btn = document.getElementById('kankei-open-btn');
