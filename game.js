@@ -2001,7 +2001,7 @@ function showToast(msg) {
 // ========================================
 // imgSrc: 表示する画像パス
 // displayMs: 表示時間（ミリ秒、デフォルト 2800ms）
-function showChapterCompleteBanner(imgSrc, displayMs = 2800) {
+function showChapterCompleteBanner(imgSrc, displayMs = 1800) {
   // 既存オーバーレイがあれば即削除
   document.getElementById('chapter-complete-overlay')?.remove();
   document.getElementById('chapter-complete-flash')?.remove();
@@ -4776,7 +4776,7 @@ document.getElementById('debug-adv-ch1-play').addEventListener('click', () => {
   document.getElementById('debug-screen').classList.add('hidden');
   // scene17（完結）の後に第一章完結バナーを表示
   const cb = val === 'scene17'
-    ? () => setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png'), 300)
+    ? () => setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png'), 80)
     : null;
   openAdventureScene(val, cb);
 });
@@ -7004,7 +7004,7 @@ function progressStory(chapter = 1) {
   if (chapter === 1 && state.ch1Count >= CH1_SCENE_IDS.length && !eventState.ch1BannerShown) {
     eventState.ch1BannerShown = true;
     _chain(() => {
-      setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png'), 300);
+      setTimeout(() => showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png'), 80);
     });
   }
 
