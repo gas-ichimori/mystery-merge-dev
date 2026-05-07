@@ -5794,9 +5794,9 @@ function renderKankeiBoard() {
     textEl.setAttribute('fill',        textColor);
     textEl.setAttribute('stroke',        'none');      // 透明な縁取りを防ぐ
     textEl.setAttribute('pointer-events', 'none');
-    // 関係線上フォント: 現在14px固定（キャラ名フォントと同サイズ）
-    // SVG unitsに戻す場合: textEl.setAttribute('font-size', '3') に変更
-    textEl.style.fontSize = '14px';
+    // 関係線上フォント: 3 SVG units（画面サイズに追従）
+    // CSS固定pxに戻す場合: textEl.style.fontSize = '14px'; に変更
+    textEl.setAttribute('font-size', '3');
     textEl.style.animation = `kankei-fade-in 0.4s ease-out ${labelDelay + 60}ms both`;
 
     if (multiLine) {
@@ -5843,11 +5843,13 @@ function renderKankeiBoard() {
         <div class="kankei-frame${unlocked ? '' : ' kankei-frame-locked'}"></div>
       </div>
       <div class="kankei-name">${unlocked ? node.name : '???'}</div>
+      <!-- バッジ（関係フォント）は現在非表示
       <div class="kankei-badges">
         ${nodeBadges.map((b, bi) =>
           `<div class="kankei-badge kankei-badge-${b.type}" style="animation-delay:${nodeDelay + bi*60}ms">${b.label}</div>`
         ).join('')}
       </div>
+      -->
     `;
     nodesWrap.appendChild(div);
   });
