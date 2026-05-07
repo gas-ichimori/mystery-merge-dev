@@ -3008,7 +3008,7 @@ body {
   cursor: pointer;
 }
 .kankei-btn-img {
-  height: 64px;
+  height: 32px;
   width: auto;
   object-fit: contain;
   display: block;
