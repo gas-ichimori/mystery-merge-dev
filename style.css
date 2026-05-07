@@ -2456,8 +2456,8 @@ body {
   transition: opacity 0.18s, transform 0.12s;
 }
 .story-read-btn-img {
-  width: 100%;
-  height: auto;
+  height: 64px;
+  width: auto;
   display: block;
   object-fit: contain;
 }
