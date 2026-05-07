@@ -5679,8 +5679,8 @@ const CH2_KANKEI_EDGES = [
 const CH3_KANKEI_NODES = [
   { id: 'keisuke', name: 'ケイスケ', sub: '故人',  noImg: true, unlockScene: 'c3s01', x: 50, y: 10 },
   { id: 'fumiko',  name: 'フミコ',   sub: '71歳',  img: 'img/Chapter3/chara/image_merge_order_chara_15.png', unlockScene: 'c3s01', x: 18, y: 35 },
-  { id: 'kouji',   name: 'コウジ',   sub: '47歳',  img: 'img/Chapter3/chara/image_merge_order_chara_16.png', unlockScene: 'c3s03', x: 45, y: 60 },
-  { id: 'sachiko', name: 'サチコ',   sub: '44歳',  img: 'img/Chapter3/chara/image_merge_order_chara_17.png', unlockScene: 'c3s04', x: 70, y: 60 },
+  { id: 'kouji',   name: 'コウジ',   sub: '47歳',  img: 'img/Chapter3/chara/image_merge_order_chara_16.png', unlockScene: 'c3s03', x: 35, y: 60 },
+  { id: 'sachiko', name: 'サチコ',   sub: '44歳',  img: 'img/Chapter3/chara/image_merge_order_chara_17.png', unlockScene: 'c3s04', x: 80, y: 60 },
   { id: 'midori',  name: 'ミドリ',   sub: '52歳',  img: 'img/Chapter3/chara/image_merge_order_chara_19.png', unlockScene: 'c3s05', x: 68, y: 82 },
   { id: 'ryota',   name: 'リョウタ', sub: '24歳',  img: 'img/Chapter3/chara/image_merge_order_chara_20.png', unlockScene: 'c3s06', x: 12, y: 82 },
   { id: 'nobuo',   name: 'ノブオ',   sub: '67歳',  img: 'img/Chapter3/chara/image_merge_order_chara_18.png', unlockScene: 'c3s08', x: 46, y: 82 },
