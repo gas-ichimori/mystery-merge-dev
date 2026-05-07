@@ -2415,7 +2415,7 @@ body {
   margin-bottom: 18px;
 }
 .story-header-img {
-  height: 32px;
+  height: 64px;
   width: auto;
   object-fit: contain;
 }
@@ -3006,7 +3006,7 @@ body {
   cursor: pointer;
 }
 .kankei-btn-img {
-  height: 36px;
+  height: 64px;
   width: auto;
   object-fit: contain;
   display: block;
