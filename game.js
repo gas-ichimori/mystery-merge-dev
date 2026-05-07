@@ -5647,17 +5647,16 @@ const CH1_KANKEI_NODES = [
 
 // ノードに紐づくラベルバッジ（複数付与可）
 const CH1_KANKEI_BADGES = [
-  { nodeId: 'miyu',    label: '依頼人',           unlockScene: 'scene02', type: 'normal'   },
-  { nodeId: 'kenichi', label: '父親',              unlockScene: 'scene04', type: 'normal'   },
-  { nodeId: 'nanako',  label: '妻・母',            unlockScene: 'scene06', type: 'normal'   },
-  { nodeId: 'nanako',  label: '不審な荷物',        unlockScene: 'scene08', type: 'warning'  },
-  { nodeId: 'misaki',  label: 'ストーカー被害者',  unlockScene: 'scene10', type: 'warning'  },
-  { nodeId: 'shinji',  label: '配達員',            unlockScene: 'scene12', type: 'normal'   },
-  { nodeId: 'shinji',  label: 'ストーカー',        unlockScene: 'scene13', type: 'danger'   },
-  { nodeId: 'miyu',    label: '嫌がらせ被害',      unlockScene: 'scene16', type: 'danger'   },
-  { nodeId: 'nanako',  label: '嫌がらせ被害',      unlockScene: 'scene16', type: 'danger'   },
-  { nodeId: 'kenichi', label: '嫌がらせ被害',      unlockScene: 'scene16', type: 'danger'   },
-  { nodeId: 'shinji',  label: '犯人・逃亡',        unlockScene: 'scene17', type: 'criminal' },
+  { nodeId: 'miyu',    label: '依頼人',         unlockScene: 'scene02', type: 'normal'   },
+  { nodeId: 'kenichi', label: '父',             unlockScene: 'scene04', type: 'normal'   },
+  { nodeId: 'kenichi', label: '夫',             unlockScene: 'scene06', type: 'normal'   },
+  { nodeId: 'nanako',  label: '母',             unlockScene: 'scene06', type: 'normal'   },
+  { nodeId: 'nanako',  label: '妻',             unlockScene: 'scene06', type: 'normal'   },
+  { nodeId: 'nanako',  label: '不審な荷物',     unlockScene: 'scene08', type: 'warning'  },
+  { nodeId: 'misaki',  label: 'ストーカー被害', unlockScene: 'scene10', type: 'warning'  },
+  { nodeId: 'shinji',  label: '配達員',         unlockScene: 'scene12', type: 'normal'   },
+  { nodeId: 'shinji',  label: 'ストーカー',     unlockScene: 'scene13', type: 'danger'   },
+  { nodeId: 'shinji',  label: '犯人・逃亡',     unlockScene: 'scene17', type: 'criminal' },
 ];
 
 // ノード間の接続線
@@ -5665,11 +5664,11 @@ const CH1_KANKEI_EDGES = [
   { from: 'miyu',    to: 'kenichi', label: '父と娘',         unlockScene: 'scene04', type: 'family' },
   { from: 'miyu',    to: 'nanako',  label: '母と娘',         unlockScene: 'scene06', type: 'family' },
   { from: 'kenichi', to: 'nanako',  label: '夫と妻',         unlockScene: 'scene06', type: 'family' },
-  { from: 'shinji',  to: 'misaki',  label: 'ストーカー行為',   unlockScene: 'scene13', type: 'danger' },
+  { from: 'shinji',  to: 'misaki',  label: 'ストーカー',      unlockScene: 'scene13', type: 'danger' },
   { from: 'misaki',  to: 'kenichi', label: '不倫関係',       unlockScene: 'scene15', type: 'danger' },
   { from: 'shinji',  to: 'nanako',  label: '嫌がらせ',       unlockScene: 'scene16', type: 'danger' },
   { from: 'shinji',  to: 'kenichi', label: '嫌がらせ',       unlockScene: 'scene16', type: 'danger' },
-  { from: 'shinji',  to: 'miyu',    label: '嫌がらせ・猫を迷子', unlockScene: 'scene16', type: 'danger' },
+  { from: 'shinji',  to: 'miyu',    label: '嫌がらせ',           unlockScene: 'scene16', type: 'danger' },
 ];
 
 function openKankeiScreen() {
