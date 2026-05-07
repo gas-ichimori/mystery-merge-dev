@@ -5724,7 +5724,7 @@ const CH3_KANKEI_EDGES = [
   { from: 'sachiko', to: 'akira',  label: '異母姉弟',     unlockScene: 'c3s20', type: 'family'   },
   { from: 'nobuo',   to: 'keisuke', label: '脅迫',         unlockScene: 'c3s21', type: 'criminal' },
   { from: 'nobuo',   to: 'kouji',   label: '共犯',         unlockScene: 'c3s23', type: 'danger'   },
-  { from: 'keisuke', to: 'midori',  label: '遺言を預かる', unlockScene: 'c3s24', type: 'normal'   },
+  { from: 'keisuke', to: 'midori',  label: '遺言を預かる', unlockScene: 'c3s24', type: 'normal',  labelPos: 0.72 },
 ];
 
 // ヤスは相関図に不要のため除外
@@ -5922,8 +5922,9 @@ function renderKankeiBoard() {
 
   // ── Phase 2: エッジラベル（全ラインの後に追加 → 上に描画される）
   labelQueue.forEach(({ edge, fromNode, toNode, delay }) => {
-    const mx = (fromNode.x + toNode.x) / 2;
-    const my = (fromNode.y + toNode.y) / 2;
+    const t  = edge.labelPos ?? 0.5;
+    const mx = fromNode.x + (toNode.x - fromNode.x) * t;
+    const my = fromNode.y + (toNode.y - fromNode.y) * t;
     const lines      = splitEdgeLabel(edge.label);
     const multiLine  = lines.length > 1;
     const textColor  = TEXT_COLORS[edge.type] || TEXT_COLORS.normal;
