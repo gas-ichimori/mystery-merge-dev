@@ -2955,10 +2955,10 @@ body {
   gap: 2px;
 }
 
-/* ノードバッジ（ポストイット画像背景）：2.5倍 = 35px */
+/* 関係フォント（ノードバッジ）: 5 SVG units ≈ 5vw */
 .kankei-badge {
   font-family: 'Zen Kurenaido', sans-serif;
-  font-size: 35px;
+  font-size: 5vw;
   padding: 6px 14px 9px;
   white-space: nowrap;
   text-align: center;
