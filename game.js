@@ -2469,14 +2469,16 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
     ...CH2_KANKEI_NODES, ...CH2_KANKEI_EDGES, ...CH2_KANKEI_BADGES,
     ...CH3_KANKEI_NODES, ...CH3_KANKEI_EDGES, ...CH3_KANKEI_BADGES,
     ...CH4_KANKEI_NODES, ...CH4_KANKEI_EDGES, ...CH4_KANKEI_BADGES,
+    ...CH5_KANKEI_NODES, ...CH5_KANKEI_EDGES, ...CH5_KANKEI_BADGES,
   ];
   allKankei.forEach(item => {
     if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
   });
   // 各章プルダウンを表示するため解放フラグもオン
-  eventState.fireGenUnlocked   = true;
-  eventState.kanteGenUnlocked  = true;
+  eventState.fireGenUnlocked    = true;
+  eventState.kanteGenUnlocked   = true;
   eventState.keikakuGenUnlocked = true;
+  eventState.snsGenUnlocked     = true;
   openKankeiScreen();
 });
 
@@ -6235,6 +6237,39 @@ const CH3_KANKEI_EDGES = [
 ];
 
 // ── 第四章データ ──
+const CH5_KANKEI_NODES = [
+  { id: 'aoi',    name: 'アオイ',  sub: '27歳', img: 'img/Chapter5/chara/image_merge_order_chara_27.png', unlockScene: 'c5s01', x: 50, y: 40 },
+  { id: 'hana',   name: 'ハナ',   sub: '25歳', img: 'img/Chapter5/chara/image_merge_order_chara_29.png', unlockScene: 'c5s05', x: 15, y: 72 },
+  { id: 'ryo',    name: 'リョウ',  sub: '32歳', img: 'img/Chapter5/chara/image_merge_order_chara_30.png', unlockScene: 'c5s06', x: 15, y: 15 },
+  { id: 'naoki',  name: 'ナオキ',  sub: '30歳', img: 'img/Chapter5/chara/image_merge_order_chara_28.png', unlockScene: 'c5s08', x: 82, y: 15 },
+  { id: 'manami', name: 'マナミ',  sub: '44歳', img: 'img/Chapter5/chara/image_merge_order_chara_31.png', unlockScene: 'c5s11', x: 82, y: 72 },
+  { id: 'kenji',  name: 'ケンジ',  sub: '36歳', img: 'img/Chapter5/chara/image_merge_order_chara_32.png', unlockScene: 'c5s15', x: 50, y: 82 },
+];
+
+const CH5_KANKEI_BADGES = [
+  { nodeId: 'aoi',    label: '依頼人',           unlockScene: 'c5s01', type: 'normal'   },
+  { nodeId: 'aoi',    label: 'イラストレーター', unlockScene: 'c5s01', type: 'normal'   },
+  { nodeId: 'manami', label: 'マネージャー',     unlockScene: 'c5s11', type: 'normal'   },
+  { nodeId: 'naoki',  label: '犯人',             unlockScene: 'c5s24', type: 'criminal' },
+];
+
+const CH5_KANKEI_EDGES = [
+  { from: 'aoi',   to: 'hana',   label: '友人',      unlockScene: 'c5s05', type: 'normal'   },
+  { from: 'ryo',   to: 'aoi',    label: '調査',      unlockScene: 'c5s06', type: 'normal'   },
+  { from: 'ryo',   to: 'hana',   label: '調査',      unlockScene: 'c5s06', type: 'normal'   },
+  { from: 'ryo',   to: 'naoki',  label: '調査',      unlockScene: 'c5s06', type: 'normal'   },
+  { from: 'aoi',   to: 'naoki',  label: '元恋人',    unlockScene: 'c5s08', type: 'normal',   hideIfScene: 'c5s24' },
+  { from: 'aoi',   to: 'manami', label: '契約',      unlockScene: 'c5s11', type: 'normal'   },
+  { from: 'aoi',   to: 'hana',   label: '裏切り？',  unlockScene: 'c5s12', type: 'danger',   hideIfScene: 'c5s14' },
+  { from: 'naoki', to: 'hana',   label: '情報流出',  unlockScene: 'c5s14', type: 'criminal' },
+  { from: 'naoki', to: 'kenji',  label: '友人',      unlockScene: 'c5s15', type: 'normal'   },
+  { from: 'kenji', to: 'manami', label: '誹謗中傷',  unlockScene: 'c5s20', type: 'criminal' },
+  { from: 'kenji', to: 'ryo',    label: '共犯',      unlockScene: 'c5s21', type: 'criminal' },
+  { from: 'naoki', to: 'aoi',    label: 'なりすまし', unlockScene: 'c5s24', type: 'criminal' },
+  { from: 'naoki', to: 'manami', label: '誹謗中傷',  unlockScene: 'c5s24', type: 'criminal' },
+  { from: 'naoki', to: 'hana',   label: '嘘発言',    unlockScene: 'c5s24', type: 'danger'   },
+];
+
 const CH4_KANKEI_NODES = [
   { id: 'takeshi', name: 'タケシ', sub: '35歳', img: 'img/Chapter4/chara/image_merge_order_chara_22.png', unlockScene: 'c4s01', x: 22, y: 28 },
   { id: 'haruka',  name: 'ハルカ', sub: '28歳', img: 'img/Chapter4/chara/image_merge_order_chara_25.png', unlockScene: 'c4s04', x: 78, y: 28 },
@@ -6340,6 +6375,14 @@ function updateKankeiChapterSelect() {
     opt.textContent = '第四章　相関図';
     sel.appendChild(opt);
   }
+  // 第五章オプションの有無を同期
+  const has5 = eventState.snsGenUnlocked;
+  if (has5 && !sel.querySelector('[value="5"]')) {
+    const opt = document.createElement('option');
+    opt.value = '5';
+    opt.textContent = '第五章　相関図';
+    sel.appendChild(opt);
+  }
   sel.value = String(currentKankeiChapter);
 }
 
@@ -6360,6 +6403,9 @@ function updateKankeiAttention() {
     ...CH4_KANKEI_NODES.map(n => n.unlockScene),
     ...CH4_KANKEI_EDGES.map(e => e.unlockScene),
     ...CH4_KANKEI_BADGES.map(b => b.unlockScene),
+    ...CH5_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH5_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH5_KANKEI_BADGES.map(b => b.unlockScene),
   ];
   const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
   const btn = document.getElementById('kankei-open-btn');
@@ -6390,9 +6436,9 @@ function renderKankeiBoard() {
   nodesWrap.innerHTML = '';
 
   // 章に応じてデータを切り替え
-  const NODES  = currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
-  const EDGES  = currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
-  const BADGES = currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
+  const NODES  = currentKankeiChapter === 5 ? CH5_KANKEI_NODES  : currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
+  const EDGES  = currentKankeiChapter === 5 ? CH5_KANKEI_EDGES  : currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
+  const BADGES = currentKankeiChapter === 5 ? CH5_KANKEI_BADGES : currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
 
   // 解放済みノードセット
   const unlockedNodeIds = new Set(
