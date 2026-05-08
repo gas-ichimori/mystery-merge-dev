@@ -2550,6 +2550,19 @@ document.getElementById('debug-popup-maxlv').addEventListener('click', () => {
   showToast('最大レベルです');
 });
 
+// アドベンチャーシーン再生ボタン（各章）
+['ch1', 'ch2', 'ch3', 'ch4'].forEach(ch => {
+  const btn = document.getElementById(`debug-adv-${ch}-play`);
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const sel = document.getElementById(`debug-adv-${ch}-select`);
+    const sceneId = sel?.value;
+    if (!sceneId) { showToast('シーンを選択してください'); return; }
+    document.getElementById('debug-screen').classList.add('hidden');
+    openAdventureScene(sceneId);
+  });
+});
+
 // ========================================
 // アドベンチャーシーン
 // ========================================
