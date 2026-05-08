@@ -2467,13 +2467,15 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
     ...CH1_KANKEI_NODES, ...CH1_KANKEI_EDGES, ...CH1_KANKEI_BADGES,
     ...CH2_KANKEI_NODES, ...CH2_KANKEI_EDGES, ...CH2_KANKEI_BADGES,
     ...CH3_KANKEI_NODES, ...CH3_KANKEI_EDGES, ...CH3_KANKEI_BADGES,
+    ...CH4_KANKEI_NODES, ...CH4_KANKEI_EDGES, ...CH4_KANKEI_BADGES,
   ];
   allKankei.forEach(item => {
     if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
   });
   // 各章プルダウンを表示するため解放フラグもオン
-  eventState.fireGenUnlocked  = true;
-  eventState.kanteGenUnlocked = true;
+  eventState.fireGenUnlocked   = true;
+  eventState.kanteGenUnlocked  = true;
+  eventState.keikakuGenUnlocked = true;
   openKankeiScreen();
 });
 
@@ -5740,6 +5742,39 @@ const CH3_KANKEI_EDGES = [
   { from: 'keisuke', to: 'midori',  label: '遺言を預かる', unlockScene: 'c3s24', type: 'normal',  labelPos: 0.85 },
 ];
 
+// ── 第四章データ ──
+const CH4_KANKEI_NODES = [
+  { id: 'takeshi', name: 'タケシ', sub: '35歳', img: 'img/Chapter4/chara/image_merge_order_chara_22.png', unlockScene: 'c4s01', x: 22, y: 28 },
+  { id: 'haruka',  name: 'ハルカ', sub: '28歳', img: 'img/Chapter4/chara/image_merge_order_chara_25.png', unlockScene: 'c4s04', x: 78, y: 28 },
+  { id: 'shigeru', name: 'シゲル', sub: '68歳', img: 'img/Chapter4/chara/image_merge_order_chara_26.png', unlockScene: 'c4s05', x: 78, y: 78 },
+  { id: 'reiko',   name: 'レイコ', sub: '42歳', img: 'img/Chapter4/chara/image_merge_order_chara_23.png', unlockScene: 'c4s07', x: 22, y: 78 },
+  { id: 'kazuya',  name: 'カズヤ', sub: '55歳', img: 'img/Chapter4/chara/image_merge_order_chara_24.png', unlockScene: 'c4s09', x: 50, y: 53 },
+];
+
+const CH4_KANKEI_BADGES = [
+  { nodeId: 'takeshi', label: '依頼人',       unlockScene: 'c4s01', type: 'normal'   },
+  { nodeId: 'takeshi', label: '不動産会社社員',unlockScene: 'c4s01', type: 'normal'   },
+  { nodeId: 'haruka',  label: '地権者の娘',   unlockScene: 'c4s04', type: 'normal'   },
+  { nodeId: 'shigeru', label: '地元の古老',   unlockScene: 'c4s05', type: 'normal'   },
+  { nodeId: 'reiko',   label: '不動産会社社員',unlockScene: 'c4s07', type: 'normal'   },
+  { nodeId: 'kazuya',  label: '不動産会社社長',unlockScene: 'c4s09', type: 'normal'   },
+  { nodeId: 'takeshi', label: '内部告発者',   unlockScene: 'c4s10', type: 'warning'  },
+  { nodeId: 'reiko',   label: '被害者',       unlockScene: 'c4s12', type: 'warning'  },
+  { nodeId: 'takeshi', label: '失踪',         unlockScene: 'c4s17', type: 'danger',   hideIfScene: 'c4s21' },
+  { nodeId: 'kazuya',  label: '犯人',         unlockScene: 'c4s19', type: 'criminal' },
+  { nodeId: 'kazuya',  label: '逃亡画策',     unlockScene: 'c4s19', type: 'danger',   hideIfScene: 'c4s22' },
+  { nodeId: 'reiko',   label: '証人',         unlockScene: 'c4s20', type: 'normal'   },
+  { nodeId: 'shigeru', label: '証人',         unlockScene: 'c4s23', type: 'normal'   },
+  { nodeId: 'kazuya',  label: '逮捕',         unlockScene: 'c4s27', type: 'criminal' },
+];
+
+const CH4_KANKEI_EDGES = [
+  { from: 'takeshi', to: 'reiko',  label: '同僚',     unlockScene: 'c4s07', type: 'normal'   },
+  { from: 'takeshi', to: 'kazuya', label: '内部告発', unlockScene: 'c4s10', type: 'danger'   },
+  { from: 'reiko',   to: 'kazuya', label: '脅迫',     unlockScene: 'c4s12', type: 'criminal' },
+  { from: 'kazuya',  to: 'haruka', label: '脅迫',     unlockScene: 'c4s13', type: 'criminal' },
+];
+
 // ヤスは相関図に不要のため除外
 const CH1_KANKEI_NODES = [
   { id: 'miyu',    name: 'ミユ',    sub: '9歳',   img: 'img/Chapter1/Chara/image_merge_order_chara_01a.png', unlockScene: 'scene02', x: 50, y: 14 },
@@ -5790,6 +5825,7 @@ function updateKankeiChapterSelect() {
   if (!sel) return;
   const has2 = eventState.fireGenUnlocked;
   const has3 = eventState.kanteGenUnlocked;
+  const has4 = eventState.keikakuGenUnlocked;
   // 第二章オプションの有無を同期
   if (has2 && !sel.querySelector('[value="2"]')) {
     const opt = document.createElement('option');
@@ -5802,6 +5838,13 @@ function updateKankeiChapterSelect() {
     const opt = document.createElement('option');
     opt.value = '3';
     opt.textContent = '第三章　相関図';
+    sel.appendChild(opt);
+  }
+  // 第四章オプションの有無を同期
+  if (has4 && !sel.querySelector('[value="4"]')) {
+    const opt = document.createElement('option');
+    opt.value = '4';
+    opt.textContent = '第四章　相関図';
     sel.appendChild(opt);
   }
   sel.value = String(currentKankeiChapter);
@@ -5821,6 +5864,9 @@ function updateKankeiAttention() {
     ...CH3_KANKEI_NODES.map(n => n.unlockScene),
     ...CH3_KANKEI_EDGES.map(e => e.unlockScene),
     ...CH3_KANKEI_BADGES.map(b => b.unlockScene),
+    ...CH4_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH4_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH4_KANKEI_BADGES.map(b => b.unlockScene),
   ];
   const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
   const btn = document.getElementById('kankei-open-btn');
@@ -5851,9 +5897,9 @@ function renderKankeiBoard() {
   nodesWrap.innerHTML = '';
 
   // 章に応じてデータを切り替え
-  const NODES  = currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
-  const EDGES  = currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
-  const BADGES = currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
+  const NODES  = currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
+  const EDGES  = currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
+  const BADGES = currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
 
   // 解放済みノードセット
   const unlockedNodeIds = new Set(
