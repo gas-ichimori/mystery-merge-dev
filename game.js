@@ -244,6 +244,7 @@ let state = {
   ch2Count: 0,      // 第二章既読シーン数（0-21）
   ch3Count: 0,      // 第三章既読シーン数（0-26）
   ch4Count: 0,      // 第四章既読シーン数（0-30）
+  ch5Count: 0,      // 第五章既読シーン数（0-30）
   pendingUse: null,
   // 発見済みアイテム管理: discovered[chainId][stage] = true
   discovered: {},
@@ -4139,6 +4140,489 @@ const ADV_SCENES = {
       { speaker: 'ヤス', text: '...さて。次は、どんな依頼が来るでしょうか。', side: 'left' },
     ],
   },
+  // ===== 第五章 c5s01〜c5s30 =====
+  // 第五章 Scene01：アオイ来訪・依頼受理
+  c5s01: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'アオイ', text: 'こんにちわ...失礼します...', side: 'right' },
+      { speaker: 'ヤス',   text: 'どのようなご依頼でしょうか？', side: 'left' },
+      { speaker: 'アオイ', text: 'あの…私、フリーランスでイラストレーターをやってます...アオイと申します...SNSのことで相談したくて来ました...', side: 'right' },
+      { speaker: 'ヤス',   text: 'SNSですね...詳しく聞かせてください...', side: 'left' },
+      { speaker: 'アオイ', text: '...誰かが私に成りすましている様で...', side: 'right' },
+      { speaker: 'ヤス',   text: '成りすましの被害を受けられているのですね...わかりました...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene02：被害の詳細ヒアリング
+  c5s02: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'アオイ', text: '...これを見てください...私のアカウントにそっくりなんです...', side: 'right' },
+      { speaker: 'ヤス',   text: '…確かに、アイコンも名前も本人と区別がつかない...', side: 'left' },
+      { speaker: 'アオイ', text: 'そのアカウントが、私の友達に酷いことを送りつけているんです...', side: 'right' },
+      { speaker: 'ヤス',   text: 'いつから気づきましたか？...', side: 'left' },
+      { speaker: 'アオイ', text: '2週間ほど前です...友人からの連絡で初めて知りました...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene03：事務所からの電話
+  c5s03: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '（電話が鳴る）...少し失礼します……はい、はい、わかりました...', side: 'left' },
+      { speaker: 'ヤス',   text: '...お待たせしました...', side: 'left' },
+      { speaker: 'ヤス',   text: '先ほどの電話ですが、アオイさんが契約されているクリエイター事務所のマネージャーさんからです...アオイさんに活動を自粛してほしい...と', side: 'left' },
+      { speaker: 'アオイ', text: 'マナミさんが……。やっぱり、もう知れ渡っているんですね...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene04：心当たりの人物
+  c5s04: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '少し個人的なことを聞かせてください...心当たりのある人物はいらっしゃいますか？...', side: 'left' },
+      { speaker: 'アオイ', text: '……いるとしたら、一人だけ...', side: 'right' },
+      { speaker: 'ヤス',   text: 'どの様な方でしょうか？...', side: 'left' },
+      { speaker: 'アオイ', text: '3ヶ月前に別れた元彼です...ナオキといいます...別れ際に少し揉めて...', side: 'right' },
+      { speaker: 'ヤス',   text: '揉めた...というのは？', side: 'left' },
+      { speaker: 'アオイ', text: '彼が納得していなかったみたいで……。でも、まさか彼が？……', side: 'right' },
+    ],
+  },
+  // 第五章 Scene05：ハナが来訪
+  c5s05: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_29.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ハナ', text: '突然すみません...アオイの友達のハナといいます...アオイの相談に乗って頂けていると聞いて...', side: 'right' },
+      { speaker: 'ヤス', text: '...わざわざありがとうございます...アオイさんのことを詳しくご存じですか？...', side: 'left' },
+      { speaker: 'ハナ', text: 'もちろんです！...アオイは本当にいい子で、絶対こんなことしない...誰かの嫌がらせだと思います...', side: 'right' },
+      { speaker: 'ヤス', text: '（ハナの様子をさりげなく観察する）……そうですね。ご協力よろしくお願いします....', side: 'left' },
+    ],
+  },
+  // 第五章 Scene06：リョウへの調査依頼
+  c5s06: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス',  text: 'リョウさん...お久しぶりです...早速ですが、デジタル調査をお願いしたいことがありまして...', side: 'left' },
+      { speaker: 'リョウ', text: '...ああ...なりすましの件ですよね...連絡もらっていたので把握してますよ...', side: 'right' },
+      { speaker: 'ヤス',  text: 'アカウントの追跡はできそうですか？...', side: 'left' },
+      { speaker: 'リョウ', text: 'やってみます...ただ、時間はかかりますよ...SNSのIPはすぐには割れ出せないこともあって...', side: 'right' },
+      { speaker: 'ヤス',  text: 'もちろんです...それでは、引き続きよろしくお願いします...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene07：投稿分析の結果
+  c5s07: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '...アオイさん...なりすましアカウントの投稿を分析してみました...', side: 'left' },
+      { speaker: 'アオイ', text: '...何かわかりましたか？...', side: 'right' },
+      { speaker: 'ヤス',   text: '投稿のタイミングや内容から、アオイさんの日常を近くで知っている人物の関与が疑われます...', side: 'left' },
+      { speaker: 'アオイ', text: '近くにいる人……ですか？...', side: 'right' },
+      { speaker: 'ヤス',   text: 'アオイさんが今日何をされたのか、誰とお会いしたのか...そういった情報が投稿の端々に出ておりますので...', side: 'left' },
+      { speaker: 'アオイ', text: '...！.... ...。', side: 'right' },
+    ],
+  },
+  // 第五章 Scene08：ナオキへの接触
+  c5s08: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_28.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_cafe.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ナオキ', text: '... ...アオイのことで話を聞きたいって？...何ですか突然... ...', side: 'right' },
+      { speaker: 'ヤス',   text: 'アオイさんのなりすまし被害について調べております...単刀直入にお聞きします...心当たりはありませんか？...', side: 'left' },
+      { speaker: 'ナオキ', text: '...失礼な！...俺には関係ないことだな...', side: 'right' },
+      { speaker: 'ヤス',   text: '...最近、アオイさんと連絡はとっておられますか？....', side: 'left' },
+      { speaker: 'ナオキ', text: '……ないですね。そんなことより、何を根拠に俺を疑っているんですか？...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene09：複数端末の発覚
+  c5s09: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'リョウ', text: 'ヤスさん...アカウントの使用端末、少し絞り込めましたよ...', side: 'right' },
+      { speaker: 'ヤス',   text: '...どんなことがわかりましたか？...', side: 'left' },
+      { speaker: 'リョウ', text: '...複数の端末から操作されています...なので一人じゃなく、複数人が関わっている可能性がある...', side: 'right' },
+      { speaker: 'ヤス',   text: '複数人……', side: 'left' },
+      { speaker: 'リョウ', text: '...さて...もう少し時間をください。もっと詳しく追えるはずです...', side: 'right' },
+      { speaker: 'ヤス',   text: 'よろしくお願いします...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene10：ハナへの問いただし
+  c5s10: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_29.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_cafe.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '...ハナさん、本日は突然すみません...単刀直入にお聞きしますね...最近ナオキさんとも連絡をとっていると聞きましたが...', side: 'left' },
+      { speaker: 'ハナ', text: '... ...え……なんで知ってるんですか？...', side: 'right' },
+      { speaker: 'ヤス', text: '（無視して）アオイさんのSNSの関係を調べていまして...ナオキさんとはどんな話を？...', side: 'left' },
+      { speaker: 'ハナ', text: 'それは……ちょっと、話しにくい...です...', side: 'right' },
+      { speaker: 'ヤス', text: '（静かに）ハナさん、アオイさんのためにも正直に話してください...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene11：マナミの来訪
+  c5s11: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_31.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'マナミ', text: '...こんにちわ...アオイの担当マネージャーの工藤マナミです...直接お話ししたくて伺わせて頂きました...', side: 'right' },
+      { speaker: 'ヤス',   text: '...どのようなお話しでしょうか？...', side: 'left' },
+      { speaker: 'マナミ', text: 'アオイには今すぐ活動を止めてもらう必要があります...事務所の他のタレントへの影響がありまして...', side: 'right' },
+      { speaker: 'ヤス',   text: 'それでは、活動休止ではなく、自粛を求めるのはいかがでしょうか？...', side: 'left' },
+      { speaker: 'マナミ', text: '（少し間があって）……わかっています。でも事務所としては……', side: 'right' },
+      { speaker: 'ヤス',   text: '... ...？... ...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene12：ハナの情報漏洩をアオイに告知
+  c5s12: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '...アオイさん、少しお話したいことがあります... ...落ち着いて聞いてくださいね...', side: 'left' },
+      { speaker: 'アオイ', text: '...な...なんですか？...', side: 'right' },
+      { speaker: 'ヤス',   text: '実は、ハナさんが、あなたの日常の情報をナオキさんに伝えていた可能性が出てきました...', side: 'left' },
+      { speaker: 'アオイ', text: '……え？ハナが？なんで……', side: 'right' },
+      { speaker: 'ヤス',   text: '意図的ではなかったかもしれません...ナオキさんに何かを信じ込まされていた可能性があります...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene13：アカウント作成タイミングの一致
+  c5s13: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'リョウ', text: '何となく見えてきました...なりすましアカウントが作られたタイミングですが、アオイさんとナオキ氏が別れた直後ということが...わかりました...', side: 'right' },
+      { speaker: 'ヤス',   text: '...やはりナオキさんが関わっているですね...', side: 'left' },
+      { speaker: 'リョウ', text: '...ただ、アカウントの操作IPのひとつがナオキ氏の自宅じゃないんです...別の何者かが動かしていることが...', side: 'right' },
+      { speaker: 'ヤス',   text: '... ...なるほど... ...共犯者がいるということですね……', side: 'left' },
+    ],
+  },
+  // 第五章 Scene14：ハナの告白
+  c5s14: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_29.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_cafe.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ハナ', text: '……正直に話します...ごめんなさい...', side: 'right' },
+      { speaker: 'ヤス', text: '...はい...聞かせてください...', side: 'left' },
+      { speaker: 'ハナ', text: '...実は、ナオキくんから『アオイが自分の絵を盗用しているので、所属事務所の情報を教えてくれ』と言われて...', side: 'right' },
+      { speaker: 'ヤス', text: '...ナオキさんの絵？...をですか？... ...それを信じてしまったということですか？...', side: 'left' },
+      { speaker: 'ハナ', text: 'はい……だからアオイの最近の話を少しだけ教えてしまって...本当に知らなかったんです、こんなことになるなんて...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene15：ケンジの特定
+  c5s15: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'リョウ', text: 'ヤスさん...お待たせしました...アカウントを操作していた端末が、ひとつに絞れました...', side: 'right' },
+      { speaker: 'ヤス',   text: '...どの様な人物ですか？...', side: 'left' },
+      { speaker: 'リョウ', text: 'ナオキ氏の古い友人らしいです......SNSに痕跡が残っていて辿った先の個人情報にアクセスした結果...ケンジという人らしいです...', side: 'right' },
+      { speaker: 'ヤス',   text: '...なるほど...ナオキさんに頼まれて動かしていたということですかね？...', side: 'left' },
+      { speaker: 'リョウ', text: '...おそらく...ナオキ氏自身は直接手を汚していない可能性が高いです...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene16：ケンジへの初接触
+  c5s16: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_32.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_street.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス',  text: '... ... 突然すみません...ケンジさんですよね？...ナオキさんという方...ご存知ですね？...', side: 'left' },
+      { speaker: 'ケンジ', text: '！... ...なんですか急に...', side: 'right' },
+      { speaker: 'ヤス',  text: '....少しだけ...お話を聞かせてください...単刀直入にお聞きしますと... ...ナオキさんとはどんなお付き合いですか？...', side: 'left' },
+      { speaker: 'ケンジ', text: '不躾ですね... ...まぁ... ...昔からの友達ってだけですよ...それがどうかしましたか...', side: 'right' },
+      { speaker: 'ヤス',  text: '...最近、SNSのアカウント管理を頼まれたりしませんでしたか？...', side: 'left' },
+      { speaker: 'ケンジ', text: '（目が泳ぐ）……知りませんよ、そんなこと！...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene17：ケンジのデータ確認
+  c5s17: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'リョウ', text: '…ケンジ氏のスマホから送信されたと思われるデータ…確認できましたよ…', side: 'right' },
+      { speaker: 'ヤス',   text: '…これは証拠になりますか？...', side: 'left' },
+      { speaker: 'リョウ', text: '…そうですね…自白か…もうひとつの物証があれば確定できます…', side: 'right' },
+      { speaker: 'ヤス',   text: 'わかりました…ケンジさんにもう一度アプローチしてみます…', side: 'left' },
+      { speaker: 'リョウ', text: '…その辺りは、気をつけてくださいね…ナオキ氏は追い詰められると何をするかわからないタイプなので…', side: 'right' },
+    ],
+  },
+  // 第五章 Scene18：アオイとの心情ダイアログ
+  c5s18: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'アオイ', text: '...ナオキは……どうしてここまでするんでしょうか', side: 'right' },
+      { speaker: 'ヤス',   text: '...これはあくまで推測ですが...アオイさんが仕事で成功していくのが許せなかったのかもしれません...', side: 'left' },
+      { speaker: 'アオイ', text: '... ...仕事は関係ないのに...', side: 'right' },
+      { speaker: 'ヤス',   text: '...どうしても...華やかで、幸せそうに見えてしまいますからね...それが、我慢できなかったのかもしれません...', side: 'left' },
+      { speaker: 'アオイ', text: '……悲しいですね....そんな理由で...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene19：ケンジへの再接触・説得
+  c5s19: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_32.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_cafe.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',  text: '...ケンジさん...もう一度だけ話を聞いてもらえますか...', side: 'left' },
+      { speaker: 'ケンジ', text: '……何を話せっていうんですか...', side: 'right' },
+      { speaker: 'ヤス',  text: '...ケンジさんは、ナオキさんに頼まれてやっただけですよね...このまま黙っていると、ケンジさんが全責任を負うことになりますよ...', side: 'left' },
+      { speaker: 'ケンジ', text: '... ...（俯いて黙り込む）... ...', side: 'right' },
+      { speaker: 'ヤス',  text: 'ケンジさん自身も、ナオキさんに利用されているんです...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene20：新たな攻撃・緊急連絡
+  c5s20: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'アオイ', text: 'すみません！...また新しい投稿が出ました...今度は事務所への直接攻撃が...', side: 'right' },
+      { speaker: 'ヤス',   text: 'なるほど...マナミさんからも連絡が？...', side: 'left' },
+      { speaker: 'アオイ', text: 'はい...『もう契約を続けられないかもしれない』と...', side: 'right' },
+      { speaker: 'ヤス',   text: '...わかりました...急ぎます。もう少しだけ待ってください...', side: 'left' },
+      { speaker: 'アオイ', text: '... ...お願いします……もう限界で...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene21：証拠確定
+  c5s21: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'リョウ', text: 'お待たせしました...ケンジ氏のIPアドレスと、なりすましアカウントの操作ログが完全に一致しました...', side: 'right' },
+      { speaker: 'ヤス',   text: '！... ...ありがとうございます...これで動けます....', side: 'left' },
+      { speaker: 'リョウ', text: 'あと...ナオキ氏への直接的な証拠は？', side: 'right' },
+      { speaker: 'ヤス',   text: 'はい...ケンジさんの証言があれば揃います...あとはケンジさん次第ですね...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene22：ケンジへの最終説得
+  c5s22: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_32.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス',  text: '...ケンジさん、証拠は全て揃いましたよ...', side: 'left' },
+      { speaker: 'ケンジ', text: '……そうですか', side: 'right' },
+      { speaker: 'ヤス',  text: 'ケンジさんが話してくれれば、ナオキさんが首謀者だとはっきりします...このまま黙っていれば、ケンジさんが全責任を負う...', side: 'left' },
+      { speaker: 'ケンジ', text: '... ...（長い沈黙）……俺は、ただ友達に頼まれただけなのに...', side: 'right' },
+      { speaker: 'ヤス',  text: 'わかっています...だからこそ...今、正しい選択をしてください...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene23：ケンジの告白
+  c5s23: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_32.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ケンジ', text: '...わかりました...話します...全部、お話します...', side: 'right' },
+      { speaker: 'ヤス',  text: '...ありがとうございます...是非、聞かせてください...', side: 'left' },
+      { speaker: 'ケンジ', text: 'ナオキから『アカウントを動かしてくれるだけでいい』と言われて。最初は冗談だと思ってたけど、それが本気で……', side: 'right' },
+      { speaker: 'ヤス',  text: 'なるほど...それは、いつからですか？...', side: 'left' },
+      { speaker: 'ケンジ', text: '2ヶ月半前です...アオイさん？って人を徹底的に叩きたいって...途中から俺も怖くなってきて...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene24：ナオキとの対峙
+  c5s24: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_28.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_cafe.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: 'さて... ...ナオキさん...ケンジさんが全て話してくれましたよ...', side: 'left' },
+      { speaker: 'ナオキ', text: '！……ケンジが！？...', side: 'right' },
+      { speaker: 'ヤス',   text: 'はい...そして...アカウントの操作ログ、ナオキさんとの連絡記録、全て揃っています...', side: 'left' },
+      { speaker: 'ナオキ', text: '（表情が硬くなる）... ...そんな証拠なんて……', side: 'right' },
+      { speaker: 'ヤス',   text: '（遮る様に）...残念ですが、ここにあります...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene25：ナオキの自白
+  c5s25: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_28.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_cafe.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ナオキ', text: '……わかった...わかったよ...やったよ...やった...でも、あいつが悪いんだ。俺のこと捨てておいて楽しそうにしてるから...', side: 'right' },
+      { speaker: 'ヤス',   text: '...ナオキさん...それはアオイさんへの攻撃の理由には、なりません！...', side: 'left' },
+      { speaker: 'ナオキ', text: '...あいつが仕事で成功したり、幸せそうな状況が許せなかったんだよ...俺だって...俺だって', side: 'right' },
+      { speaker: 'ヤス',   text: '（静かに）ナオキさん...それでも、やっていいことと悪いことがあるんですよ...', side: 'left' },
+      { speaker: 'ナオキ', text: '（項垂れる）... ...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene26：証拠確定・リョウへの感謝
+  c5s26: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_30.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_it_room.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'リョウ', text: 'ヤスさん...ケンジさんの証言と物証が揃いました...ナオキ氏の関与は完全に確定です！...', side: 'right' },
+      { speaker: 'ヤス',   text: 'お疲れ様でした...リョウさん...', side: 'left' },
+      { speaker: 'リョウ', text: '...これで被害届も通ります...アオイさんに早く知らせてあげてくださいね...', side: 'right' },
+      { speaker: 'ヤス',   text: 'はい...ありがとうございます...', side: 'left' },
+    ],
+  },
+  // 第五章 Scene27：マナミの謝罪
+  c5s27: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_31.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'マナミ', text: 'こんにちわ...一連の件が解決したと聞きました...アオイには……謝らないといけないですね...', side: 'right' },
+      { speaker: 'ヤス',   text: '...活動休止を求めたことですか？...', side: 'left' },
+      { speaker: 'マナミ', text: '...はい...アオイは被害者なのに、守るどころか追い詰めてしまって...マネージャー失格ですね...', side: 'right' },
+      { speaker: 'ヤス',   text: '... ...そのお気持ちは、アオイさんに直接、伝えてあげてください...', side: 'left' },
+      { speaker: 'マナミ', text: '...はい...仰る通りですね...それが私にできる唯一のことです...この度はありがとうございました...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene28：ハナとアオイの和解
+  c5s28: {
+    title: '',
+    leftImg:  'img/Chapter5/chara/image_merge_order_chara_27.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_29.png',
+    bg: 'img/Chapter5/bg/image_merge_bg_ch5_park.png',
+    leftEntrance: 'fade', flipLeft: false,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ハナ',   text: 'アオイ！...本当にごめん...ナオキくんの言ったことを信じてしまって...本当に...', side: 'right' },
+      { speaker: 'アオイ', text: '...ハナが悪いんじゃないよ...ナオキに騙されただけだもん...大丈夫だよ...', side: 'left' },
+      { speaker: 'ハナ',   text: 'でも...でも...私が話しなければ……', side: 'right' },
+      { speaker: 'アオイ', text: 'もういいよ...ハナが正直に打ち明けてくれたことが嬉しいよ...', side: 'left' },
+      { speaker: 'ハナ',   text: '... ...ありがとう...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene29：依頼解決
+  c5s29: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter5/chara/image_merge_order_chara_27.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス',   text: '全て解決しました...被害届も受理されるでしょう...', side: 'left' },
+      { speaker: 'アオイ', text: '本当に…本当に…ありがとうございます...', side: 'right' },
+      { speaker: 'ヤス',   text: '本当にお疲れ様でした...今回は、辛い思いをしましたね...', side: 'left' },
+      { speaker: 'アオイ', text: '...最初は誰にも信じてもらえないと思ってました...本当にここに来てよかったです...', side: 'right' },
+      { speaker: 'ヤス',   text: 'なりすましアカウントも削除申請中です...またいつもの日常に戻れますよ...', side: 'left' },
+      { speaker: 'アオイ', text: 'はい！ありがとうございます...またイラスト作成を頑張ります！...ありがとうございました...', side: 'right' },
+    ],
+  },
+  // 第五章 Scene30：後日談・ヤスの独白（伏線）
+  c5s30: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '今回の件もうまく収まりましたね...', side: 'left' },
+      { sound: '...', autoAdvance: true, advanceDelay: 1500 },
+      { speaker: 'ヤス', text: 'しかし……SNSというのは、面白いものです...誰でも誰かになれる...', side: 'left' },
+      { speaker: 'ヤス', text: 'もっとも、本当の意味で『なりすます』のは、そう簡単なことじゃない...', side: 'left' },
+      { speaker: 'ヤス', text: '（少し遠い目をして）……さて、次の依頼が来る前に、お茶でも淹れましょうかね...', side: 'left' },
+    ],
+  },
+
   // ===== 第一章スライド01（2,000コインで解放）=====
   scene02: {
     title:         '',
@@ -4823,6 +5307,14 @@ document.getElementById('debug-adv-ch3-play').addEventListener('click', () => {
 // デバッグ：アドベンチャーシーン（第四章）
 document.getElementById('debug-adv-ch4-play').addEventListener('click', () => {
   const val = document.getElementById('debug-adv-ch4-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
+  document.getElementById('debug-screen').classList.add('hidden');
+  openAdventureScene(val);
+});
+
+// デバッグ：アドベンチャーシーン（第五章）
+document.getElementById('debug-adv-ch5-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch5-select').value;
   if (!val) { showToast('シーンを選択してください'); return; }
   document.getElementById('debug-screen').classList.add('hidden');
   openAdventureScene(val);
@@ -7137,6 +7629,7 @@ const CH1_SCENE_IDS = ['scene02','scene03','scene04','scene05','scene06','scene0
 const CH2_SCENE_IDS = ['c2s01','c2s02','c2s03','c2s04','c2s05','c2s06','c2s07','c2s08','c2s09','c2s10','c2s11','c2s12','c2s13','c2s14','c2s15','c2s15b','c2s16','c2s17','c2s18','c2s19','c2s20'];
 const CH3_SCENE_IDS = ['c3s01','c3s02','c3s03','c3s04','c3s05','c3s06','c3s07','c3s08','c3s09','c3s10','c3s11','c3s12','c3s13','c3s14','c3s15','c3s16','c3s17','c3s18','c3s19','c3s20','c3s21','c3s22','c3s23','c3s24','c3s25','c3s26'];
 const CH4_SCENE_IDS = ['c4s01','c4s02','c4s03','c4s04','c4s05','c4s06','c4s07','c4s08','c4s09','c4s10','c4s11','c4s12','c4s13','c4s14','c4s15','c4s16','c4s17','c4s18','c4s19','c4s20','c4s21','c4s22','c4s23','c4s24','c4s25','c4s26','c4s27','c4s28','c4s29','c4s30'];
+const CH5_SCENE_IDS = ['c5s01','c5s02','c5s03','c5s04','c5s05','c5s06','c5s07','c5s08','c5s09','c5s10','c5s11','c5s12','c5s13','c5s14','c5s15','c5s16','c5s17','c5s18','c5s19','c5s20','c5s21','c5s22','c5s23','c5s24','c5s25','c5s26','c5s27','c5s28','c5s29','c5s30'];
 
 // ストーリー進行処理（chapter: 1/2/3）
 function progressStory(chapter = 1) {
@@ -7157,6 +7650,9 @@ function progressStory(chapter = 1) {
   } else if (chapter === 3) {
     sceneId = CH3_SCENE_IDS[state.ch3Count] ?? CH3_SCENE_IDS[CH3_SCENE_IDS.length - 1];
     state.ch3Count = Math.min(state.ch3Count + 1, CH3_SCENE_IDS.length);
+  } else if (chapter === 5) {
+    sceneId = CH5_SCENE_IDS[state.ch5Count] ?? CH5_SCENE_IDS[CH5_SCENE_IDS.length - 1];
+    state.ch5Count = Math.min(state.ch5Count + 1, CH5_SCENE_IDS.length);
   } else {
     sceneId = CH4_SCENE_IDS[state.ch4Count] ?? CH4_SCENE_IDS[CH4_SCENE_IDS.length - 1];
     state.ch4Count = Math.min(state.ch4Count + 1, CH4_SCENE_IDS.length);
