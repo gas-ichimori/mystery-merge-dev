@@ -5773,6 +5773,7 @@ const CH4_KANKEI_EDGES = [
   { from: 'takeshi', to: 'kazuya', label: '内部告発', unlockScene: 'c4s10', type: 'danger'   },
   { from: 'reiko',   to: 'kazuya', label: '脅迫',     unlockScene: 'c4s12', type: 'criminal' },
   { from: 'kazuya',  to: 'haruka', label: '脅迫',     unlockScene: 'c4s13', type: 'criminal' },
+  { from: 'haruka',  to: 'shigeru', label: '協力関係', unlockScene: 'c4s29', type: 'normal'   },
 ];
 
 // ヤスは相関図に不要のため除外
