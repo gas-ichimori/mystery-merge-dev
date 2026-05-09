@@ -1709,6 +1709,11 @@ body {
   font-size: clamp(32px, 9vw, 44px);
   line-height: 1;
 }
+.page2-icon-img {
+  width: clamp(44px, 12vw, 64px);
+  height: clamp(44px, 12vw, 64px);
+  object-fit: contain;
+}
 .page2-label {
   font-size: clamp(10px, 2.8vw, 13px);
   font-weight: bold;

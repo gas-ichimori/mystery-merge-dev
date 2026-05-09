@@ -2263,7 +2263,7 @@ function showEnergyGain(amount) {
       sources.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
     }
   });
-  ['story-btn', 'ev-page2-btn', 'daily-mission-btn'].forEach(id => {
+  ['ev-page2-btn', 'daily-mission-btn'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.classList.contains('hidden')) {
       const r = el.getBoundingClientRect();
@@ -5433,11 +5433,6 @@ document.getElementById('debug-kankei-all').addEventListener('click', () => {
   showToast('相関図を全解放しました');
 });
 
-document.getElementById('story-btn').addEventListener('click', () => {
-  if (isTutorialInProgress()) return;
-  openStoryScreen();
-});
-
 document.getElementById('settings-close').addEventListener('click', () => {
   document.getElementById('settings-screen').classList.add('hidden');
 });
@@ -6110,7 +6105,7 @@ function checkStoryGuide() {
     '依頼解決で得た報酬で、ストーリーを読むことができます。',
     'ストーリーを一定回数読んでいくとプレイヤーLvがあがります。',
     'プレイヤーLvが上がる際に報酬をもらうことができます。',
-  ], '#story-btn', null);
+  ], '#ev-page2-btn', null);
 }
 
 // ========================================
@@ -7733,7 +7728,7 @@ function renderEventHeader() {
 function renderPlayerLevel() {
   const numEl    = document.getElementById('player-level-num');
   const ringEl   = document.getElementById('player-level-ring');
-  const storyBtn = document.getElementById('story-btn');
+  const storyBtn = document.getElementById('page2-story-btn');
   if (!numEl || !ringEl) return;
 
   numEl.textContent = state.playerLevel;
