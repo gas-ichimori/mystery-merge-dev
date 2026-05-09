@@ -2417,14 +2417,48 @@ document.getElementById('characters-close').addEventListener('click', () => {
 });
 
 // ========================================
-// 設定ページ
+// メインゲーム2ページ目
 // ========================================
-document.getElementById('settings-btn').addEventListener('click', () => {
+function openMainPage2() {
   if (isTutorialInProgress()) return;
   hideNaviHint();
-  document.getElementById('settings-screen').classList.remove('hidden');
+  document.getElementById('main-page2-screen').classList.remove('hidden');
+}
+function closeMainPage2() {
+  document.getElementById('main-page2-screen').classList.add('hidden');
+}
+
+document.getElementById('main-page2-btn').addEventListener('click', openMainPage2);
+document.getElementById('page2-back-btn').addEventListener('click', closeMainPage2);
+
+document.getElementById('page2-catalog-btn').addEventListener('click', () => {
+  closeMainPage2();
+  openCatalog();
+});
+document.getElementById('page2-shop-btn').addEventListener('click', () => {
+  closeMainPage2();
+  document.getElementById('shop-screen').classList.remove('hidden');
+});
+document.getElementById('page2-characters-btn').addEventListener('click', () => {
+  closeMainPage2();
+  document.getElementById('characters-screen').classList.remove('hidden');
+});
+document.getElementById('page2-kankei-btn').addEventListener('click', () => {
+  closeMainPage2();
+  openKankeiScreen();
+});
+document.getElementById('page2-story-btn').addEventListener('click', () => {
+  closeMainPage2();
+  openStoryScreen();
+});
+document.getElementById('page2-video-btn').addEventListener('click', () => {
+  closeMainPage2();
+  playPVThenStart(() => {});
 });
 
+// ========================================
+// 設定ページ（イベント画面から）
+// ========================================
 document.getElementById('ev-settings-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   hideNaviHint();
@@ -5381,7 +5415,6 @@ function openCatalog() {
   document.getElementById('catalog-screen').classList.remove('hidden');
 }
 document.getElementById('catalog-btn').addEventListener('click', () => { if (isTutorialInProgress()) return; openCatalog(); });
-document.getElementById('main-catalog-btn').addEventListener('click', () => { if (isTutorialInProgress()) return; openCatalog(); });
 document.getElementById('ev-catalog-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   if (!mainGameStarted) return; // プレゲーム・エピローグ中は無効
