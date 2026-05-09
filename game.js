@@ -7741,8 +7741,15 @@ function renderPlayerLevel() {
   const xp     = state.playerXP;
   const needed = getLevelUpXP(state.playerLevel);
   const pct    = Math.min(100, (xp / needed) * 100);
-  ringEl.style.background =
-    `conic-gradient(#f9c846 ${pct}%, #2a3a6a ${pct}%)`;
+  const progPath = document.getElementById('player-level-star-prog');
+  if (progPath) {
+    const totalLen = progPath.getTotalLength() || 120;
+    const offset   = totalLen * (1 - pct / 100);
+    progPath.style.strokeDasharray  = totalLen;
+    progPath.style.strokeDashoffset = offset;
+  } else {
+    ringEl.style.background = `conic-gradient(#f9c846 ${pct}%, #2a3a6a ${pct}%)`;
+  }
 
   if (storyBtn) {
     const cost       = getStoryCost(state.playerLevel);

@@ -1276,7 +1276,7 @@ body {
   align-items: center;
   padding: 8px 12px;
   padding-top: calc(8px + env(safe-area-inset-top, 0px));
-  padding-bottom: 0;
+  padding-bottom: 8px;
 }
 
 #event-nav {
@@ -1374,37 +1374,43 @@ body {
   align-items: center;
 }
 #player-level-ring {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: conic-gradient(#f9c846 0%, #2a3a6a 0%);
+  width: 40px;
+  height: 40px;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.4s ease;
+  position: relative;
+}
+#player-level-svg {
+  pointer-events: none;
 }
 #player-level-inner {
   width: 26px;
   height: 26px;
-  border-radius: 50%;
-  background: #0d1a3a;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 #player-level-num {
   color: #f9c846;
   font-size: 11px;
   font-weight: bold;
   line-height: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
-#player-level-ring.player-level-up-flash {
+#player-level-ring.player-level-up-flash #player-level-svg {
   animation: lv-up-flash 0.8s ease-out;
 }
 @keyframes lv-up-flash {
-  0%   { box-shadow: 0 0 0 0 rgba(249,200,70,0.9); }
-  40%  { box-shadow: 0 0 12px 6px rgba(249,200,70,0.6); }
-  100% { box-shadow: 0 0 0 0 rgba(249,200,70,0); }
+  0%   { filter: drop-shadow(0 0 0px rgba(249,200,70,0.9)); }
+  40%  { filter: drop-shadow(0 0 8px rgba(249,200,70,1)); }
+  100% { filter: drop-shadow(0 0 0px rgba(249,200,70,0)); }
 }
 
 /* ストーリー進行ボタン */
@@ -1715,23 +1721,29 @@ body {
   border-radius: 16px;
 }
 
-/* メニューボタン（メイン・イベント両ヘッダー右上）：枠なし・大きく */
+/* メニューボタン（メイン・イベント両ヘッダー右上）：丸枠・余白なし */
 #main-page2-btn,
 #ev-page2-btn {
   background: none;
-  border: none;
-  border-radius: 0;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 50%;
   width: auto;
   height: auto;
-  padding: 2px;
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   box-shadow: none;
 }
 #main-page2-btn:active,
-#ev-page2-btn:active { background: none; }
+#ev-page2-btn:active { background: rgba(255,255,255,0.1); }
 #main-page2-btn .navi-icon-img,
 #ev-page2-btn .navi-icon-img {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
 }
 
 /* ========================================

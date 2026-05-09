@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Zen+Kurenaido&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20260510f" />
+  <link rel="stylesheet" href="style.css?v=20260510k" />
 </head>
 <body>
 
@@ -615,6 +615,12 @@
           <button id="event-close">← 戻る</button>
           <div id="player-level-wrap">
             <div id="player-level-ring">
+              <svg id="player-level-svg" viewBox="0 0 40 40" width="40" height="40" style="position:absolute;top:0;left:0;overflow:visible;">
+                <!-- 星のトラック（薄い背景線） -->
+                <path class="star-track" d="M20,2 L24.11,14.34 L37.12,14.44 L26.66,22.16 L30.58,34.56 L20,27 L9.42,34.56 L13.34,22.16 L2.88,14.44 L15.89,14.34 Z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" stroke-linejoin="round"/>
+                <!-- 進捗ライン（XPで塗られる） -->
+                <path id="player-level-star-prog" d="M20,2 L24.11,14.34 L37.12,14.44 L26.66,22.16 L30.58,34.56 L20,27 L9.42,34.56 L13.34,22.16 L2.88,14.44 L15.89,14.34 Z" fill="none" stroke="#f9c846" stroke-width="2.5" stroke-linejoin="round" stroke-dasharray="1" stroke-dashoffset="1"/>
+              </svg>
               <div id="player-level-inner">
                 <span id="player-level-num">1</span>
               </div>
@@ -798,6 +804,6 @@
     <img id="title-start-btn" src="img/UI/image_merge_start_button.png" alt="ゲームスタート" style="display:none">
   </div>
 
-  <script src="game.js?v=20260509x"></script>
+  <script src="game.js?v=20260510j"></script>
 </body>
 </html>
