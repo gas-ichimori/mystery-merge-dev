@@ -2688,10 +2688,10 @@ const ADV_SCENES = {
     rightEntrance: 'none',   // ミユは最初非表示・セリフ時にスライドイン
     autoClose:     false,
     script: [
-      { speaker: 'ヤス', text: 'ご依頼内容をお聞かせください。',                          side: 'left'                               },
-      { speaker: 'ミユ', text: '猫が居なくなっちゃったの・・・。\n探してもらえますか？',   side: 'right', showRight: true, slideRight: true },
-      { speaker: 'ヤス', text: 'それは、困りましたね。\n早速、探しましょう。',              side: 'left'                               },
-      { speaker: 'ミユ', text: 'ありがとうございます！',                                   side: 'right'                              },
+      { speaker: 'ヤス', text: 'どうぞ...\nご依頼内容をお聞かせください...',                side: 'left'                               },
+      { speaker: 'ミユ', text: '猫が居なくなちゃったの...\n探してくれますか？...',          side: 'right', showRight: true, slideRight: true },
+      { speaker: 'ヤス', text: 'それは、とても心配ですね...\n早速探しましょう...',           side: 'left'                               },
+      { speaker: 'ミユ', text: 'ありがとうございます...',                                  side: 'right'                              },
     ],
   },
   // 第一章スライド06（6回目のコイン支払い時）
@@ -5756,21 +5756,22 @@ const ITEM_HINT_TEXT = '？？？？をマージさせて次のレベルにア�
 //       'merge_focus'  → 2個のLv1アイテムのみ操作可（マージで自動進行）
 // ========================================
 const TUTORIAL_STEPS = [
-  { type: 'blocking_msg', text: '私は、アナタの助手のヤスヒコと申します。\nヤスと呼んでください。' },
-  { type: 'blocking_msg', text: 'アナタは、新米探偵です。' },
-  { type: 'blocking_msg', text: 'これから、様々なご依頼を解決して頂きます。' },
-  // ↑ #2 完了後にアドベンチャーシーン01が自動挿入される
-  { type: 'gen_focus',    text: 'まずは、"メモ帳"を\n２回タップしてみてください。' },
-  { type: 'merge_focus',  text: '新しい"アイテム"が出ましたね？\nその同じ"アイテム"を重ねてみてください。' },
-  { type: 'blocking_msg', text: '重ねると新しい"アイテム"に\nなりましたね？' },
-  { type: 'blocking_msg', text: '重ねた"アイテム"で\n"依頼"を解決することができます。' },
+  { type: 'blocking_msg', text: 'アナタの助手のヤスヒコと申します...\nヤスと呼んでください...' },
+  { type: 'blocking_msg', text: 'アナタは、新米探偵です...' },
+  { type: 'blocking_msg', text: 'コチラは、探偵事務所です...' },
+  { type: 'blocking_msg', text: 'これから様々な...\nご依頼を解決して頂きます...' },
+  // ↑ #3 完了後にアドベンチャーシーン01が自動挿入される
+  { type: 'gen_focus',    text: '"メモ机"を\n2回タップしてみてください...' },
+  { type: 'merge_focus',  text: '"メモ机"から"メモ紙"が出ましたね？\n"メモ紙"同士を重ね（マージし）てみてください...' },
+  { type: 'blocking_msg', text: 'マージすると新しい"アイテム（猫）"に\nなりましたね？...' },
+  { type: 'blocking_msg', text: 'マージした"アイテム"で\n"依頼"を解決することができますので、覚えておいてください...' },
   // 依頼解決チュートリアル
-  { type: 'blocking_msg', text: '先ほどの依頼人が依頼をしてきています。', showRequest: true, noOverlay: true },
-  { type: 'request_focus', text: '"依頼解決"ボタンをタップして、\n依頼を解決してください。' },
+  { type: 'blocking_msg', text: '先ほどの依頼人（ミユさん）が、\n依頼をされています...', showRequest: true, noOverlay: true },
+  { type: 'request_focus', text: '"依頼解決"ボタンをタップして、\n依頼を解決してみてください...' },
   // 依頼解決後
-  { type: 'blocking_msg', text: '依頼を解決すると、報酬を頂けます。' },
-  { type: 'blocking_msg', text: '引き続き、たくさんの依頼を解決して頂きます。' },
-  { type: 'blocking_msg', text: 'それでは、探偵業のはじまりです。' },
+  { type: 'blocking_msg', text: '依頼を解決すると、報酬（コイン）を\n受け取ることができます...' },
+  { type: 'blocking_msg', text: '引き続き、たくさんの依頼を\n解決してください...' },
+  { type: 'blocking_msg', text: '探偵業のはじまりです...' },
 ];
 
 let eventState = {
@@ -5904,8 +5905,8 @@ function currentTutStep() {
 function advanceTutorial() {
   eventState.tutorialStep++;
 
-  // ステップ#2→#3 の間にアドベンチャーシーン01を挿入
-  if (eventState.tutorialStep === 3) {
+  // ステップ#3→#4 の間にアドベンチャーシーン01を挿入
+  if (eventState.tutorialStep === 4) {
     document.getElementById('tutorial-panel')?.classList.add('hidden');
     document.getElementById('tutorial-overlay')?.classList.add('hidden');
     if (!state.seenScenes) state.seenScenes = [];
@@ -7691,7 +7692,7 @@ function renderEventBoard() {
 
         // チュートリアルの見た目
         if (step) {
-          const spotlightCat = eventState.tutorialStep >= 5 && eventState.tutorialStep <= 8;
+          const spotlightCat = eventState.tutorialStep >= 6 && eventState.tutorialStep <= 9;
           if (step.type === 'merge_focus') {
             cell.classList.add('tutorial-spotlight');
           } else if (spotlightCat && item.stage === 2) {
