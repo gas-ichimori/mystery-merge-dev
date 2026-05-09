@@ -1749,10 +1749,11 @@ body {
   font-size: 15px;
   line-height: 1.7;
 }
-/* ガイド中、対象ボタンはオーバーレイの前面に */
+/* ガイド中、対象ボタンはオーバーレイの前面に表示するが操作不可 */
 #main-page2-screen .guide-attention {
   position: relative;
   z-index: 11;
+  pointer-events: none; /* メッセージ完了まで直接タップ不可 */
 }
 
 /* page2-catalog-btnはcatalog-access-btnのwidthをリセット */
