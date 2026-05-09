@@ -1706,12 +1706,23 @@ body {
   border-radius: 16px;
 }
 
-/* メインゲーム2ページ目ナビボタン（ヘッダー右上） */
-#main-page2-btn {
-  font-size: 22px;
-  font-weight: bold;
-  color: #e8f4fd;
-  letter-spacing: -1px;
+/* メニューボタン（メイン・イベント両ヘッダー右上）：枠なし・大きく */
+#main-page2-btn,
+#ev-page2-btn {
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+  padding: 2px;
+  box-shadow: none;
+}
+#main-page2-btn:active,
+#ev-page2-btn:active { background: none; }
+#main-page2-btn .navi-icon-img,
+#ev-page2-btn .navi-icon-img {
+  width: 48px;
+  height: 48px;
 }
 
 /* ========================================
