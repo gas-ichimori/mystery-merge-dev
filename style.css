@@ -2566,50 +2566,55 @@ body {
 ======================================== */
 #event-slots-panel {
   flex: 0 0 auto;
-  width: 68px;
-  min-height: 80px;
-  padding: 6px 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  width: 128px;
+  padding: 5px;
+  margin: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: start;
+  gap: 4px;
+  max-height: 130px;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  border-right: 1px solid rgba(255,255,255,0.15);
-  align-items: center;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  background: rgba(0,0,0,0.15);
   box-sizing: border-box;
-  align-self: stretch;
-  border-right: 1px solid rgba(255,255,255,0.15);
+  align-self: center;
 }
 #event-slots-panel::-webkit-scrollbar { display: none; }
 
 .event-slot-btn {
   position: relative;
-  width: 58px;
-  height: 82px;          /* 依頼スロットと同等の高さ */
+  width: 100%;
+  aspect-ratio: 1;
   flex-shrink: 0;
   background: rgba(30,40,80,0.85);
-  border: 1px solid rgba(241,196,15,0.5);
-  border-radius: 8px;
+  border: 1px solid rgba(241,196,15,0.4);
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   cursor: pointer;
-  padding: 4px 2px;
+  padding: 2px;
   transition: background 0.15s;
 }
 .event-slot-btn:active {
   background: rgba(241,196,15,0.2);
 }
+.ev-slot-placeholder {
+  opacity: 0.5;
+}
 .event-slot-icon {
-  font-size: 26px;
+  font-size: 18px;
   line-height: 1;
 }
 .event-slot-label {
-  font-size: 10px;
+  font-size: 8px;
   color: #f1c40f;
   font-weight: bold;
   line-height: 1;
