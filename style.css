@@ -1460,6 +1460,8 @@ body {
 /* イベント依頼行ラッパー（sticky・イベントスロット＋依頼スロット） */
 #event-req-row {
   width: 100%;
+  height: 117px; /* イベント枠と同じ高さで固定 */
+  overflow: hidden; /* キャラが伸びても行高を変えない */
   border-bottom: 2px solid #f1c40f55;
   display: flex;
   flex-direction: row;
@@ -1480,6 +1482,10 @@ body {
   scrollbar-width: none;
 }
 #event-req-panel::-webkit-scrollbar { display: none; }
+/* イベント画面のキャラは上端揃え（顔が見えるよう）*/
+#event-req-panel .req-char-wrap {
+  align-self: flex-start;
+}
 
 /* ボード（イベント） */
 #event-board-wrap {
@@ -2724,7 +2730,7 @@ body {
   flex-direction: row;
   align-items: center;
   gap: 3px;
-  margin: 10px 14px 4px 4px;
+  margin: 4px 14px 4px 4px;
   flex-shrink: 0;
 }
 
