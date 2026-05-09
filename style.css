@@ -1749,11 +1749,21 @@ body {
   font-size: 15px;
   line-height: 1.7;
 }
-/* ガイド中、対象ボタンはオーバーレイの前面に表示するが操作不可 */
+/* ガイド中、対象ボタンはオーバーレイの前面に表示 */
 #main-page2-screen .guide-attention {
   position: relative;
   z-index: 11;
-  pointer-events: none; /* メッセージ完了まで直接タップ不可 */
+}
+/* ガイドアクティブ中のみ操作不可 */
+#main-page2-screen.menu-guide-active .guide-attention {
+  pointer-events: none;
+}
+/* ▼タップで次へ（メニューガイド内）*/
+#menu-guide-panel .tutorial-tap-hint {
+  font-size: 10px;
+  color: #e74c3c;
+  text-align: right;
+  margin: 6px 0 0;
 }
 
 /* page2-catalog-btnはcatalog-access-btnのwidthをリセット */

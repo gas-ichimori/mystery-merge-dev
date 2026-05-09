@@ -2486,6 +2486,7 @@ document.getElementById('main-page2-btn').addEventListener('click', openMainPage
 document.getElementById('page2-back-btn').addEventListener('click', closeMainPage2);
 
 document.getElementById('page2-catalog-btn').addEventListener('click', () => {
+  document.getElementById('page2-catalog-btn').classList.remove('guide-attention');
   closeMainPage2(); returnToMenu = true;
   openCatalog();
 });
@@ -2502,6 +2503,7 @@ document.getElementById('page2-kankei-btn').addEventListener('click', () => {
   openKankeiScreen();
 });
 document.getElementById('page2-story-btn').addEventListener('click', () => {
+  document.getElementById('page2-story-btn').classList.remove('guide-attention');
   closeMainPage2(); returnToMenu = true;
   openStoryScreen();
 });
@@ -6076,8 +6078,9 @@ function startMenuGuide(messages, attentionSelector, onDone) {
   menuGuideState = { messages, idx: 0, attentionSelector, onDone };
   const el = attentionSelector ? document.querySelector(attentionSelector) : null;
   if (el) el.classList.add('guide-attention');
+  // ガイド中はmenu-guide-activeクラスでpointer-eventsをブロック
+  document.getElementById('main-page2-screen').classList.add('menu-guide-active');
   _renderMenuGuidePanel();
-  // オーバーレイタップで進む
   document.getElementById('menu-guide-overlay').onclick = advanceMenuGuide;
   document.getElementById('menu-guide-panel').onclick   = advanceMenuGuide;
 }
@@ -6091,10 +6094,11 @@ function advanceMenuGuide() {
   if (!menuGuideState) return;
   menuGuideState.idx++;
   if (menuGuideState.idx >= menuGuideState.messages.length) {
-    const el = menuGuideState.attentionSelector ? document.querySelector(menuGuideState.attentionSelector) : null;
-    if (el) el.classList.remove('guide-attention');
+    // オーバーレイ・パネルを閉じ、menu-guide-activeを外す
+    // guide-attentionはそのまま残してアニメーション継続
     document.getElementById('menu-guide-overlay').classList.add('hidden');
     document.getElementById('menu-guide-panel').classList.add('hidden');
+    document.getElementById('main-page2-screen').classList.remove('menu-guide-active');
     const cb = menuGuideState.onDone;
     menuGuideState = null;
     if (cb) cb();
