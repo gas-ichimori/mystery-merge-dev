@@ -5979,9 +5979,9 @@ function transitionToMainGame() {
   // ゲームスタートと同時にアイテムリストガイドを表示
   eventState.catalogTutShown = true;
   const DAIYA = '<img src="img/UI/image_merge_navi_daiya.png" class="icon-inline" alt="ダイヤ">';
-  // メニューを先に開いてpage2-catalog-btnを指す
+  // メニューを先に開いてpage2-catalog-btnをハイライト→メニュー内ガイド
   openMainPage2();
-  startGuide(
+  startMenuGuide(
     [
       `新しいアイテムを発見すると、${DAIYA}を獲得できます。`,
       '発見したアイテムは"？"マークになっているので、タップして、アイテムリストに追加してください。',
@@ -6070,6 +6070,39 @@ function startGuide(messages, attentionSelector, onDone) {
   _renderGuidePanel();
 }
 
+// メニューページ内専用ガイド（オーバーレイ・パネルがmenu内に収まる）
+let menuGuideState = null;
+function startMenuGuide(messages, attentionSelector, onDone) {
+  menuGuideState = { messages, idx: 0, attentionSelector, onDone };
+  const el = attentionSelector ? document.querySelector(attentionSelector) : null;
+  if (el) el.classList.add('guide-attention');
+  _renderMenuGuidePanel();
+  // オーバーレイタップで進む
+  document.getElementById('menu-guide-overlay').onclick = advanceMenuGuide;
+  document.getElementById('menu-guide-panel').onclick   = advanceMenuGuide;
+}
+function _renderMenuGuidePanel() {
+  if (!menuGuideState) return;
+  document.getElementById('menu-guide-overlay').classList.remove('hidden');
+  document.getElementById('menu-guide-panel').classList.remove('hidden');
+  document.getElementById('menu-guide-text').innerHTML = menuGuideState.messages[menuGuideState.idx];
+}
+function advanceMenuGuide() {
+  if (!menuGuideState) return;
+  menuGuideState.idx++;
+  if (menuGuideState.idx >= menuGuideState.messages.length) {
+    const el = menuGuideState.attentionSelector ? document.querySelector(menuGuideState.attentionSelector) : null;
+    if (el) el.classList.remove('guide-attention');
+    document.getElementById('menu-guide-overlay').classList.add('hidden');
+    document.getElementById('menu-guide-panel').classList.add('hidden');
+    const cb = menuGuideState.onDone;
+    menuGuideState = null;
+    if (cb) cb();
+    return;
+  }
+  _renderMenuGuidePanel();
+}
+
 function _applyGuideAttention(on) {
   if (!guideState?.attentionSelector) return;
   const el = document.querySelector(guideState.attentionSelector);
@@ -6110,9 +6143,9 @@ function checkStoryGuide() {
   if (state.coin < cost) return;          // まだコインが足りない
   if (isTutorialInProgress()) return;     // チュートリアル・ガイド中は後回し
   state.storyGuideShown = true;
-  // メニューを先に開いてpage2-story-btnを指す
+  // メニューを先に開いてpage2-story-btnをハイライト→メニュー内ガイド
   openMainPage2();
-  startGuide([
+  startMenuGuide([
     '依頼解決で得た報酬で、ストーリーを読むことができます。',
     'ストーリーを一定回数読んでいくとプレイヤーLvがあがります。',
     'プレイヤーLvが上がる際に報酬をもらうことができます。',

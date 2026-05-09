@@ -1726,6 +1726,35 @@ body {
   font-weight: bold;
   text-align: center;
 }
+/* ========================================
+   メニューページ内ガイドオーバーレイ
+======================================== */
+#menu-guide-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 10;
+  cursor: pointer;
+}
+#menu-guide-panel {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(8,8,30,0.88);
+  border-top: 2px solid rgba(255,140,40,0.85);
+  border-radius: 18px 18px 0 0;
+  padding: 16px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+  z-index: 12;
+  cursor: pointer;
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.7;
+}
+/* ガイド中、対象ボタンはオーバーレイの前面に */
+#main-page2-screen .guide-attention {
+  position: relative;
+  z-index: 11;
+}
+
 /* page2-catalog-btnはcatalog-access-btnのwidthをリセット */
 #page2-catalog-btn {
   width: 100%;
@@ -1737,7 +1766,7 @@ body {
 #main-page2-btn,
 #ev-page2-btn {
   background: none;
-  border: 2px solid rgba(255,255,255,0.6);
+  border: 2px solid transparent;
   border-radius: 50%;
   width: auto;
   height: auto;
