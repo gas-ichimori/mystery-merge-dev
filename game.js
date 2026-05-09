@@ -196,7 +196,8 @@ const BUBBLE_COIN_DELAY_MS = 40000;
 
 // コイン・ダイヤの上限
 const MAX_COIN    = 999999;
-const MAX_DIAMOND = 99999;
+const MAX_DIAMOND = 9999;
+const MAX_ENERGY  = 9999;
 
 // ========================================
 // プレイヤーレベル設定
@@ -1969,7 +1970,12 @@ function renderCatalog() {
 // 体力加算ヘルパー
 // ========================================
 function addEnergy(amount, _reason) {
-  state.energy += amount;
+  if (state.energy >= MAX_ENERGY) {
+    showCenterPopup('体力は最大値です。');
+    return;
+  }
+  state.energy = Math.min(state.energy + amount, MAX_ENERGY);
+  if (state.energy >= MAX_ENERGY) showCenterPopup('体力は最大値です。');
   showEnergyGain(amount);
   renderHeader();
   renderEventHeader();
@@ -2525,7 +2531,7 @@ document.getElementById('debug-close').addEventListener('click', () => {
 
 document.getElementById('dbf-energy').addEventListener('change', function() {
   debugState.infiniteEnergy = this.checked;
-  if (this.checked) { state.energy = 99999; state.maxEnergy = 99999; renderEventHeader(); }
+  if (this.checked) { state.energy = MAX_ENERGY; state.maxEnergy = MAX_ENERGY; renderEventHeader(); }
 });
 document.getElementById('dbf-coin').addEventListener('change', function() {
   debugState.infiniteCoin = this.checked;
@@ -2628,6 +2634,9 @@ document.getElementById('debug-popup-storycost').addEventListener('click', () =>
 });
 document.getElementById('debug-popup-maxlv').addEventListener('click', () => {
   showToast('最大レベルです');
+});
+document.getElementById('debug-popup-max-energy').addEventListener('click', () => {
+  showCenterPopup('体力は最大値です。');
 });
 document.getElementById('debug-popup-max-coin').addEventListener('click', () => {
   showCenterPopup('コインは最大値です。');

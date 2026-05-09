@@ -514,23 +514,23 @@ body {
   margin: -7px 0 -7px -12px; /* 枠左端を隠す */
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
 }
-/* コインアイコン：少し大きく */
+/* コインアイコン */
 #coin-display .icon-inline {
   width: 34px;
   height: 34px;
-  margin: -9px 0 -9px -12px;
+  margin: -9px 0 -9px -20px;
 }
-/* 体力アイコン：特に大きく */
+/* 体力アイコン：50px */
 #energy-text .icon-inline {
+  width: 50px;
+  height: 50px;
+  margin: -18px 0 -18px -20px;
+}
+/* ダイヤアイコン：42px */
+#diamond-display .icon-inline {
   width: 42px;
   height: 42px;
-  margin: -13px 0 -13px -12px;
-}
-/* ダイヤアイコン：大きく */
-#diamond-display .icon-inline {
-  width: 36px;
-  height: 36px;
-  margin: -10px 0 -10px -12px;
+  margin: -14px 0 -14px -20px;
 }
 
 /* ========================================
@@ -1300,20 +1300,20 @@ body {
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  margin: -8px 0 -8px -12px; /* 枠左端を隠す */
+  margin: -8px 0 -8px -20px;
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
 }
-/* 体力アイコン：特に大きく */
+/* 体力アイコン：50px */
 #ev-energy .ev-icon-img {
+  width: 50px;
+  height: 50px;
+  margin: -16px 0 -16px -20px;
+}
+/* ダイヤアイコン：42px */
+#ev-diamond .ev-icon-img {
   width: 42px;
   height: 42px;
-  margin: -12px 0 -12px -12px;
-}
-/* ダイヤアイコン：大きく */
-#ev-diamond .ev-icon-img {
-  width: 36px;
-  height: 36px;
-  margin: -9px 0 -9px -12px;
+  margin: -12px 0 -12px -20px;
 }
 #ev-coin, #ev-diamond, #ev-energy {
   display: inline-flex;
@@ -2706,7 +2706,7 @@ body {
   flex-direction: row;
   align-items: center;
   gap: 3px;
-  margin: 4px 10px 4px 4px;
+  margin: 4px 14px 4px 4px;
   flex-shrink: 0;
 }
 
