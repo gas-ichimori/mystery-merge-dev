@@ -1270,21 +1270,22 @@ body {
 
 /* ヘッダーアイコン画像（コイン・体力・ダイヤ等） */
 .ev-icon-img {
-  width: 36px;
-  height: 36px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   vertical-align: middle;
-  margin-right: 2px;
-}
-/* コインアイコンだけ小さめ */
-#ev-coin .ev-icon-img {
-  width: 18px;
-  height: 18px;
 }
 #ev-coin, #ev-diamond, #ev-energy {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+  background: rgba(30, 100, 220, 0.75);
+  border: 1px solid rgba(100, 180, 255, 0.5);
+  border-radius: 999px;
+  padding: 3px 10px 3px 6px;
+  font-weight: bold;
+  color: #fff;
+  font-size: 13px;
 }
 
 #ev-energy-timer {
