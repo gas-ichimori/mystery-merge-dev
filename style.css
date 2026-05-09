@@ -1461,7 +1461,7 @@ body {
 #event-req-row {
   width: 100%;
   height: 117px; /* イベント枠と同じ高さで固定 */
-  overflow: hidden; /* キャラが伸びても行高を変えない */
+  overflow: visible; /* キャラが上方向にはみ出せるように */
   border-bottom: 2px solid #f1c40f55;
   display: flex;
   flex-direction: row;
@@ -1477,14 +1477,17 @@ body {
   flex-direction: row;
   gap: 6px;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
 #event-req-panel::-webkit-scrollbar { display: none; }
-/* イベント画面のキャラは上端揃え（顔が見えるよう）*/
+/* イベント画面のキャラは下端揃え（行から上にはみ出して全身表示）*/
 #event-req-panel .req-char-wrap {
-  align-self: flex-start;
+  align-self: flex-end;
+  position: relative;
+  z-index: 1; /* 依頼枠フレーム(z-index:2)の後ろに */
+  margin-right: -52px; /* 依頼物の下に隠れるよう左方向に */
 }
 
 /* ボード（イベント） */
