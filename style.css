@@ -1232,6 +1232,9 @@ body {
   top: 0;
   z-index: 10;
   width: 100%;
+  background: #0d0d1e;
+  display: flex;
+  flex-direction: column;
 }
 
 #event-header-bar {
@@ -1241,9 +1244,7 @@ body {
   align-items: center;
   padding: 8px 12px;
   padding-top: calc(8px + env(safe-area-inset-top, 0px));
-  background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(4px);
-  border-bottom: 1px solid #8a5aee44;
+  padding-bottom: 0;
 }
 
 #event-nav {
@@ -1410,8 +1411,6 @@ body {
 /* イベント依頼行ラッパー（sticky・イベントスロット＋依頼スロット） */
 #event-req-row {
   width: 100%;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
   border-bottom: 2px solid #f1c40f55;
   display: flex;
   flex-direction: row;
