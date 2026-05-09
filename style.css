@@ -144,14 +144,14 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  margin-right: -14px;
+  margin-right: -28px;
   flex-shrink: 0;
 }
 
 /* キャラクター画像 */
 .req-char-img {
-  width: 58px;
-  height: 78px;
+  width: 116px;
+  height: 156px;
   object-fit: contain;
   object-position: bottom;
   pointer-events: none;
@@ -159,12 +159,12 @@ body {
 
 /* 絵文字キャラ（画像がない依頼人用） */
 .req-char-figure {
-  width: 38px;
-  height: 48px;
+  width: 76px;
+  height: 96px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  font-size: 28px;
+  font-size: 56px;
 }
 
 /* カードフレーム（前面） */
@@ -504,29 +504,36 @@ body {
   vertical-align: middle;
 }
 
-/* インラインアイコン（コイン・HP・ダイヤ）*/
+/* インラインアイコン（依頼カード・報酬表示など）- 元サイズ */
 .icon-inline {
-  width: 30px;
-  height: 30px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  display: inline-block;
   object-fit: contain;
+}
+/* ヘッダーのみ大きく・はみ出し */
+#coin-display .icon-inline,
+#energy-text .icon-inline,
+#diamond-display .icon-inline {
   display: block;
   flex-shrink: 0;
-  margin: -7px 0 -7px -12px; /* 枠左端を隠す */
+  object-fit: contain;
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
 }
-/* コインアイコン */
+/* コインアイコン（ヘッダー） */
 #coin-display .icon-inline {
   width: 34px;
   height: 34px;
   margin: -9px 0 -9px -20px;
 }
-/* 体力アイコン：50px */
+/* 体力アイコン（ヘッダー）：50px */
 #energy-text .icon-inline {
   width: 50px;
   height: 50px;
   margin: -18px 0 -18px -20px;
 }
-/* ダイヤアイコン：42px */
+/* ダイヤアイコン（ヘッダー）：42px */
 #diamond-display .icon-inline {
   width: 42px;
   height: 42px;
