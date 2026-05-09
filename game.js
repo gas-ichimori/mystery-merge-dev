@@ -194,6 +194,10 @@ const COIN_IMAGES   = [
 // しゃぼん玉がコインに変わるまでの時間（ミリ秒）
 const BUBBLE_COIN_DELAY_MS = 40000;
 
+// コイン・ダイヤの上限
+const MAX_COIN    = 999999;
+const MAX_DIAMOND = 99999;
+
 // ========================================
 // プレイヤーレベル設定
 // ========================================
@@ -1473,7 +1477,7 @@ function completeRequest(index) {
     }
   }
 
-  state.coin += req.coin;
+  addCoin(req.coin);
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
   trackDailyRequest();
@@ -1587,7 +1591,7 @@ function startEnergyTimer() {
 function discoverItem(chainId, stage, cellIdx = null, boardId = 'board') {
   if (state.discovered[chainId][stage]) return; // 既発見
   state.discovered[chainId][stage] = true;
-  state.diamond += 1;
+  addDiamond(1);
   if (cellIdx !== null) {
     showSpecialOnCell(cellIdx, boardId, '新アイテム発見！', '#f9c846');
   } else {
@@ -1740,7 +1744,7 @@ function revealCatalogItem(itemType, id) {
     eventState.genRevealed[k] = true;
   } else { return; }
 
-  state.diamond += 1;
+  addDiamond(1);
   showToast('💎+1 アイテムを解放しました！');
   renderHeader();
   renderEventHeader();
@@ -1983,6 +1987,46 @@ function shopRemaining(lastTs) {
 // ========================================
 // トースト通知
 // ========================================
+// 画面中央ポップアップ（最大値通知など）
+function showCenterPopup(msg) {
+  if (document.getElementById('center-popup-overlay')) return; // 多重表示防止
+  const el = document.createElement('div');
+  el.id = 'center-popup-overlay';
+  el.textContent = msg;
+  el.style.cssText = `
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(10, 20, 50, 0.92); color: #fff;
+    padding: 18px 32px; border-radius: 16px;
+    font-size: 16px; font-weight: bold; z-index: 9999;
+    pointer-events: none; text-align: center;
+    border: 2px solid rgba(249,200,70,0.85);
+    box-shadow: 0 0 24px rgba(249,200,70,0.45);
+    white-space: nowrap;
+  `;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
+}
+
+// コイン加算（上限 MAX_COIN を超えない）
+function addCoin(amount) {
+  if (state.coin >= MAX_COIN) {
+    showCenterPopup('コインは最大値です。');
+    return;
+  }
+  state.coin = Math.min(state.coin + amount, MAX_COIN);
+  if (state.coin >= MAX_COIN) showCenterPopup('コインは最大値です。');
+}
+
+// ダイヤ加算（上限 MAX_DIAMOND を超えない）
+function addDiamond(amount) {
+  if (state.diamond >= MAX_DIAMOND) {
+    showCenterPopup('ダイヤは最大値です。');
+    return;
+  }
+  state.diamond = Math.min(state.diamond + amount, MAX_DIAMOND);
+  if (state.diamond >= MAX_DIAMOND) showCenterPopup('ダイヤは最大値です。');
+}
+
 function showToast(msg) {
   const el = document.createElement('div');
   el.innerHTML = msg;
@@ -2583,6 +2627,12 @@ document.getElementById('debug-popup-storycost').addEventListener('click', () =>
 });
 document.getElementById('debug-popup-maxlv').addEventListener('click', () => {
   showToast('最大レベルです');
+});
+document.getElementById('debug-popup-max-coin').addEventListener('click', () => {
+  showCenterPopup('コインは最大値です。');
+});
+document.getElementById('debug-popup-max-diamond').addEventListener('click', () => {
+  showCenterPopup('ダイヤは最大値です。');
 });
 
 // アドベンチャーシーン再生ボタン（各章）
@@ -7997,7 +8047,7 @@ function completeEventRequest(index) {
     }
   }
 
-  state.coin += req.coin;
+  addCoin(req.coin);
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
   trackDailyRequest();
@@ -8639,7 +8689,7 @@ function onEventCellClick(index) {
     if (now - lastCoinTapTime < 400 && lastCoinTapIdx === index) {
       // ダブルタップ: コイン獲得してアイテム消去
       const reward = COIN_REWARD[item.coinLv ?? 1] ?? 0;
-      state.coin += reward;
+      addCoin(reward);
       eventState.board[index] = null;
       eventState.selectedCell = null;
       hideNaviHint();
@@ -8693,7 +8743,7 @@ function completeTutorialRequest() {
   const idx = eventState.board.findIndex(c => c && !c.isFog && !c.isEventGen && c.stage === 2);
   if (idx === -1) { showToast('アイテムがありません'); return; }
   eventState.board[idx] = null;
-  state.coin += 100;
+  addCoin(100);
   showToastNearPanel(`依頼完了！ ${COIN_ICON}+100`, document.getElementById('event-req-panel'));
   renderEventHeader();
   renderEventBoard();
@@ -9798,7 +9848,7 @@ document.getElementById('navi-coin-btn').addEventListener('click', (e) => {
   const selItem = eventState.board[selIdx];
   if (!selItem || selItem.stage < 2 || selItem.isFog || selItem.isBubble || selItem.isCoin || selItem.isEventGen) return;
   const reward = selItem.stage * 10;
-  state.coin += reward;
+  addCoin(reward);
   eventState.board[selIdx] = null;
   eventState.selectedCell  = null;
   hideNaviHint();
