@@ -2470,6 +2470,8 @@ document.getElementById('characters-close').addEventListener('click', () => {
 // ========================================
 // メインゲーム2ページ目
 // ========================================
+let returnToMenu = false; // メニューページから開いた画面を閉じる時に戻る先フラグ
+
 function openMainPage2() {
   if (isTutorialInProgress()) return;
   hideNaviHint();
@@ -2483,23 +2485,23 @@ document.getElementById('main-page2-btn').addEventListener('click', openMainPage
 document.getElementById('page2-back-btn').addEventListener('click', closeMainPage2);
 
 document.getElementById('page2-catalog-btn').addEventListener('click', () => {
-  closeMainPage2();
+  closeMainPage2(); returnToMenu = true;
   openCatalog();
 });
 document.getElementById('page2-shop-btn').addEventListener('click', () => {
-  closeMainPage2();
+  closeMainPage2(); returnToMenu = true;
   document.getElementById('shop-screen').classList.remove('hidden');
 });
 document.getElementById('page2-characters-btn').addEventListener('click', () => {
-  closeMainPage2();
+  closeMainPage2(); returnToMenu = true;
   document.getElementById('characters-screen').classList.remove('hidden');
 });
 document.getElementById('page2-kankei-btn').addEventListener('click', () => {
-  closeMainPage2();
+  closeMainPage2(); returnToMenu = true;
   openKankeiScreen();
 });
 document.getElementById('page2-story-btn').addEventListener('click', () => {
-  closeMainPage2();
+  closeMainPage2(); returnToMenu = true;
   openStoryScreen();
 });
 document.getElementById('page2-video-btn').addEventListener('click', () => {
@@ -5310,6 +5312,7 @@ document.getElementById('adventure-screen').addEventListener('click', () => {
 // ストーリー選択画面のボタン
 document.getElementById('story-screen-close-btn').addEventListener('click', () => {
   closeStoryScreen();
+  if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 document.getElementById('story-ch1-next-btn').addEventListener('click', () => {
   closeStoryScreen();
@@ -5435,6 +5438,7 @@ document.getElementById('debug-kankei-all').addEventListener('click', () => {
 
 document.getElementById('settings-close').addEventListener('click', () => {
   document.getElementById('settings-screen').classList.add('hidden');
+  if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 
 document.getElementById('settings-catalog-btn').addEventListener('click', () => {
@@ -5473,6 +5477,7 @@ document.getElementById('catalog-close').addEventListener('click', () => {
     pendingGenMergeTutStart = false;
     renderGenMergeTutPanel();
   }
+  if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 
 // ========================================
@@ -5575,6 +5580,7 @@ document.getElementById('shop-close').addEventListener('click', () => {
   document.getElementById('shop-screen').classList.add('hidden');
   clearInterval(shopTimerInterval);
   shopTimerInterval = null;
+  if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 
 // ========================================
@@ -6697,6 +6703,7 @@ document.getElementById('kankei-open-btn').addEventListener('click', () => {
 });
 document.getElementById('kankei-close-btn').addEventListener('click', () => {
   closeKankeiScreen();
+  if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 document.getElementById('kankei-chapter-select').addEventListener('change', (e) => {
   currentKankeiChapter = Number(e.target.value);
@@ -8321,7 +8328,20 @@ function renderEventRequest() {
 
   // チュートリアル完了後：eventState.requests を表示
   const { reqHighlights } = calcMatchHighlights();
-  eventState.requests.forEach((req, i) => {
+
+  // マッチ優先度でソート: 全一致(completable) > 部分一致 > なし
+  const sortedIndices = eventState.requests.map((_, i) => i).sort((a, b) => {
+    const scoreOf = idx => {
+      const hl = reqHighlights.get(idx) || [];
+      if (eventRequestCompletable(eventState.requests[idx])) return 2;
+      if (hl.some(h => h !== 'none')) return 1;
+      return 0;
+    };
+    return scoreOf(b) - scoreOf(a);
+  });
+
+  sortedIndices.forEach(i => {
+    const req = eventState.requests[i];
     const character   = REQUESTERS[req.characterId];
     const completable = eventRequestCompletable(req);
     const perItem     = reqHighlights.get(i) || req.items.map(() => 'none');
