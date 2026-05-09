@@ -2212,7 +2212,7 @@ function showEnergyGain(amount) {
       sources.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
     }
   });
-  ['story-btn', 'ev-settings-btn', 'ev-catalog-btn', 'daily-mission-btn'].forEach(id => {
+  ['story-btn', 'ev-page2-btn', 'daily-mission-btn'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.classList.contains('hidden')) {
       const r = el.getBoundingClientRect();
@@ -2457,13 +2457,9 @@ document.getElementById('page2-video-btn').addEventListener('click', () => {
 });
 
 // ========================================
-// 設定ページ（イベント画面から）
+// イベント画面メニューボタン → 2ページ目を開く
 // ========================================
-document.getElementById('ev-settings-btn').addEventListener('click', () => {
-  if (isTutorialInProgress()) return;
-  hideNaviHint();
-  document.getElementById('settings-screen').classList.remove('hidden');
-});
+document.getElementById('ev-page2-btn').addEventListener('click', openMainPage2);
 
 // ========================================
 // デバッグモード
@@ -5415,11 +5411,6 @@ function openCatalog() {
   document.getElementById('catalog-screen').classList.remove('hidden');
 }
 document.getElementById('catalog-btn').addEventListener('click', () => { if (isTutorialInProgress()) return; openCatalog(); });
-document.getElementById('ev-catalog-btn').addEventListener('click', () => {
-  if (isTutorialInProgress()) return;
-  if (!mainGameStarted) return; // プレゲーム・エピローグ中は無効
-  openCatalog();
-});
 
 document.getElementById('catalog-close').addEventListener('click', () => {
   document.getElementById('catalog-screen').classList.add('hidden');
@@ -5931,11 +5922,11 @@ function transitionToMainGame() {
       '発見したアイテムは"？"マークになっているので、タップして、アイテムリストに追加してください。',
       'アイテムの種類とレベルを把握しておくと、ゲーム進行に役立ちます。',
     ],
-    '#ev-catalog-btn',
+    '#ev-page2-btn',
     () => {
-      // メッセージ確認後にカタログを開き、閉じたらジェネレーター誘導チュートを開始
+      // メッセージ確認後にメニュー(2ページ目)を開く → ユーザーがアイテムリストをタップ → カタログ閉じたらジェネレーター誘導チュートを開始
       pendingGenMergeTutStart = true;
-      openCatalog();
+      openMainPage2();
     }
   );
 }
