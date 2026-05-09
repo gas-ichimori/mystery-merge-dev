@@ -1478,7 +1478,7 @@ body {
 #event-req-panel {
   flex: 1 1 0;
   min-width: 0;
-  padding: 3px 8px;
+  padding: 3px 2px 3px 0;
   display: flex;
   flex-direction: row;
   gap: 6px;

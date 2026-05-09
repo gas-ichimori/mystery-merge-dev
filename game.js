@@ -8430,6 +8430,11 @@ function renderEventRequest() {
     }
     panel.appendChild(div);
   });
+
+  // completableな依頼があれば先頭（イベント枠ギリギリ）までスクロール
+  if (eventState.requests.some(r => eventRequestCompletable(r))) {
+    panel.scrollLeft = 0;
+  }
 }
 
 // ========================================
