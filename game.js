@@ -2528,11 +2528,11 @@ document.getElementById('dbf-energy').addEventListener('change', function() {
 });
 document.getElementById('dbf-coin').addEventListener('change', function() {
   debugState.infiniteCoin = this.checked;
-  if (this.checked) { state.coin = 9999999; renderEventHeader(); }
+  if (this.checked) { state.coin = MAX_COIN; renderEventHeader(); }
 });
 document.getElementById('dbf-diamond').addEventListener('change', function() {
   debugState.infiniteDiamond = this.checked;
-  if (this.checked) { state.diamond = 9999999; renderEventHeader(); }
+  if (this.checked) { state.diamond = MAX_DIAMOND; renderEventHeader(); }
 });
 
 // フロートの 🕵️全解放 ボタン
