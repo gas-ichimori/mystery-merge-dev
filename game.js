@@ -9797,36 +9797,34 @@ function updateStickyHeights() {
 window.addEventListener('resize', updateStickyHeights);
 
 // ========================================
-// イベントスロットのカスタムスクロールインジケーター
+// イベントスロットのページドットインジケーター
 // ========================================
 (function() {
-  function initEvScrollIndicator() {
+  function initEvScrollDots() {
     const panel = document.getElementById('event-slots-panel');
-    const track = document.getElementById('ev-scroll-track');
-    const thumb = document.getElementById('ev-scroll-thumb');
-    if (!panel || !track || !thumb) return;
+    const dot0  = document.getElementById('ev-dot-0');
+    const dot1  = document.getElementById('ev-dot-1');
+    if (!panel || !dot0 || !dot1) return;
 
-    function updateThumb() {
+    function updateDots() {
       const scrollable = panel.scrollHeight - panel.clientHeight;
-      if (scrollable <= 0) {
-        thumb.style.display = 'none';
-        return;
+      const ratio = scrollable > 0 ? panel.scrollTop / scrollable : 0;
+      if (ratio < 0.5) {
+        dot0.classList.add('active');
+        dot1.classList.remove('active');
+      } else {
+        dot0.classList.remove('active');
+        dot1.classList.add('active');
       }
-      thumb.style.display = 'block';
-      const ratio = panel.scrollTop / scrollable;
-      const trackH = track.clientHeight - thumb.offsetHeight;
-      thumb.style.top = (ratio * trackH) + 'px';
     }
 
-    panel.addEventListener('scroll', updateThumb, { passive: true });
-    // 初期位置を設定
-    requestAnimationFrame(updateThumb);
+    panel.addEventListener('scroll', updateDots, { passive: true });
+    requestAnimationFrame(updateDots);
   }
-  // DOM構築後に初期化
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initEvScrollIndicator);
+    document.addEventListener('DOMContentLoaded', initEvScrollDots);
   } else {
-    initEvScrollIndicator();
+    initEvScrollDots();
   }
 })();
 
