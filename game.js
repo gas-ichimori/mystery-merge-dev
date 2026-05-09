@@ -2465,6 +2465,7 @@ function renderCharacters() {
 
 document.getElementById('characters-close').addEventListener('click', () => {
   document.getElementById('characters-screen').classList.add('hidden');
+  if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 
 // ========================================
@@ -3530,7 +3531,7 @@ const ADV_SCENES = {
     title:        '',
     leftImg:      'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg:     'img/Chapter3/chara/image_merge_order_chara_19.png',
-    bg:           'img/bg/image_merge_bg.png',
+    bg:           'img/bg/image_merge_bg_hiruma.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance:'slide', autoClose: false,
     script: [
@@ -4962,7 +4963,7 @@ function openAdventureScene(sceneId, callback = null) {
 
   // 背景設定（全プロパティをインラインで設定してCSS競合を完全排除）
   const advScreen = document.getElementById('adventure-screen');
-  const bgSrc = scene.bg || 'img/bg/image_merge_bg.png';
+  const bgSrc = scene.bg || 'img/bg/image_merge_bg_hiruma.png';
   advScreen.style.backgroundImage    = `url('${bgSrc}')`;
   advScreen.style.backgroundSize     = 'cover';
   advScreen.style.backgroundPosition = 'center center';
@@ -5977,17 +5978,18 @@ function transitionToMainGame() {
   // ゲームスタートと同時にアイテムリストガイドを表示
   eventState.catalogTutShown = true;
   const DAIYA = '<img src="img/UI/image_merge_navi_daiya.png" class="icon-inline" alt="ダイヤ">';
+  // メニューを先に開いてpage2-catalog-btnを指す
+  openMainPage2();
   startGuide(
     [
       `新しいアイテムを発見すると、${DAIYA}を獲得できます。`,
       '発見したアイテムは"？"マークになっているので、タップして、アイテムリストに追加してください。',
       'アイテムの種類とレベルを把握しておくと、ゲーム進行に役立ちます。',
     ],
-    '#ev-page2-btn',
+    '#page2-catalog-btn',
     () => {
-      // メッセージ確認後にメニュー(2ページ目)を開く → ユーザーがアイテムリストをタップ → カタログ閉じたらジェネレーター誘導チュートを開始
+      // メッセージ確認後: カタログ閉じたらジェネレーター誘導チュートを開始
       pendingGenMergeTutStart = true;
-      openMainPage2();
     }
   );
 }
@@ -6107,11 +6109,13 @@ function checkStoryGuide() {
   if (state.coin < cost) return;          // まだコインが足りない
   if (isTutorialInProgress()) return;     // チュートリアル・ガイド中は後回し
   state.storyGuideShown = true;
+  // メニューを先に開いてpage2-story-btnを指す
+  openMainPage2();
   startGuide([
     '依頼解決で得た報酬で、ストーリーを読むことができます。',
     'ストーリーを一定回数読んでいくとプレイヤーLvがあがります。',
     'プレイヤーLvが上がる際に報酬をもらうことができます。',
-  ], '#ev-page2-btn', null);
+  ], '#page2-story-btn', null);
 }
 
 // ========================================
