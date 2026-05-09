@@ -62,7 +62,7 @@ body {
   background: rgba(80, 160, 255, 0.55);
   border: 1px solid rgba(160, 210, 255, 0.7);
   border-radius: 999px;
-  padding: 2px 10px 2px 4px;
+  padding: 2px 10px 2px 14px;
   min-width: 52px;
   font-weight: bold;
   color: #fff;
@@ -88,7 +88,7 @@ body {
   background: rgba(80, 160, 255, 0.55);
   border: 1px solid rgba(160, 210, 255, 0.7);
   border-radius: 999px;
-  padding: 2px 10px 2px 4px;
+  padding: 2px 10px 2px 14px;
   min-width: 52px;
   font-weight: bold;
   color: #fff;
@@ -511,8 +511,26 @@ body {
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  margin: -7px 0 -7px -2px; /* 枠からはみ出す */
+  margin: -7px 0 -7px -12px; /* 枠左端を隠す */
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+}
+/* コインアイコン：少し大きく */
+#coin-display .icon-inline {
+  width: 34px;
+  height: 34px;
+  margin: -9px 0 -9px -12px;
+}
+/* 体力アイコン：特に大きく */
+#energy-text .icon-inline {
+  width: 42px;
+  height: 42px;
+  margin: -13px 0 -13px -12px;
+}
+/* ダイヤアイコン：大きく */
+#diamond-display .icon-inline {
+  width: 36px;
+  height: 36px;
+  margin: -10px 0 -10px -12px;
 }
 
 /* ========================================
@@ -1277,13 +1295,25 @@ body {
 
 /* ヘッダーアイコン画像（コイン・体力・ダイヤ等） */
 .ev-icon-img {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
-  margin: -6px 0 -6px -2px; /* 枠からはみ出す */
+  margin: -8px 0 -8px -12px; /* 枠左端を隠す */
   filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+}
+/* 体力アイコン：特に大きく */
+#ev-energy .ev-icon-img {
+  width: 42px;
+  height: 42px;
+  margin: -12px 0 -12px -12px;
+}
+/* ダイヤアイコン：大きく */
+#ev-diamond .ev-icon-img {
+  width: 36px;
+  height: 36px;
+  margin: -9px 0 -9px -12px;
 }
 #ev-coin, #ev-diamond, #ev-energy {
   display: inline-flex;
@@ -1292,7 +1322,7 @@ body {
   background: rgba(80, 160, 255, 0.55);
   border: 1px solid rgba(160, 210, 255, 0.7);
   border-radius: 999px;
-  padding: 3px 10px 3px 4px;
+  padding: 3px 10px 3px 14px;
   font-weight: bold;
   color: #fff;
   font-size: 13px;
@@ -2718,7 +2748,7 @@ body {
   scrollbar-width: none;
   border: 1px solid rgba(150, 210, 255, 0.45);
   border-radius: 10px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(100, 100, 100, 0.7);
   box-sizing: border-box;
   align-self: center;
 }
