@@ -2531,7 +2531,7 @@ document.getElementById('debug-close').addEventListener('click', () => {
 
 document.getElementById('dbf-energy').addEventListener('change', function() {
   debugState.infiniteEnergy = this.checked;
-  if (this.checked) { state.energy = MAX_ENERGY; state.maxEnergy = MAX_ENERGY; renderEventHeader(); }
+  if (this.checked) { state.energy = MAX_ENERGY; renderEventHeader(); }
 });
 document.getElementById('dbf-coin').addEventListener('change', function() {
   debugState.infiniteCoin = this.checked;
