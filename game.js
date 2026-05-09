@@ -9796,6 +9796,40 @@ function updateStickyHeights() {
 }
 window.addEventListener('resize', updateStickyHeights);
 
+// ========================================
+// イベントスロットのカスタムスクロールインジケーター
+// ========================================
+(function() {
+  function initEvScrollIndicator() {
+    const panel = document.getElementById('event-slots-panel');
+    const track = document.getElementById('ev-scroll-track');
+    const thumb = document.getElementById('ev-scroll-thumb');
+    if (!panel || !track || !thumb) return;
+
+    function updateThumb() {
+      const scrollable = panel.scrollHeight - panel.clientHeight;
+      if (scrollable <= 0) {
+        thumb.style.display = 'none';
+        return;
+      }
+      thumb.style.display = 'block';
+      const ratio = panel.scrollTop / scrollable;
+      const trackH = track.clientHeight - thumb.offsetHeight;
+      thumb.style.top = (ratio * trackH) + 'px';
+    }
+
+    panel.addEventListener('scroll', updateThumb, { passive: true });
+    // 初期位置を設定
+    requestAnimationFrame(updateThumb);
+  }
+  // DOM構築後に初期化
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEvScrollIndicator);
+  } else {
+    initEvScrollIndicator();
+  }
+})();
+
 // ドラッグ中にウィンドウがフォーカスを失った場合（アプリ切り替え等）にゴーストを強制削除
 window.addEventListener('blur', () => {
   if (evDrag.ghost || evDrag.active) {

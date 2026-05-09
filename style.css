@@ -2564,11 +2564,45 @@ body {
 /* ========================================
    イベントスロットパネル（依頼枠の左端・固定）
 ======================================== */
+/* イベントスロットのラッパー（パネル＋スクロールインジケーター） */
+#event-slots-outer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+  margin: 4px;
+  flex-shrink: 0;
+}
+
+/* スクロールトラック（縦線） */
+#ev-scroll-track {
+  width: 6px;
+  height: 100px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* スクロールサム（円形ボタン） */
+#ev-scroll-thumb {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  width: 12px;
+  height: 12px;
+  background: rgba(200, 230, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(120, 200, 255, 0.9);
+  transition: top 0.12s ease;
+}
+
 #event-slots-panel {
   flex: 0 0 auto;
   width: 175px;
   padding: 2px;
-  margin: 4px;
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-content: start;
@@ -2577,24 +2611,14 @@ body {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(180, 220, 255, 0.6) transparent;
+  scrollbar-width: none;
   border: 1px solid rgba(150, 210, 255, 0.45);
   border-radius: 10px;
   background: rgba(255,255,255,0.08);
   box-sizing: border-box;
   align-self: center;
 }
-#event-slots-panel::-webkit-scrollbar {
-  width: 3px;
-}
-#event-slots-panel::-webkit-scrollbar-track {
-  background: transparent;
-}
-#event-slots-panel::-webkit-scrollbar-thumb {
-  background: rgba(180, 220, 255, 0.6);
-  border-radius: 3px;
-}
+#event-slots-panel::-webkit-scrollbar { display: none; }
 
 .event-slot-btn {
   position: relative;
