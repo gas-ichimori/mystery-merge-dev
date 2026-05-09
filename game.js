@@ -223,7 +223,8 @@ function getLevelUpXP(level) {
 const COLS = 7;
 const ROWS = 9;
 const TOTAL_CELLS = COLS * ROWS;
-const COIN_ICON = '<img src="img/UI/image_merge_icon_coin01.png" class="icon-inline" alt="💰">';
+const COIN_ICON  = '<img src="img/UI/image_merge_icon_coin01.png" class="icon-inline" alt="💰">';
+const DAIYA_ICON = '<img src="img/UI/image_merge_navi_daiya.png" class="icon-inline" alt="💎">';
 const HP_ICON   = '<img src="img/UI/image_merge_navi_hp.png"    class="icon-inline" alt="⚡">';
 
 let state = {
@@ -815,9 +816,9 @@ function renderGenerators() {
 }
 
 function renderHeader() {
-  document.getElementById('energy-text').textContent = `${Math.floor(state.energy)}`;
+  document.getElementById('energy-val').textContent = `${Math.floor(state.energy)}`;
   document.getElementById('coin-display').innerHTML = `${COIN_ICON} ${state.coin}`;
-  document.getElementById('diamond-display').textContent = `💎 ${state.diamond}`;
+  document.getElementById('diamond-display').innerHTML = `${DAIYA_ICON} ${state.diamond}`;
 }
 
 // ========================================
