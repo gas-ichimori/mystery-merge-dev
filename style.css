@@ -1487,7 +1487,7 @@ body {
   align-self: flex-end;
   position: relative;
   z-index: 1; /* 依頼枠フレーム(z-index:2)の後ろに */
-  margin-right: -52px; /* 依頼物の下に隠れるよう左方向に */
+  margin-right: -26px; /* 依頼物の下に隠れるよう左方向に */
 }
 
 /* ボード（イベント） */
