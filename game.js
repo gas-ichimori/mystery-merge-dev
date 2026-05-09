@@ -6268,7 +6268,7 @@ const CH5_KANKEI_EDGES = [
   { from: 'ryo',   to: 'kenji',  label: '調査',       unlockScene: 'c5s21', type: 'normal'   },
   { from: 'kenji', to: 'aoi',    label: 'なりすまし', unlockScene: 'c5s24', type: 'criminal' },
   { from: 'naoki', to: 'manami', label: '嫌がらせ',   unlockScene: 'c5s24', type: 'criminal' },
-  { from: 'naoki', to: 'hana',   label: '嘘発言',     unlockScene: 'c5s24', type: 'danger'   },
+  { from: 'naoki', to: 'hana',   label: '嘘発言',     unlockScene: 'c5s24', type: 'danger',   labelPos: 0.3 },
 ];
 
 const CH4_KANKEI_NODES = [
