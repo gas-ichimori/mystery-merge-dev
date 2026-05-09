@@ -6239,35 +6239,36 @@ const CH3_KANKEI_EDGES = [
 // ── 第四章データ ──
 const CH5_KANKEI_NODES = [
   { id: 'aoi',    name: 'アオイ',  sub: '27歳', img: 'img/Chapter5/chara/image_merge_order_chara_27.png', unlockScene: 'c5s01', x: 50, y: 40 },
-  { id: 'hana',   name: 'ハナ',   sub: '25歳', img: 'img/Chapter5/chara/image_merge_order_chara_29.png', unlockScene: 'c5s05', x: 15, y: 72 },
+  { id: 'hana',   name: 'ハナ',   sub: '25歳', img: 'img/Chapter5/chara/image_merge_order_chara_29.png', unlockScene: 'c5s05', x: 15, y: 80 },
   { id: 'ryo',    name: 'リョウ',  sub: '32歳', img: 'img/Chapter5/chara/image_merge_order_chara_30.png', unlockScene: 'c5s06', x: 15, y: 15 },
-  { id: 'naoki',  name: 'ナオキ',  sub: '30歳', img: 'img/Chapter5/chara/image_merge_order_chara_28.png', unlockScene: 'c5s08', x: 82, y: 15 },
-  { id: 'manami', name: 'マナミ',  sub: '44歳', img: 'img/Chapter5/chara/image_merge_order_chara_31.png', unlockScene: 'c5s11', x: 82, y: 72 },
-  { id: 'kenji',  name: 'ケンジ',  sub: '36歳', img: 'img/Chapter5/chara/image_merge_order_chara_32.png', unlockScene: 'c5s15', x: 50, y: 82 },
+  { id: 'naoki',  name: 'ナオキ',  sub: '30歳', img: 'img/Chapter5/chara/image_merge_order_chara_28.png', unlockScene: 'c5s08', x: 82, y: 28 },
+  { id: 'manami', name: 'マナミ',  sub: '44歳', img: 'img/Chapter5/chara/image_merge_order_chara_31.png', unlockScene: 'c5s11', x: 82, y: 80 },
+  { id: 'kenji',  name: 'ケンジ',  sub: '36歳', img: 'img/Chapter5/chara/image_merge_order_chara_32.png', unlockScene: 'c5s15', x: 50, y: 90 },
 ];
 
 const CH5_KANKEI_BADGES = [
   { nodeId: 'aoi',    label: '依頼人',           unlockScene: 'c5s01', type: 'normal'   },
   { nodeId: 'aoi',    label: 'イラストレーター', unlockScene: 'c5s01', type: 'normal'   },
+  { nodeId: 'ryo',    label: '調査協力者',       unlockScene: 'c5s06', type: 'normal'   },
   { nodeId: 'manami', label: 'マネージャー',     unlockScene: 'c5s11', type: 'normal'   },
   { nodeId: 'naoki',  label: '犯人',             unlockScene: 'c5s24', type: 'criminal' },
 ];
 
 const CH5_KANKEI_EDGES = [
-  { from: 'aoi',   to: 'hana',   label: '友人',      unlockScene: 'c5s05', type: 'normal'   },
-  { from: 'ryo',   to: 'aoi',    label: '調査',      unlockScene: 'c5s06', type: 'normal'   },
-  { from: 'ryo',   to: 'hana',   label: '調査',      unlockScene: 'c5s06', type: 'normal'   },
-  { from: 'ryo',   to: 'naoki',  label: '調査',      unlockScene: 'c5s06', type: 'normal'   },
-  { from: 'aoi',   to: 'naoki',  label: '元恋人',    unlockScene: 'c5s08', type: 'normal',   hideIfScene: 'c5s24' },
-  { from: 'aoi',   to: 'manami', label: '契約',      unlockScene: 'c5s11', type: 'normal'   },
-  { from: 'aoi',   to: 'hana',   label: '裏切り？',  unlockScene: 'c5s12', type: 'danger',   hideIfScene: 'c5s14' },
-  { from: 'naoki', to: 'hana',   label: '情報流出',  unlockScene: 'c5s14', type: 'criminal' },
-  { from: 'naoki', to: 'kenji',  label: '友人',      unlockScene: 'c5s15', type: 'normal'   },
-  { from: 'kenji', to: 'manami', label: '誹謗中傷',  unlockScene: 'c5s20', type: 'criminal' },
-  { from: 'kenji', to: 'ryo',    label: '共犯',      unlockScene: 'c5s21', type: 'criminal' },
-  { from: 'naoki', to: 'aoi',    label: 'なりすまし', unlockScene: 'c5s24', type: 'criminal' },
-  { from: 'naoki', to: 'manami', label: '誹謗中傷',  unlockScene: 'c5s24', type: 'criminal' },
-  { from: 'naoki', to: 'hana',   label: '嘘発言',    unlockScene: 'c5s24', type: 'danger'   },
+  { from: 'aoi',   to: 'hana',   label: '友人',       unlockScene: 'c5s05', type: 'normal'   },
+  { from: 'ryo',   to: 'aoi',    label: '調査',       unlockScene: 'c5s06', type: 'normal'   },
+  { from: 'ryo',   to: 'hana',   label: '調査',       unlockScene: 'c5s06', type: 'normal'   },
+  { from: 'ryo',   to: 'naoki',  label: '調査',       unlockScene: 'c5s06', type: 'normal'   },
+  { from: 'aoi',   to: 'naoki',  label: '元恋人',     unlockScene: 'c5s08', type: 'normal'   },
+  { from: 'aoi',   to: 'manami', label: '契約',       unlockScene: 'c5s11', type: 'normal'   },
+  { from: 'aoi',   to: 'hana',   label: '裏切り？',   unlockScene: 'c5s12', type: 'danger',   hideIfScene: 'c5s14' },
+  { from: 'naoki', to: 'hana',   label: '情報流出',   unlockScene: 'c5s14', type: 'criminal', labelPos: 0.7 },
+  { from: 'naoki', to: 'kenji',  label: '友人',       unlockScene: 'c5s15', type: 'normal'   },
+  { from: 'kenji', to: 'manami', label: '嫌がらせ',   unlockScene: 'c5s20', type: 'criminal' },
+  { from: 'ryo',   to: 'kenji',  label: '調査',       unlockScene: 'c5s21', type: 'normal'   },
+  { from: 'kenji', to: 'aoi',    label: 'なりすまし', unlockScene: 'c5s24', type: 'criminal' },
+  { from: 'naoki', to: 'manami', label: '嫌がらせ',   unlockScene: 'c5s24', type: 'criminal' },
+  { from: 'naoki', to: 'hana',   label: '嘘発言',     unlockScene: 'c5s24', type: 'danger'   },
 ];
 
 const CH4_KANKEI_NODES = [
