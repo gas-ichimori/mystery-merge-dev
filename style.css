@@ -2613,6 +2613,12 @@ body {
   font-size: 18px;
   line-height: 1;
 }
+.event-slot-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  pointer-events: none;
+}
 .event-slot-label {
   font-size: 8px;
   color: #f1c40f;
