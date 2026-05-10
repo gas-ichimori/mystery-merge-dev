@@ -1747,6 +1747,10 @@ body {
   cursor: pointer;
   color: #fff;
   font-size: 15px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 14px;
   line-height: 1.7;
 }
 /* ガイド中、対象ボタンはオーバーレイの前面に表示 */
@@ -1757,6 +1761,23 @@ body {
 /* ガイドアクティブ中のみ操作不可 */
 #main-page2-screen.menu-guide-active .guide-attention {
   pointer-events: none;
+}
+#menu-guide-char-wrap {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+#menu-guide-char {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+}
+#menu-guide-text-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 /* ▼タップで次へ（メニューガイド内）*/
 #menu-guide-panel .tutorial-tap-hint {
