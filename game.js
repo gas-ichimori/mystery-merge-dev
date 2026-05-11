@@ -1659,7 +1659,29 @@ function discoverSeizoItem(stage) {
   // 第二章マージアイテムが初めて出現したときに赤いメッセージを表示
   if (!eventState.seizoFirstItemShown) {
     eventState.seizoFirstItemShown = true;
-    setTimeout(() => showToastRed('第二章のマージアイテムが出現しました！依頼に活用しましょう！'), 600);
+    setTimeout(() => {
+      const genTile = document.getElementById('fire-gen-tile');
+      if (genTile) {
+        const rect = genTile.getBoundingClientRect();
+        const el = document.createElement('div');
+        el.innerHTML = '第二章のマージアイテムが出現しました！依頼に活用しましょう！';
+        el.style.cssText = `
+          position:fixed;
+          left:${rect.left + rect.width / 2}px;
+          top:${rect.bottom + 8}px;
+          transform:translate(-50%, 0);
+          background:rgba(180,0,0,0.92); color:#fff; padding:8px 18px;
+          border-radius:16px; font-size:13px; font-weight:bold; z-index:500;
+          pointer-events:none; max-width:80vw; text-align:center;
+          white-space:normal; word-break:break-all;
+          animation:toast-pop 3s ease-out forwards;
+        `;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 3000);
+      } else {
+        showToastRed('第二章のマージアイテムが出現しました！依頼に活用しましょう！');
+      }
+    }, 600);
   }
 }
 
