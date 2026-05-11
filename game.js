@@ -5335,18 +5335,22 @@ document.getElementById('story-screen-close-btn').addEventListener('click', () =
   if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 document.getElementById('story-ch1-next-btn').addEventListener('click', () => {
+  document.getElementById('story-ch1-next-btn').classList.remove('guide-attention');
   closeStoryScreen();
   progressStory(1);
 });
 document.getElementById('story-ch2-next-btn').addEventListener('click', () => {
+  document.getElementById('story-ch2-next-btn').classList.remove('guide-attention');
   closeStoryScreen();
   progressStory(2);
 });
 document.getElementById('story-ch3-next-btn').addEventListener('click', () => {
+  document.getElementById('story-ch3-next-btn').classList.remove('guide-attention');
   closeStoryScreen();
   progressStory(3);
 });
 document.getElementById('story-ch4-next-btn')?.addEventListener('click', () => {
+  document.getElementById('story-ch4-next-btn')?.classList.remove('guide-attention');
   closeStoryScreen();
   progressStory(4);
 });
@@ -6865,11 +6869,14 @@ function renderStoryScreen() {
   if (ch1Complete) {
     ch1NextWrap.classList.add('hidden');
     ch1Complete_.classList.remove('hidden');
+    ch1NextBtn.classList.remove('guide-attention');
   } else {
     ch1NextWrap.classList.remove('hidden');
     ch1Complete_.classList.add('hidden');
     ch1NextBtn.disabled = !canAfford;
     ch1CostLabel.innerHTML = costLabel;
+    if (canAfford) ch1NextBtn.classList.add('guide-attention');
+    else ch1NextBtn.classList.remove('guide-attention');
   }
   // 既読シーンがあれば章完了前でも見返し可能
   {
@@ -6896,11 +6903,14 @@ function renderStoryScreen() {
     if (ch2Complete) {
       ch2NextWrap.classList.add('hidden');
       ch2Complete_.classList.remove('hidden');
+      ch2NextBtn.classList.remove('guide-attention');
     } else {
       ch2NextWrap.classList.remove('hidden');
       ch2Complete_.classList.add('hidden');
       ch2NextBtn.disabled = !canAfford;
       ch2CostLbl.innerHTML = costLabel;
+      if (canAfford) ch2NextBtn.classList.add('guide-attention');
+      else ch2NextBtn.classList.remove('guide-attention');
     }
     // 既読シーンがあれば章完了前でも見返し可能
     {
@@ -6931,11 +6941,14 @@ function renderStoryScreen() {
     if (ch3Complete) {
       ch3NextWrap.classList.add('hidden');
       ch3Complete_.classList.remove('hidden');
+      ch3NextBtn.classList.remove('guide-attention');
     } else {
       ch3NextWrap.classList.remove('hidden');
       ch3Complete_.classList.add('hidden');
       ch3NextBtn.disabled = !canAfford;
       ch3CostLbl.innerHTML = costLabel;
+      if (canAfford) ch3NextBtn.classList.add('guide-attention');
+      else ch3NextBtn.classList.remove('guide-attention');
     }
     // 既読シーンがあれば章完了前でも見返し可能
     {
@@ -6971,7 +6984,11 @@ function renderStoryScreen() {
     } else {
       ch4NextWrap?.classList.remove('hidden');
       ch4Complete_?.classList.add('hidden');
-      if (ch4NextBtn) ch4NextBtn.disabled = !canAfford;
+      if (ch4NextBtn) {
+        ch4NextBtn.disabled = !canAfford;
+        if (canAfford) ch4NextBtn.classList.add('guide-attention');
+        else ch4NextBtn.classList.remove('guide-attention');
+      }
       if (ch4CostLbl) ch4CostLbl.innerHTML = costLabel;
     }
     // 既読シーンがあれば章完了前でも見返し可能
