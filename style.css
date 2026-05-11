@@ -14,7 +14,7 @@ body, * {
 body {
   background: #1a1a2e url('img/bg/image_merge_bg_light.png') center top / cover no-repeat fixed;
   color: #fff;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Zen Kurenaido', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2361,6 +2361,10 @@ body {
   z-index: 300;
   background-color: #000;
   overflow: hidden;
+}
+/* アドベンチャーシーンのみ元フォントを維持 */
+#adventure-screen {
+  font-family: 'Segoe UI', sans-serif;
 }
 /* #adv-bg は暗転オーバーレイ（::after）専用 */
 #adv-bg {
