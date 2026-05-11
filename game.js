@@ -5891,17 +5891,10 @@ function initEventMap() {
   eventState.genRevealed        = {};
   eventState.catalogTutShown    = false;
 
-  // 霧アイテム配置（Lv1/2/3）
-  EVENT_FOG_ITEM_MAP.forEach((stage, i) => {
-    eventState.board[i] = { isFog: true, stage };
-  });
-
-  // メモ帳ジェネレーターを配置（霧でないセルの最初の空きに）
-  const genIdx = eventState.board.findIndex(c => c === null);
-  if (genIdx !== -1) {
-    eventState.board[genIdx] = { isEventGen: true, genLevel: 0 };
-    discoverGen('ch1', 0); // Lv1 を発見
-  }
+  // チュートリアル中は霧アイテムを配置しない（transitionToMainGame で配置）
+  // メモ帳ジェネレーターをボード中央エリア（row5,col2 = index37）に配置
+  eventState.board[37] = { isEventGen: true, genLevel: 0 };
+  discoverGen('ch1', 0); // Lv1 を発見
 }
 
 // ========================================
@@ -6079,6 +6072,20 @@ function isGuideInProgress() { return guideState !== null; }
 // いずれかのデバッグフラグが有効なら true
 function isDebugModeActive() {
   return debugState.infiniteEnergy || debugState.infiniteCoin || debugState.infiniteDiamond;
+}
+
+// プレイヤーLv2到達時、蜘蛛の巣アイテムが残っていたら注意ガイドを表示
+function checkFogReminder() {
+  const fogIdx = eventState.board.findIndex(c => c && c.isFog);
+  if (fogIdx === -1) return; // 霧なし → スキップ
+  startGuide(
+    [
+      '蜘蛛の巣に覆われているマージアイテムがまだ残っています...早く蜘蛛の巣から取り除いてあげてください。',
+      'タップしてゲーム再開です。',
+    ],
+    `#event-board .cell[data-index="${fogIdx}"]`,
+    null
+  );
 }
 
 function startGuide(messages, attentionSelector, onDone) {
@@ -7883,6 +7890,10 @@ function progressStory(chapter = 1) {
     if (ringEl) {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+    }
+    // Lv2 到達時に霧アイテムが残っていたら注意メッセージ
+    if (state.playerLevel === 2) {
+      setTimeout(checkFogReminder, 900);
     }
   }
 
