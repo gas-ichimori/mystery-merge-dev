@@ -7843,6 +7843,14 @@ function renderPlayerLevel() {
     storyBtn.classList.toggle('guide-attention', canProgress);
     // ストーリーボタンが初めてアクティブになった瞬間にガイドを表示
     if (canProgress) checkStoryGuide();
+    // 盤面のメニューアイコンにも赤バッジ（物語が読めるとき）
+    document.querySelectorAll('#main-page2-btn, #ev-page2-btn').forEach(btn => {
+      if (canProgress) {
+        btn.classList.add('catalog-badge-active');
+      } else if (!hasUnrevealedItems()) {
+        btn.classList.remove('catalog-badge-active');
+      }
+    });
   }
 }
 
