@@ -2412,6 +2412,13 @@ const CHARACTERS = [
   { img: 'img/Chapter4/chara/image_merge_order_chara_24.png', name: 'カズヤ', age: '55歳', desc: '不動産会社社長' },
   { img: 'img/Chapter4/chara/image_merge_order_chara_25.png', name: 'ハルカ', age: '28歳', desc: '地権者の娘' },
   { img: 'img/Chapter4/chara/image_merge_order_chara_26.png', name: 'シゲル', age: '68歳', desc: '地元の古老' },
+  // 第五章
+  { img: 'img/Chapter5/chara/image_merge_order_chara_27.png', name: 'アオイ', age: '27歳', desc: 'フリーランスイラストレーター・依頼人' },
+  { img: 'img/Chapter5/chara/image_merge_order_chara_28.png', name: 'ナオキ', age: '30歳', desc: 'アオイの元交際相手' },
+  { img: 'img/Chapter5/chara/image_merge_order_chara_29.png', name: 'ハナ',   age: '25歳', desc: 'アオイのリアル友人' },
+  { img: 'img/Chapter5/chara/image_merge_order_chara_30.png', name: 'リョウ', age: '32歳', desc: 'ITエンジニア・調査協力者' },
+  { img: 'img/Chapter5/chara/image_merge_order_chara_31.png', name: 'マナミ', age: '44歳', desc: 'クリエイター事務所マネージャー' },
+  { img: 'img/Chapter5/chara/image_merge_order_chara_32.png', name: 'ケンジ', age: '36歳', desc: 'ナオキの古い友人・共犯者' },
 ];
 
 function renderCharacters() {
@@ -2420,35 +2427,31 @@ function renderCharacters() {
   const ch2Unlocked = !!eventState.fireGenUnlocked;
   const ch3Unlocked = !!eventState.kanteGenUnlocked;
   const ch4Unlocked = !!eventState.keikakuGenUnlocked;
+  const ch5Unlocked = !!eventState.snsGenUnlocked;
+
+  // 章ラベルの挿入インデックスと表示条件
+  const chapterDefs = [
+    { startIdx: 1,  label: '第一章', unlocked: true },
+    { startIdx: 6,  label: '第二章', unlocked: ch2Unlocked },
+    { startIdx: 11, label: '第三章', unlocked: ch3Unlocked },
+    { startIdx: 18, label: '第四章', unlocked: ch4Unlocked },
+    { startIdx: 23, label: '第五章', unlocked: ch5Unlocked },
+  ];
+
   CHARACTERS.forEach((c, idx) => {
-    // 第二章キャラクター（idx 6〜10）は製造機解放後のみ表示
-    if (idx >= 6 && idx <= 10 && !ch2Unlocked) return;
-    // 第三章キャラクター（idx 11〜17）は鑑定台解放後のみ表示
+    if (idx >= 6  && idx <= 10 && !ch2Unlocked) return;
     if (idx >= 11 && idx <= 17 && !ch3Unlocked) return;
-    // 第四章キャラクター（idx 18〜）は設計台解放後のみ表示
-    if (idx >= 18 && !ch4Unlocked) return;
-    // 章ラベルを挿入
-    if (idx === 1) {
+    if (idx >= 18 && idx <= 22 && !ch4Unlocked) return;
+    if (idx >= 23 && !ch5Unlocked) return;
+
+    const chDef = chapterDefs.find(d => d.startIdx === idx);
+    if (chDef) {
       const label = document.createElement('div');
       label.className = 'character-chapter-label';
-      label.textContent = '第一章';
-      list.appendChild(label);
-    } else if (idx === 6) {
-      const label = document.createElement('div');
-      label.className = 'character-chapter-label';
-      label.textContent = '第二章';
-      list.appendChild(label);
-    } else if (idx === 11) {
-      const label = document.createElement('div');
-      label.className = 'character-chapter-label';
-      label.textContent = '第三章';
-      list.appendChild(label);
-    } else if (idx === 18) {
-      const label = document.createElement('div');
-      label.className = 'character-chapter-label';
-      label.textContent = '第四章';
+      label.textContent = chDef.label;
       list.appendChild(label);
     }
+
     const card = document.createElement('div');
     card.className = 'character-card';
     card.innerHTML = `
@@ -2507,6 +2510,7 @@ document.getElementById('page2-shop-btn').addEventListener('click', () => {
 });
 document.getElementById('page2-characters-btn').addEventListener('click', () => {
   closeMainPage2(); returnToMenu = true;
+  renderCharacters();
   document.getElementById('characters-screen').classList.remove('hidden');
 });
 document.getElementById('page2-kankei-btn').addEventListener('click', () => {
