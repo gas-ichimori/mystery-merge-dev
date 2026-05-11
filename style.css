@@ -655,7 +655,7 @@ body {
 }
 #catalog-close {
   background: none;
-  border: 2px solid rgba(255,255,255,0.5);
+  border: none;
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -862,7 +862,7 @@ body {
 
 #shop-close {
   background: none;
-  border: 2px solid rgba(255,255,255,0.5);
+  border: none;
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -2092,7 +2092,7 @@ body {
 }
 #characters-close {
   background: none;
-  border: 2px solid rgba(255,255,255,0.5);
+  border: none;
   border-radius: 50%;
   width: 44px;
   height: 44px;
@@ -2776,7 +2776,7 @@ body {
 }
 #story-screen-close-btn {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: none;
   border-radius: 50%;
   padding: 3px;
   width: 26px;
@@ -3043,7 +3043,7 @@ body {
   top: 10px;
   right: 12px;
   background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.25);
+  border: none;
   color: #fff;
   font-size: 18px;
   width: 30px;
@@ -3204,7 +3204,7 @@ body {
 
 #kankei-close-btn {
   background: none;
-  border: 1px solid rgba(255,255,255,0.25);
+  border: none;
   border-radius: 50%;
   width: 26px;
   height: 26px;
