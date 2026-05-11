@@ -5758,21 +5758,21 @@ const ITEM_HINT_TEXT = '？？？？をマージさせて次のレベルにア�
 //       'merge_focus'  → 2個のLv1アイテムのみ操作可（マージで自動進行）
 // ========================================
 const TUTORIAL_STEPS = [
-  { type: 'blocking_msg', text: 'アナタの助手のヤスヒコと申します...\nヤスと呼んでください...' },
+  { type: 'blocking_msg', text: 'アナタの助手のヤスヒコと申します...ヤスと呼んでください...' },
   { type: 'blocking_msg', text: 'アナタは、新米探偵です...' },
   { type: 'blocking_msg', text: 'コチラは、探偵事務所です...' },
-  { type: 'blocking_msg', text: 'これから様々な...\nご依頼を解決して頂きます...' },
+  { type: 'blocking_msg', text: 'これから様々な...ご依頼を解決して頂きます...' },
   // ↑ #3 完了後にアドベンチャーシーン01が自動挿入される
-  { type: 'gen_focus',    text: '"メモ机"を\n2回タップしてみてください...' },
-  { type: 'merge_focus',  text: '"メモ机"から"メモ紙"が出ましたね？\n"メモ紙"同士を重ね（マージし）てみてください...' },
-  { type: 'blocking_msg', text: 'マージすると新しい"アイテム（猫）"に\nなりましたね？...' },
-  { type: 'blocking_msg', text: 'マージした"アイテム"で\n"依頼"を解決することができますので、覚えておいてください...' },
+  { type: 'gen_focus',    text: '"メモ机"を2回タップしてみてください...' },
+  { type: 'merge_focus',  text: '"メモ机"から"メモ紙"が出ましたね？"メモ紙"同士を重ね（マージし）てみてください...' },
+  { type: 'blocking_msg', text: 'マージすると新しい"アイテム（猫）"になりましたね？...' },
+  { type: 'blocking_msg', text: 'マージした"アイテム"で"依頼"を解決することができますので、覚えておいてください...' },
   // 依頼解決チュートリアル
-  { type: 'blocking_msg', text: '先ほどの依頼人（ミユさん）が、\n依頼をされています...', showRequest: true, noOverlay: true },
-  { type: 'request_focus', text: '"依頼解決"ボタンをタップして、\n依頼を解決してみてください...' },
+  { type: 'blocking_msg', text: '先ほどの依頼人（ミユさん）が、依頼をされています...', showRequest: true, noOverlay: true },
+  { type: 'request_focus', text: '"依頼解決"ボタンをタップして、依頼を解決してみてください...' },
   // 依頼解決後
-  { type: 'blocking_msg', text: '依頼を解決すると、報酬（コイン）を\n受け取ることができます...' },
-  { type: 'blocking_msg', text: '引き続き、たくさんの依頼を\n解決してください...' },
+  { type: 'blocking_msg', text: '依頼を解決すると、報酬（コイン）を受け取ることができます...' },
+  { type: 'blocking_msg', text: '引き続き、たくさんの依頼を解決してください...' },
   { type: 'blocking_msg', text: '探偵業のはじまりです...' },
 ];
 
