@@ -2194,7 +2194,7 @@ function showRewardInPanel(msg, panelEl, textColor = '#fff') {
 }
 
 // 任意のDOM要素の近くにフロートテキストを表示（lucky-fade アニメ適用）
-function showFloatNearEl(text, color, el) {
+function showFloatNearEl(text, color, el, fontSize = 15) {
   if (!el) { showToast(text); return; }
   const rect = el.getBoundingClientRect();
   const div = document.createElement('div');
@@ -2205,7 +2205,7 @@ function showFloatNearEl(text, color, el) {
     top: ${rect.top}px;
     transform: translate(-50%, -50%) scale(1.2);
     color: ${color};
-    font-size: 15px;
+    font-size: ${fontSize}px;
     font-weight: bold;
     pointer-events: none;
     z-index: 9999;
@@ -2247,8 +2247,8 @@ function showEnergyGain(amount) {
     : document.getElementById('energy-wrap');
   if (!energyEl) { showToast(`${HP_ICON} +${amount}`); return; }
 
-  // +N テキスト（オレンジ、体力の上に浮かぶ）
-  showFloatNearEl(`+${amount}`, '#ff8c00', energyEl);
+  // +N テキスト（オレンジ、体力の上に浮かぶ・大きめボールド）
+  showFloatNearEl(`+${amount}`, '#ff8c00', energyEl, 24);
 
   const rect = energyEl.getBoundingClientRect();
   const targetX = rect.left + rect.width  / 2;
@@ -2490,7 +2490,7 @@ document.getElementById('page2-back-btn').addEventListener('click', () => {
   if (pending > 0) {
     flyHpIcons(() => {
       addEnergy(pending, `体力 +${pending}！`);
-    }, pending);
+    });
   }
 });
 
@@ -2639,7 +2639,7 @@ document.getElementById('debug-popup-discover').addEventListener('click', () => 
 document.getElementById('debug-popup-energy').addEventListener('click', () => {
   flyHpIcons(() => {
     addEnergy(25, 'デバッグ体力回復');
-  }, 25);
+  });
 });
 document.getElementById('debug-popup-bonus').addEventListener('click', () => {
   showEnergyGain(25);
@@ -5577,7 +5577,7 @@ let shopTimerInterval = null;
 let shopPendingHP = 0;
 
 // 体力アイコンが弧を描いてヘッダーのHPアイコンに飛び込むアニメーション
-function flyHpIcons(onComplete, amount = 25) {
+function flyHpIcons(onComplete) {
   const eventScreen = document.getElementById('event-screen');
   let targetEl;
   if (eventScreen && !eventScreen.classList.contains('hidden')) {
@@ -5592,17 +5592,6 @@ function flyHpIcons(onComplete, amount = 25) {
   const endY = targetRect.top + targetRect.height / 2;
   const startX = window.innerWidth / 2;
   const startY = window.innerHeight * 0.45;
-
-  // 中央に「HPアイコン（大）＋+N」を表示してフェードアウト
-  const popup = document.createElement('div');
-  popup.style.cssText = `position:fixed;left:${startX}px;top:${startY}px;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;z-index:9998;pointer-events:none;`;
-  popup.innerHTML = `<img src="img/UI/image_merge_navi_hp.png" style="width:80px;height:80px;object-fit:contain;"><span style="color:#ff8c00;font-size:28px;font-weight:bold;text-shadow:0 2px 8px rgba(0,0,0,0.9);font-family:'Zen Kurenaido',sans-serif;">+${amount}</span>`;
-  document.body.appendChild(popup);
-  popup.animate([
-    { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' },
-    { opacity: 1, transform: 'translate(-50%,-50%) scale(1.1)', offset: 0.3 },
-    { opacity: 0, transform: 'translate(-50%,-50%) scale(0.8)' }
-  ], { duration: 900, delay: 100, easing: 'ease-out', fill: 'forwards' }).onfinish = () => popup.remove();
 
   const count = 6;
   let done = 0;
