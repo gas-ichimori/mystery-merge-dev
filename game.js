@@ -8144,11 +8144,13 @@ function completeEventRequest(index) {
   const newKeys = new Set();
   for (const it of req.items) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
-    if (!it.chainId && it.stage <= 5) {
-      // Ch1 Lv1-5のみ永久封印（第一章序盤アイテムは一度解決したら不要）
+    const isCh1Low  = !it.chainId && it.stage <= 5;
+    const isCh2up   = it.chainId !== undefined;
+    if (isCh1Low || (isCh2up && it.stage <= 4)) {
+      // Ch1 Lv1-5 / Ch2以降 Lv1-4: 永久封印（一度解決したら再出現しない）
       eventState.completedLowStages.add(key);
     } else {
-      // Ch2/Ch3全Lv・Ch1 Lv6+: 1件おやすみ後に復活
+      // Ch1 Lv6+ / Ch2以降 Lv5+: 1件おやすみ後に復活
       newKeys.add(key);
     }
   }
@@ -8164,7 +8166,7 @@ function completeEventRequest(index) {
 // イベントマップ専用の依頼を補充
 // ・最低 MIN_SLOTS 枠、最大 MAX_SLOTS 枠
 // ・各章のジェネレーター解放状況に応じてアイテム種別を均等抽選
-// ・Lv1-5は一度解決したら永久に再出現しない（Ch1のみLv1-2は初回から除外）
+// ・Ch1 Lv1-5 / Ch2以降 Lv1-4 は一度解決したら永久に再出現しない
 // ・Lv6以降は1個か2個かランダム（同Lv2個は不可、直前完了キーは1回スキップ）
 function fillEventRequests() {
   const MIN_SLOTS = 3;
