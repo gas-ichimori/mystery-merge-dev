@@ -289,19 +289,19 @@ function getDailyTaskDefs() {
       label:       `アイテムを${100 + g * 50}個マージする`,
       target:      100 + g * 50,
       rewardLabel: `${HP_ICON} +50`,
-      rewardFn()   { addEnergy(50, 'デイリーミッション報酬！'); },
+      rewardHP:    50,
     },
     {
       label:       `依頼を${5 + g * 5}個解決する`,
       target:      5 + g * 5,
       rewardLabel: `${HP_ICON} +25`,
-      rewardFn()   { addEnergy(25, 'デイリーミッション報酬！'); },
+      rewardHP:    25,
     },
     {
       label:       `${5 + g * 5}個のダイヤを消費する`,
       target:      5 + g * 5,
       rewardLabel: `${HP_ICON} +100`,
-      rewardFn()   { addEnergy(100, 'デイリーミッション報酬！'); },
+      rewardHP:    100,
     },
   ];
 }
@@ -406,10 +406,13 @@ function renderDailyMissionPopup() {
       const t   = state.dailyMission.tasks[idx];
       if (!t.cleared || t.claimed) return;
       t.claimed = true;
-      getDailyTaskDefs()[idx].rewardFn();
+      const hp = getDailyTaskDefs()[idx].rewardHP;
       saveDailyMission();
       renderDailyMissionPopup();
       renderDailyMissionBadge();
+      flyHpIcons(() => {
+        addEnergy(hp, `デイリーミッション報酬！ HP +${hp}`);
+      });
     });
   });
 }
@@ -1734,6 +1737,14 @@ function updateCatalogBadge() {
   document.querySelectorAll('.catalog-access-btn').forEach(btn => {
     btn.classList.toggle('catalog-badge-active', active);
   });
+  // メニューヘッダーボタンは物語が読めるときも赤バッジを維持
+  const cost = getStoryCost(state.playerLevel);
+  const storyReady = state.coin >= cost;
+  if (storyReady) {
+    document.querySelectorAll('#main-page2-btn, #ev-page2-btn').forEach(btn => {
+      btn.classList.add('catalog-badge-active');
+    });
+  }
 }
 
 // アイテムリスト内の「？」をタップして解放（💎+1）
@@ -2622,6 +2633,17 @@ document.getElementById('debug-popup-max-coin').addEventListener('click', () => 
 });
 document.getElementById('debug-popup-max-diamond').addEventListener('click', () => {
   showCenterPopup('ダイヤは最大値です。');
+});
+document.getElementById('debug-daily-reset').addEventListener('click', () => {
+  state.dailyMission.date = '';
+  state.dailyMission.tasks.forEach(t => {
+    t.progress = 0;
+    t.cleared  = false;
+    t.claimed  = false;
+  });
+  saveDailyMission();
+  renderDailyMissionBadge();
+  showToast('📋 デイリーミッションをリセットしました');
 });
 
 // アドベンチャーシーン再生ボタン（各章）
