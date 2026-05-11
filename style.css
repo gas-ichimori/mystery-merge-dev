@@ -1658,9 +1658,9 @@ body {
   background: rgba(10, 18, 50, 0.72);
 }
 .page2-back-btn {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 6px;
+  background: none;
+  border: none;
+  border-radius: 0;
   padding: 5px 10px;
   font-size: 18px;
   cursor: pointer;
@@ -1670,7 +1670,7 @@ body {
   justify-content: center;
   line-height: 1;
 }
-.page2-back-btn:active { background: rgba(255,255,255,0.25); }
+.page2-back-btn:active { background: rgba(255,255,255,0.1); }
 #page2-title {
   color: #e8f4fd;
   font-size: 16px;
@@ -1693,7 +1693,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 10px;
   gap: 4px;
   cursor: pointer;
   color: #e8f4fd;
