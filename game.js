@@ -2492,7 +2492,9 @@ document.getElementById('page2-catalog-btn').addEventListener('click', () => {
 });
 document.getElementById('page2-shop-btn').addEventListener('click', () => {
   closeMainPage2(); returnToMenu = true;
+  renderShop();
   document.getElementById('shop-screen').classList.remove('hidden');
+  shopTimerInterval = setInterval(renderShop, 60000);
 });
 document.getElementById('page2-characters-btn').addEventListener('click', () => {
   closeMainPage2(); returnToMenu = true;
@@ -5502,7 +5504,6 @@ function renderShop() {
         state.shop.lastFreeEnergy = Date.now();
         shopPendingHP += 25;
         renderShop();
-        saveState();
       },
     },
     {
@@ -5520,7 +5521,6 @@ function renderShop() {
         renderShop();
         renderHeader();
         renderEventHeader();
-        saveState();
       },
     },
     {
@@ -5539,7 +5539,6 @@ function renderShop() {
         renderShop();
         renderHeader();
         renderEventHeader();
-        saveState();
       },
     },
   ];
