@@ -2239,7 +2239,7 @@ function showSpecialFixed(text, color) {
   setTimeout(() => div.remove(), 1400);
 }
 
-// 体力回復演出: ⚡がボード/ジェネレーター/ボタンから弧を描いて体力表示へ飛び込む
+// 体力回復演出: +N テキストをヘッダーのHP表示付近に浮かせる
 function showEnergyGain(amount) {
   const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
   const energyEl = eventVisible
@@ -2249,80 +2249,6 @@ function showEnergyGain(amount) {
 
   // +N テキスト（オレンジ、体力の上に浮かぶ・大きめボールド）
   showFloatNearEl(`+${amount}`, '#ff8c00', energyEl, 24);
-
-  const rect = energyEl.getBoundingClientRect();
-  const targetX = rect.left + rect.width  / 2;
-  const targetY = rect.top  + rect.height / 2;
-
-  // 出発源の候補：ボードセル・ジェネレーター・ボタン類
-  const sources = [];
-  const boardSel = eventVisible ? '#event-board .cell' : '#board .cell';
-  document.querySelectorAll(boardSel).forEach(cell => {
-    const r = cell.getBoundingClientRect();
-    if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < window.innerHeight) {
-      sources.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-    }
-  });
-  ['ev-page2-btn', 'daily-mission-btn'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && !el.classList.contains('hidden')) {
-      const r = el.getBoundingClientRect();
-      if (r.width > 0) sources.push({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-    }
-  });
-  // フォールバック：ターゲット下方
-  if (sources.length === 0) {
-    sources.push({ x: targetX, y: targetY + 200 });
-  }
-
-  const BOLT_COUNT = 20;
-  for (let i = 0; i < BOLT_COUNT; i++) {
-    setTimeout(() => {
-      const src = sources[Math.floor(Math.random() * sources.length)];
-      const bolt = document.createElement('div');
-      bolt.innerHTML = HP_ICON;
-      bolt.style.cssText = `
-        position: fixed;
-        left: ${src.x}px;
-        top:  ${src.y}px;
-        width: 100px;
-        height: 100px;
-        pointer-events: none;
-        z-index: 9999;
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-        will-change: left, top, transform, opacity;
-      `;
-      document.body.appendChild(bolt);
-
-      // 弧の制御点（出発と到達の中間・やや上方）
-      const cpX = (src.x + targetX) / 2 + (Math.random() - 0.5) * 100;
-      const cpY = Math.min(src.y, targetY) - 60 - Math.random() * 80;
-      const duration = 550 + Math.random() * 200;
-      const startTime = performance.now();
-
-      function animateBolt(now) {
-        const t = Math.min((now - startTime) / duration, 1);
-        // ease-in-out
-        const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        // 2次ベジェ曲線
-        const bx = (1 - e) * (1 - e) * src.x + 2 * (1 - e) * e * cpX + e * e * targetX;
-        const by = (1 - e) * (1 - e) * src.y + 2 * (1 - e) * e * cpY + e * e * targetY;
-        const sc = 1 - e * 0.88;
-        const op = t < 0.65 ? 1 : 1 - (t - 0.65) / 0.35;
-        bolt.style.left      = `${bx}px`;
-        bolt.style.top       = `${by}px`;
-        bolt.style.transform = `translate(-50%,-50%) scale(${sc})`;
-        bolt.style.opacity   = `${op}`;
-        if (t < 1) {
-          requestAnimationFrame(animateBolt);
-        } else {
-          bolt.remove();
-        }
-      }
-      requestAnimationFrame(animateBolt);
-    }, i * 55);
-  }
 }
 
 // 「捜査盤面が満杯です」専用トースト（赤・立体・背景透明）
