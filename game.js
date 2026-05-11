@@ -2483,7 +2483,16 @@ function closeMainPage2() {
 }
 
 document.getElementById('main-page2-btn').addEventListener('click', openMainPage2);
-document.getElementById('page2-back-btn').addEventListener('click', closeMainPage2);
+document.getElementById('page2-back-btn').addEventListener('click', () => {
+  closeMainPage2();
+  const pending = shopPendingHP;
+  shopPendingHP = 0;
+  if (pending > 0) {
+    flyHpIcons(() => {
+      addEnergy(pending, `体力 +${pending}！`);
+    });
+  }
+});
 
 document.getElementById('page2-catalog-btn').addEventListener('click', () => {
   document.getElementById('page2-catalog-btn').classList.remove('guide-attention');
@@ -5624,13 +5633,6 @@ document.getElementById('shop-close').addEventListener('click', () => {
   clearInterval(shopTimerInterval);
   shopTimerInterval = null;
   if (returnToMenu) { returnToMenu = false; openMainPage2(); }
-  const pending = shopPendingHP;
-  shopPendingHP = 0;
-  if (pending > 0) {
-    flyHpIcons(() => {
-      addEnergy(pending, `体力 +${pending}！`);
-    });
-  }
 });
 
 // ========================================
