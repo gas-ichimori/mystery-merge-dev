@@ -7799,6 +7799,7 @@ function renderPlayerLevel() {
     // ストーリー画面はいつでも開ける（コイン不足でも章選択・見返しは可能）
     storyBtn.disabled = false;
     storyBtn.classList.toggle('story-btn-active', canProgress);
+    storyBtn.classList.toggle('guide-attention', canProgress);
     // ストーリーボタンが初めてアクティブになった瞬間にガイドを表示
     if (canProgress) checkStoryGuide();
   }

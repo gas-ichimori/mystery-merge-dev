@@ -2805,6 +2805,15 @@ body {
   opacity: 0.75;
   transform: scale(0.97);
 }
+/* guide-attentionはボタン全体ではなく画像のみに適用 */
+.story-read-btn.guide-attention {
+  animation: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.story-read-btn.guide-attention .story-read-btn-img {
+  animation: guide-attention-pulse 0.7s ease-in-out infinite alternate;
+}
 .story-cost-label {
   text-align: center;
   color: #888;
