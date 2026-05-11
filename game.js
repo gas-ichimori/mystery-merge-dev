@@ -6014,8 +6014,12 @@ function renderTutorialPanel() {
   if (!overlay || !panel) return;
 
   if (isTutorialComplete()) {
-    // チュートリアル完了後：PV再生 → 霧アイテムを指し示すガイド → ゲームスタート
+    // チュートリアル完了後：PV再生 → 蜘蛛の巣アイテムを盤面に配置 → ガイド → ゲームスタート
     playPVThenStart(() => {
+      // PV終了後に蜘蛛の巣アイテムを盤面に配置してガイドで紹介
+      EVENT_FOG_ITEM_MAP.forEach((stage, i) => { eventState.board[i] = { isFog: true, stage }; });
+      eventState.unlockedFogCells = new Set(INITIAL_UNLOCKED_FOG);
+      renderEventBoard();
       startGuide(
         [
           '蜘蛛の巣に覆われている\u201cメモ\u201dアイテムです。',
