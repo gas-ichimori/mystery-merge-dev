@@ -2490,7 +2490,7 @@ document.getElementById('page2-back-btn').addEventListener('click', () => {
   if (pending > 0) {
     flyHpIcons(() => {
       addEnergy(pending, `体力 +${pending}！`);
-    });
+    }, pending);
   }
 });
 
@@ -2639,7 +2639,7 @@ document.getElementById('debug-popup-discover').addEventListener('click', () => 
 document.getElementById('debug-popup-energy').addEventListener('click', () => {
   flyHpIcons(() => {
     addEnergy(25, 'デバッグ体力回復');
-  });
+  }, 25);
 });
 document.getElementById('debug-popup-bonus').addEventListener('click', () => {
   showEnergyGain(25);
@@ -5577,7 +5577,7 @@ let shopTimerInterval = null;
 let shopPendingHP = 0;
 
 // 体力アイコンが弧を描いてヘッダーのHPアイコンに飛び込むアニメーション
-function flyHpIcons(onComplete) {
+function flyHpIcons(onComplete, amount = 25) {
   const eventScreen = document.getElementById('event-screen');
   let targetEl;
   if (eventScreen && !eventScreen.classList.contains('hidden')) {
@@ -5592,6 +5592,17 @@ function flyHpIcons(onComplete) {
   const endY = targetRect.top + targetRect.height / 2;
   const startX = window.innerWidth / 2;
   const startY = window.innerHeight * 0.45;
+
+  // 中央に「HPアイコン（大）＋+N」を表示してフェードアウト
+  const popup = document.createElement('div');
+  popup.style.cssText = `position:fixed;left:${startX}px;top:${startY}px;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;z-index:9998;pointer-events:none;`;
+  popup.innerHTML = `<img src="img/UI/image_merge_navi_hp.png" style="width:80px;height:80px;object-fit:contain;"><span style="color:#ff8c00;font-size:28px;font-weight:bold;text-shadow:0 2px 8px rgba(0,0,0,0.9);font-family:'Zen Kurenaido',sans-serif;">+${amount}</span>`;
+  document.body.appendChild(popup);
+  popup.animate([
+    { opacity: 1, transform: 'translate(-50%,-50%) scale(1)' },
+    { opacity: 1, transform: 'translate(-50%,-50%) scale(1.1)', offset: 0.3 },
+    { opacity: 0, transform: 'translate(-50%,-50%) scale(0.8)' }
+  ], { duration: 900, delay: 100, easing: 'ease-out', fill: 'forwards' }).onfinish = () => popup.remove();
 
   const count = 6;
   let done = 0;
