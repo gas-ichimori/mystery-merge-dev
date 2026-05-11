@@ -5492,55 +5492,54 @@ function renderShop() {
 
   const items = [
     {
-      icon: HP_ICON,
       title: '無料 体力回復',
       detail: '体力 +25',
-      badge: '無料',
-      badgeClass: 'badge-free',
       remaining: () => shopRemaining(state.shop.lastFreeEnergy),
       canBuy: () => !shopRemaining(state.shop.lastFreeEnergy),
-      btnLabel: '無料でもらう',
+      btnLabel: '無料',
+      btnIcon: '',
       action() {
         state.shop.lastFreeEnergy = Date.now();
-        addEnergy(25, '無料体力ゲット！');
+        shopPendingHP += 25;
         renderShop();
+        saveState();
       },
     },
     {
-      icon: HP_ICON,
-      title: '体力大回復',
-      detail: '体力 +100',
-      badge: `${COIN_ICON} 10,000`,
-      badgeClass: 'badge-coin',
+      title: '体力回復',
+      detail: '体力 +25',
       remaining: () => shopRemaining(state.shop.lastCoinEnergy),
       canBuy: () => !shopRemaining(state.shop.lastCoinEnergy) && state.coin >= 10000,
-      btnLabel: `${COIN_ICON} 10,000で購入`,
+      btnLabel: '10,000',
+      btnIcon: COIN_ICON,
       action() {
         if (state.coin < 10000) { showToast('コインが足りません'); return; }
         state.shop.lastCoinEnergy = Date.now();
         state.coin -= 10000;
-        addEnergy(100, 'コイン購入 体力+100！');
+        shopPendingHP += 25;
         renderShop();
         renderHeader();
+        renderEventHeader();
+        saveState();
       },
     },
     {
-      icon: HP_ICON,
-      title: '体力大回復',
-      detail: '体力 +100',
-      badge: '💎 10',
-      badgeClass: 'badge-diamond',
+      title: '体力回復',
+      detail: '体力 +25',
       remaining: () => shopRemaining(state.shop.lastDiamondEnergy),
       canBuy: () => !shopRemaining(state.shop.lastDiamondEnergy) && state.diamond >= 10,
-      btnLabel: '💎 10で購入',
+      btnLabel: '10',
+      btnIcon: DAIYA_ICON,
       action() {
         if (state.diamond < 10) { showToast('ダイヤが足りません'); return; }
         state.shop.lastDiamondEnergy = Date.now();
         state.diamond -= 10;
         trackDailyDiamond(10);
-        addEnergy(100, 'ダイヤ購入 体力+100！');
+        shopPendingHP += 25;
         renderShop();
         renderHeader();
+        renderEventHeader();
+        saveState();
       },
     },
   ];
@@ -5549,28 +5548,70 @@ function renderShop() {
     const rem = item.remaining();
     const ok  = item.canBuy();
     const card = document.createElement('div');
-    card.className = 'shop-item';
+    card.className = 'shop-card';
     card.innerHTML = `
-      <div class="shop-item-left">
-        <span class="shop-item-icon">${item.icon}</span>
-        <div class="shop-item-info">
-          <div class="shop-item-title">${item.title}</div>
-          <div class="shop-item-detail">${item.detail}</div>
-        </div>
-      </div>
-      <div class="shop-item-right">
-        <span class="shop-badge ${item.badgeClass}">${item.badge}</span>
-        ${rem ? `<div class="shop-timer">⏳ ${rem}</div>` : ''}
-        <button class="shop-btn${ok ? '' : ' shop-btn-disabled'}">${ok ? item.btnLabel : (rem ? 'クールダウン中' : item.btnLabel)}</button>
-      </div>
+      <img class="shop-card-hp-img" src="img/UI/image_merge_navi_hp.png" alt="体力">
+      <div class="shop-card-title">${item.title}</div>
+      <div class="shop-card-detail">${item.detail}</div>
+      ${rem ? `<div class="shop-card-timer">⏳ ${rem}</div>` : ''}
+      <button class="shop-card-btn${ok ? '' : ' shop-card-btn-disabled'}">${item.btnIcon}${ok ? item.btnLabel : (rem ? 'クールダウン中' : item.btnLabel)}</button>
     `;
-    if (ok) card.querySelector('.shop-btn').addEventListener('click', () => item.action());
+    if (ok) card.querySelector('.shop-card-btn').addEventListener('click', () => item.action());
     list.appendChild(card);
   });
 }
 
 // ショップ表示中タイマー（残り時間更新）
 let shopTimerInterval = null;
+// ショップで購入した体力（閉じる時にアニメーションで付与）
+let shopPendingHP = 0;
+
+// 体力アイコンが弧を描いてヘッダーのHPアイコンに飛び込むアニメーション
+function flyHpIcons(onComplete) {
+  const eventScreen = document.getElementById('event-screen');
+  let targetEl;
+  if (eventScreen && !eventScreen.classList.contains('hidden')) {
+    targetEl = document.querySelector('#ev-energy img');
+  } else {
+    targetEl = document.querySelector('#energy-text img');
+  }
+  if (!targetEl) { onComplete(); return; }
+
+  const targetRect = targetEl.getBoundingClientRect();
+  const endX = targetRect.left + targetRect.width / 2;
+  const endY = targetRect.top + targetRect.height / 2;
+  const startX = window.innerWidth / 2;
+  const startY = window.innerHeight * 0.45;
+
+  const count = 6;
+  let done = 0;
+
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const img = document.createElement('img');
+      img.src = 'img/UI/image_merge_navi_hp.png';
+      img.style.cssText = `position:fixed;width:50px;height:50px;left:${startX}px;top:${startY}px;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;object-fit:contain;`;
+      document.body.appendChild(img);
+
+      const dx = endX - startX;
+      const dy = endY - startY;
+      const arcX = (Math.random() - 0.5) * 140;
+      const arcY = -90 - Math.random() * 60;
+
+      const anim = img.animate([
+        { transform: 'translate(-50%,-50%) translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(-50%,-50%) translate(${dx * 0.45 + arcX}px,${dy * 0.3 + arcY}px) scale(1.2)`, opacity: 1, offset: 0.45 },
+        { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(0.2)`, opacity: 0 }
+      ], { duration: 650 + Math.random() * 200, delay: i * 90, easing: 'ease-in', fill: 'forwards' });
+
+      anim.onfinish = () => {
+        img.remove();
+        done++;
+        if (done === count) onComplete();
+      };
+    }, 0);
+  }
+}
 
 document.getElementById('shop-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
@@ -5584,6 +5625,13 @@ document.getElementById('shop-close').addEventListener('click', () => {
   clearInterval(shopTimerInterval);
   shopTimerInterval = null;
   if (returnToMenu) { returnToMenu = false; openMainPage2(); }
+  const pending = shopPendingHP;
+  shopPendingHP = 0;
+  if (pending > 0) {
+    flyHpIcons(() => {
+      addEnergy(pending, `体力 +${pending}！`);
+    });
+  }
 });
 
 // ========================================
