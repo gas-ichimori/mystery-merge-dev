@@ -2637,7 +2637,9 @@ document.getElementById('debug-popup-discover').addEventListener('click', () => 
   showSpecialFixed('新アイテム発見！', '#f9c846');
 });
 document.getElementById('debug-popup-energy').addEventListener('click', () => {
-  showEnergyGain(25);
+  flyHpIcons(() => {
+    addEnergy(25, 'デバッグ体力回復');
+  });
 });
 document.getElementById('debug-popup-bonus').addEventListener('click', () => {
   showEnergyGain(25);
