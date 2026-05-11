@@ -6085,7 +6085,6 @@ function checkFogReminder() {
   startGuide(
     [
       '蜘蛛の巣に覆われているマージアイテムがまだ残っています...早く蜘蛛の巣から取り除いてあげてください。',
-      'タップしてゲーム再開です。',
     ],
     `#event-board .cell[data-index="${fogIdx}"]`,
     null

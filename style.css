@@ -1851,16 +1851,29 @@ body {
   width: 40px;
   height: 40px;
 }
-/* メニューボタンのアテンション：枠なし・画像のみアニメーション */
+/* メニューボタンのアテンション：枠なし・赤い丸バッジのみ */
 #main-page2-btn.catalog-badge-active,
 #ev-page2-btn.catalog-badge-active {
   border-color: transparent !important;
   animation: none !important;
   box-shadow: none !important;
+  overflow: visible !important;
 }
 #main-page2-btn.catalog-badge-active .navi-icon-img,
 #ev-page2-btn.catalog-badge-active .navi-icon-img {
-  animation: guide-attention-pulse 0.7s ease-in-out infinite alternate;
+  animation: none;
+}
+#main-page2-btn.catalog-badge-active::after,
+#ev-page2-btn.catalog-badge-active::after {
+  content: '';
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 10px; height: 10px;
+  background: #ff3333;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.5);
+  animation: kankei-attention-pulse 1.4s ease-in-out infinite;
+  pointer-events: none;
 }
 
 /* ========================================
