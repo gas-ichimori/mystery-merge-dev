@@ -1660,6 +1660,7 @@ function discoverSeizoItem(stage) {
   if (!eventState.seizoFirstItemShown) {
     eventState.seizoFirstItemShown = true;
     setTimeout(() => {
+      if (isMenuPageOpen()) return;
       const genTile = document.getElementById('fire-gen-tile');
       if (genTile) {
         const rect = genTile.getBoundingClientRect();
@@ -2056,6 +2057,12 @@ function addDiamond(amount) {
   if (state.diamond >= MAX_DIAMOND) showCenterPopup('ダイヤは最大値です。');
 }
 
+// メニューページ（main-page2-screen）が開いているか
+function isMenuPageOpen() {
+  const el = document.getElementById('main-page2-screen');
+  return el && !el.classList.contains('hidden');
+}
+
 function showToast(msg) {
   const el = document.createElement('div');
   el.innerHTML = msg;
@@ -2170,6 +2177,7 @@ function showToastNearPanel(msg, panelEl) {
 
 // ナビパネルの直上（盤面下部）にトーストを表示（ジェネレーターLvアップ体力ボーナスなど）
 function showAboveNaviToast(msg) {
+  if (isMenuPageOpen()) return;
   const panel = document.getElementById('navi-hint-panel');
   let topY;
   if (panel && !panel.classList.contains('hidden')) {
@@ -2261,8 +2269,9 @@ function showSpecialFixed(text, color) {
   setTimeout(() => div.remove(), 1400);
 }
 
-// 体力回復演出: +N テキストをヘッダーのHP表示付近に浮かせる
+/// 体力回復演出: +N テキストをヘッダーのHP表示付近に浮かせる
 function showEnergyGain(amount) {
+  if (isMenuPageOpen()) return;
   const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
   const energyEl = eventVisible
     ? document.getElementById('ev-energy')
@@ -8134,7 +8143,7 @@ function completeEventRequest(index) {
   state.requestCompletedTotal++;
   trackDailyRequest();
   checkStoryGuide();
-  showRewardInPanel('依頼完了！', document.getElementById('event-req-panel'), '#ff8c00');
+  if (!isMenuPageOpen()) showRewardInPanel('依頼完了！', document.getElementById('event-req-panel'), '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
   }
