@@ -6796,6 +6796,9 @@ document.getElementById('kankei-open-btn').addEventListener('click', () => {
 });
 document.getElementById('kankei-close-btn').addEventListener('click', () => {
   closeKankeiScreen();
+  // 物語画面から相関図を開いた場合は物語画面も閉じる
+  const storyScreen = document.getElementById('story-screen');
+  if (storyScreen && !storyScreen.classList.contains('hidden')) closeStoryScreen();
   if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
 // カスタムドロップダウン：ボタンクリックで開閉
