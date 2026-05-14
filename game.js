@@ -6529,43 +6529,40 @@ function openKankeiScreen() {
   updateKankeiAttention();
 }
 
+// カスタムドロップダウンのラベル・active状態を現在の章に同期
+function syncKankeiChapterSelect() {
+  const list  = document.getElementById('kankei-chapter-list');
+  const label = document.getElementById('kankei-chapter-label');
+  if (!list || !label) return;
+  list.querySelectorAll('.kankei-chapter-opt').forEach(li => {
+    li.classList.toggle('kankei-chapter-active', Number(li.dataset.value) === currentKankeiChapter);
+  });
+  const active = list.querySelector('.kankei-chapter-active');
+  if (active) label.textContent = active.textContent;
+}
+
 // 章セレクトの選択肢を更新（第二章解放後に追加）
 function updateKankeiChapterSelect() {
-  const sel = document.getElementById('kankei-chapter-select');
-  if (!sel) return;
+  const list = document.getElementById('kankei-chapter-list');
+  if (!list) return;
   const has2 = eventState.fireGenUnlocked;
   const has3 = eventState.kanteGenUnlocked;
   const has4 = eventState.keikakuGenUnlocked;
-  // 第二章オプションの有無を同期
-  if (has2 && !sel.querySelector('[value="2"]')) {
-    const opt = document.createElement('option');
-    opt.value = '2';
-    opt.textContent = '第二章　相関図';
-    sel.appendChild(opt);
-  }
-  // 第三章オプションの有無を同期
-  if (has3 && !sel.querySelector('[value="3"]')) {
-    const opt = document.createElement('option');
-    opt.value = '3';
-    opt.textContent = '第三章　相関図';
-    sel.appendChild(opt);
-  }
-  // 第四章オプションの有無を同期
-  if (has4 && !sel.querySelector('[value="4"]')) {
-    const opt = document.createElement('option');
-    opt.value = '4';
-    opt.textContent = '第四章　相関図';
-    sel.appendChild(opt);
-  }
-  // 第五章オプションの有無を同期
   const has5 = eventState.snsGenUnlocked;
-  if (has5 && !sel.querySelector('[value="5"]')) {
-    const opt = document.createElement('option');
-    opt.value = '5';
-    opt.textContent = '第五章　相関図';
-    sel.appendChild(opt);
+  function addOpt(val, text) {
+    if (!list.querySelector(`[data-value="${val}"]`)) {
+      const li = document.createElement('li');
+      li.className = 'kankei-chapter-opt';
+      li.dataset.value = String(val);
+      li.textContent = text;
+      list.appendChild(li);
+    }
   }
-  sel.value = String(currentKankeiChapter);
+  if (has2) addOpt(2, '第二章　相関図');
+  if (has3) addOpt(3, '第三章　相関図');
+  if (has4) addOpt(4, '第四章　相関図');
+  if (has5) addOpt(5, '第五章　相関図');
+  syncKankeiChapterSelect();
 }
 
 // 相関図の更新アテンション: 新アイテム解放時に kankei-open-btn に赤バッジを表示
@@ -6801,9 +6798,31 @@ document.getElementById('kankei-close-btn').addEventListener('click', () => {
   closeKankeiScreen();
   if (returnToMenu) { returnToMenu = false; openMainPage2(); }
 });
-document.getElementById('kankei-chapter-select').addEventListener('change', (e) => {
-  currentKankeiChapter = Number(e.target.value);
+// カスタムドロップダウン：ボタンクリックで開閉
+document.getElementById('kankei-chapter-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  const wrap = document.getElementById('kankei-chapter-select-wrap');
+  const list = document.getElementById('kankei-chapter-list');
+  const opening = list.classList.contains('hidden');
+  list.classList.toggle('hidden', !opening);
+  wrap.classList.toggle('open', opening);
+});
+
+// リストアイテムのクリックで章を切り替え
+document.getElementById('kankei-chapter-list').addEventListener('click', (e) => {
+  const li = e.target.closest('.kankei-chapter-opt');
+  if (!li) return;
+  currentKankeiChapter = Number(li.dataset.value);
+  syncKankeiChapterSelect();
+  document.getElementById('kankei-chapter-list').classList.add('hidden');
+  document.getElementById('kankei-chapter-select-wrap').classList.remove('open');
   renderKankeiBoard();
+});
+
+// 外側クリックで閉じる
+document.addEventListener('click', () => {
+  document.getElementById('kankei-chapter-list')?.classList.add('hidden');
+  document.getElementById('kankei-chapter-select-wrap')?.classList.remove('open');
 });
 
 // ストーリー閲覧中に追加されたジェネレータータイルの通知を赤字ポップアップで表示

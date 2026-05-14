@@ -796,9 +796,15 @@
   <div id="kankei-screen" class="hidden">
     <div id="kankei-header">
       <button id="kankei-close-btn"><img class="navi-icon-img" src="img/UI/image_merge_navi_close.png" alt="閉じる"></button>
-      <select id="kankei-chapter-select">
-        <option value="1">第一章　相関図</option>
-      </select>
+      <div id="kankei-chapter-select-wrap">
+        <button id="kankei-chapter-btn" type="button">
+          <span id="kankei-chapter-label">第一章　相関図</span>
+          <span class="kankei-chapter-arrow">▼</span>
+        </button>
+        <ul id="kankei-chapter-list" class="hidden">
+          <li class="kankei-chapter-opt kankei-chapter-active" data-value="1">第一章　相関図</li>
+        </ul>
+      </div>
       <span id="kankei-progress"></span>
     </div>
     <div id="kankei-board-wrap">
