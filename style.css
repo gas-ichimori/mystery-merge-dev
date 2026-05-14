@@ -1749,11 +1749,7 @@ body {
   height: clamp(44px, 12vw, 64px);
   object-fit: contain;
 }
-/* 物語アイコンは1024px画像で余白が多いためボタン比率で拡大 */
-#page2-story-btn .page2-icon-img {
-  width: 72%;
-  height: 72%;
-}
+
 .page2-label {
   font-size: clamp(10px, 2.8vw, 13px);
   font-weight: bold;

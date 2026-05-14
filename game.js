@@ -5850,6 +5850,9 @@ let eventState = {
   energyTutShown: false,        // スタミナ不足説明ガイド表示済み
   genPowerLevel: 0,             // 第一章ジェネレーター 現在選択中の出力パワーレベル
   firePowerLevel: 0,            // 第二章ジェネレーター 現在選択中の出力パワーレベル
+  kantePowerLevel: 0,           // 第三章ジェネレーター 現在選択中の出力パワーレベル
+  keikakuPowerLevel: 0,         // 第四章ジェネレーター 現在選択中の出力パワーレベル
+  snsPowerLevel: 0,             // 第五章ジェネレーター 現在選択中の出力パワーレベル
   revealed: {},            // 第一章アイテム: stage→true（ダイヤ取得済み）
   seizoRevealed: {},       // 第二章アイテム: stage→true
   genDiscovered: {},       // ジェネレーター: 'ch1_N'/'ch2_N'→true（出現済み）
@@ -5907,6 +5910,9 @@ function initEventMap() {
   eventState.energyTutShown     = false;
   eventState.genPowerLevel      = 0;
   eventState.firePowerLevel     = 0;
+  eventState.kantePowerLevel    = 0;
+  eventState.keikakuPowerLevel  = 0;
+  eventState.snsPowerLevel      = 0;
   eventState.revealed           = {};
   eventState.seizoRevealed      = {};
   eventState.genDiscovered      = {};
@@ -7223,6 +7229,86 @@ function updateFireNaviLvBtn(seizoLevel) {
   lvCrown.textContent = curPL === maxPL ? '👑' : '';
 }
 
+// --- 第三章ジェネレーター Lvボタン関連 ---
+function isKantePowerLvAvailable(powerIdx, kanteLevel) {
+  if (powerIdx === 0) return true;
+  if (powerIdx === 1) return kanteLevel >= 1;
+  if (powerIdx === 2) return kanteLevel >= 3;
+  if (powerIdx === 3) return kanteLevel >= 3 && state.energy >= 200;
+  if (powerIdx === 4) return kanteLevel >= 3 && state.energy >= 400;
+  return false;
+}
+
+function getKanteMaxAvailablePowerLv(kanteLevel) {
+  for (let i = 4; i >= 0; i--) {
+    if (isKantePowerLvAvailable(i, kanteLevel)) return i;
+  }
+  return 0;
+}
+
+function cycleKantePowerLevel(kanteLevel) {
+  let next = (eventState.kantePowerLevel + 1) % 5;
+  for (let tries = 0; tries < 5; tries++) {
+    if (isKantePowerLvAvailable(next, kanteLevel)) {
+      eventState.kantePowerLevel = next;
+      return next;
+    }
+    next = (next + 1) % 5;
+  }
+  eventState.kantePowerLevel = 0;
+  return 0;
+}
+
+function updateKanteNaviLvBtn(kanteLevel) {
+  const lvLabel = document.getElementById('navi-lv-label');
+  const lvCrown = document.getElementById('navi-lv-crown');
+  if (!lvLabel || !lvCrown) return;
+  const curPL = eventState.kantePowerLevel;
+  const maxPL = getKanteMaxAvailablePowerLv(kanteLevel);
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
+  lvCrown.textContent = curPL === maxPL ? '👑' : '';
+}
+
+// --- 第四章ジェネレーター Lvボタン関連 ---
+function isKeikakuPowerLvAvailable(powerIdx, keikakuLevel) {
+  if (powerIdx === 0) return true;
+  if (powerIdx === 1) return keikakuLevel >= 1;
+  if (powerIdx === 2) return keikakuLevel >= 3;
+  if (powerIdx === 3) return keikakuLevel >= 3 && state.energy >= 200;
+  if (powerIdx === 4) return keikakuLevel >= 3 && state.energy >= 400;
+  return false;
+}
+
+function getKeikakuMaxAvailablePowerLv(keikakuLevel) {
+  for (let i = 4; i >= 0; i--) {
+    if (isKeikakuPowerLvAvailable(i, keikakuLevel)) return i;
+  }
+  return 0;
+}
+
+function cycleKeikakuPowerLevel(keikakuLevel) {
+  let next = (eventState.keikakuPowerLevel + 1) % 5;
+  for (let tries = 0; tries < 5; tries++) {
+    if (isKeikakuPowerLvAvailable(next, keikakuLevel)) {
+      eventState.keikakuPowerLevel = next;
+      return next;
+    }
+    next = (next + 1) % 5;
+  }
+  eventState.keikakuPowerLevel = 0;
+  return 0;
+}
+
+function updateKeikakuNaviLvBtn(keikakuLevel) {
+  const lvLabel = document.getElementById('navi-lv-label');
+  const lvCrown = document.getElementById('navi-lv-crown');
+  if (!lvLabel || !lvCrown) return;
+  const curPL = eventState.keikakuPowerLevel;
+  const maxPL = getKeikakuMaxAvailablePowerLv(keikakuLevel);
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
+  lvCrown.textContent = curPL === maxPL ? '👑' : '';
+}
+
 // ========================================
 // ナビゲーターヒント表示（非ブロッキング）
 // ========================================
@@ -7394,8 +7480,8 @@ function showNaviHintForGen(genLevel, persistent = false) {
   const text = isMaxGen
     ? '第一章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第一章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
-  if (!isMaxGen) updateNaviLvBtn(genLevel);
-  _showNaviHintPanel(text, !isMaxGen, persistent, { type: 'ch1gen', level: genLevel });
+  updateNaviLvBtn(genLevel);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch1gen', level: genLevel });
 }
 
 function showNaviHintForFireGen(item, persistent = false) {
@@ -7405,8 +7491,8 @@ function showNaviHintForFireGen(item, persistent = false) {
   const text = isMax
     ? '第二章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第二章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
-  if (!isMax) updateFireNaviLvBtn(sLv);
-  _showNaviHintPanel(text, !isMax, persistent, { type: 'ch2gen', level: sLv });
+  updateFireNaviLvBtn(sLv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch2gen', level: sLv });
 }
 
 function showNaviHintForKanteGen(item, persistent = false) {
@@ -7416,8 +7502,8 @@ function showNaviHintForKanteGen(item, persistent = false) {
   const text = isMax
     ? '第三章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第三章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
-  const _kLv2 = item.kanteLevel ?? 0;
-  _showNaviHintPanel(text, false, persistent, { type: 'ch3gen', level: _kLv2 });
+  updateKanteNaviLvBtn(kLv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch3gen', level: kLv });
 }
 
 function showNaviHintForKeikakuGen(item, persistent = false) {
@@ -7427,7 +7513,8 @@ function showNaviHintForKeikakuGen(item, persistent = false) {
   const text = isMax
     ? '第四章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
     : '第四章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
-  _showNaviHintPanel(text, false, persistent, { type: 'ch4gen', level: kkLv });
+  updateKeikakuNaviLvBtn(kkLv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch4gen', level: kkLv });
 }
 
 function showNaviHintForItem(item, persistent = false) {
@@ -9260,7 +9347,8 @@ function mergeKanteGenerators(fromIdx, toIdx) {
   eventState.board[toIdx]   = { isEventGen: true, isKanteGen: true, kanteLevel: newLevel };
   eventState.board[fromIdx] = null;
   eventState.selectedCell   = null;
-  eventState.kanteGenLevel  = Math.max(eventState.kanteGenLevel, newLevel);
+  eventState.kanteGenLevel    = Math.max(eventState.kanteGenLevel, newLevel);
+  eventState.kantePowerLevel  = getKanteMaxAvailablePowerLv(newLevel);
   discoverGen('ch3', newLevel);
   const name = KANTEITA_GEN_NAMES[Math.min(newLevel, KANTEITA_GEN_NAMES.length - 1)];
   showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
@@ -9343,7 +9431,7 @@ function onEventFireGenTap(tappedCellIdx = null) {
 
 // 第三章ジェネレーター（鑑定台）タップ → KANTEITA_CHAINアイテムを生成
 function onEventKanteGenTap(tappedCellIdx = null) {
-  const powerLv    = eventState.genPowerLevel;
+  const powerLv    = eventState.kantePowerLevel;
   const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
   const outStage   = cfg.startStage;
   const energyCost = POWER_COSTS[powerLv] ?? 1;
@@ -9444,7 +9532,8 @@ function mergeKeikakuGenerators(fromIdx, toIdx) {
   eventState.board[toIdx]   = { isEventGen: true, isKeikakuGen: true, keikakuLevel: newLevel };
   eventState.board[fromIdx] = null;
   eventState.selectedCell   = null;
-  eventState.keikakuGenLevel = Math.max(eventState.keikakuGenLevel, newLevel);
+  eventState.keikakuGenLevel    = Math.max(eventState.keikakuGenLevel, newLevel);
+  eventState.keikakuPowerLevel  = getKeikakuMaxAvailablePowerLv(newLevel);
   discoverGen('ch4', newLevel);
   const name = KEIKAKU_GEN_NAMES[Math.min(newLevel, KEIKAKU_GEN_NAMES.length - 1)];
   showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
@@ -9460,7 +9549,7 @@ function mergeKeikakuGenerators(fromIdx, toIdx) {
 
 // 設計台ジェネレータータップ → KEIKAKU_CHAINアイテムを生成
 function onEventKeikakuGenTap(tappedCellIdx = null) {
-  const powerLv    = eventState.genPowerLevel;
+  const powerLv    = eventState.keikakuPowerLevel;
   const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
   const outStage   = cfg.startStage;
   const energyCost = POWER_COSTS[powerLv] ?? 1;
@@ -9948,9 +10037,19 @@ document.getElementById('navi-lv-btn').addEventListener('click', (e) => {
     const sLv = selItem.seizoLevel ?? 0;
     cycleFireGenPowerLevel(sLv);
     updateFireNaviLvBtn(sLv);
+  } else if (selItem && selItem.isKanteGen) {
+    // 第三章ジェネレーター
+    const kLv = selItem.kanteLevel ?? 0;
+    cycleKantePowerLevel(kLv);
+    updateKanteNaviLvBtn(kLv);
+  } else if (selItem && selItem.isKeikakuGen) {
+    // 第四章ジェネレーター
+    const kkLv = selItem.keikakuLevel ?? 0;
+    cycleKeikakuPowerLevel(kkLv);
+    updateKeikakuNaviLvBtn(kkLv);
   } else {
-    // 第一章ジェネレーター
-    const genItem  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen);
+    // 第一章ジェネレーター（または選択なし）
+    const genItem  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen);
     const genLevel = genItem ? (genItem.genLevel ?? 0) : 0;
     cycleGenPowerLevel(genLevel);
     updateNaviLvBtn(genLevel);
