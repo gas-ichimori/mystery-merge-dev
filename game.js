@@ -2558,6 +2558,7 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
     ...CH3_KANKEI_NODES, ...CH3_KANKEI_EDGES, ...CH3_KANKEI_BADGES,
     ...CH4_KANKEI_NODES, ...CH4_KANKEI_EDGES, ...CH4_KANKEI_BADGES,
     ...CH5_KANKEI_NODES, ...CH5_KANKEI_EDGES, ...CH5_KANKEI_BADGES,
+    ...CH6_KANKEI_NODES, ...CH6_KANKEI_EDGES, ...CH6_KANKEI_BADGES,
   ];
   allKankei.forEach(item => {
     if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
@@ -6990,6 +6991,41 @@ const CH3_KANKEI_EDGES = [
 ];
 
 // ── 第四章データ ──
+const CH6_KANKEI_NODES = [
+  { id: 'reina',     name: '玲奈',  sub: '34歳', img: 'img/Chapter6/chara/image_merge_order_chara_33.png', unlockScene: 'c6s01', x: 50, y: 12 },
+  { id: 'narumi',    name: '鳴海',  sub: '57歳', img: 'img/Chapter6/chara/image_merge_order_chara_34.png', unlockScene: 'c6s03', x: 80, y: 47 },
+  { id: 'shiraishi', name: '白石',  sub: '29歳', img: 'img/Chapter6/chara/image_merge_order_chara_35.png', unlockScene: 'c6s05', x: 18, y: 47 },
+  { id: 'fujimura',  name: '藤村',  sub: '23歳', img: 'img/Chapter6/chara/image_merge_order_chara_36.png', unlockScene: 'c6s07', x: 78, y: 83 },
+  { id: 'omae',      name: '大前',  sub: '63歳', img: 'img/Chapter6/chara/image_merge_order_chara_37.png', unlockScene: 'c6s09', x: 50, y: 90 },
+  { id: 'kitazawa',  name: '北澤',  sub: '49歳', img: 'img/Chapter6/chara/image_merge_order_chara_38.png', unlockScene: 'c6s12', x: 18, y: 83 },
+];
+
+const CH6_KANKEI_BADGES = [
+  { nodeId: 'reina',     label: '依頼人',         unlockScene: 'c6s01', type: 'normal'   },
+  { nodeId: 'reina',     label: 'フラワー講師',   unlockScene: 'c6s01', type: 'normal'   },
+  { nodeId: 'narumi',    label: '時計店主',        unlockScene: 'c6s03', type: 'normal'   },
+  { nodeId: 'shiraishi', label: '保険調査員',      unlockScene: 'c6s05', type: 'normal'   },
+  { nodeId: 'fujimura',  label: '修理見習い',      unlockScene: 'c6s07', type: 'normal'   },
+  { nodeId: 'omae',      label: 'アンティーク商', unlockScene: 'c6s09', type: 'normal'   },
+  { nodeId: 'kitazawa',  label: '元宝飾鑑定士',   unlockScene: 'c6s12', type: 'normal'   },
+  { nodeId: 'kitazawa',  label: '証人',            unlockScene: 'c6s17', type: 'normal'   },
+  { nodeId: 'fujimura',  label: '内部告発者',      unlockScene: 'c6s15', type: 'warning'  },
+  { nodeId: 'omae',      label: '共犯者',          unlockScene: 'c6s20', type: 'criminal' },
+  { nodeId: 'narumi',    label: '保険詐欺・犯人', unlockScene: 'c6s21', type: 'criminal' },
+];
+
+const CH6_KANKEI_EDGES = [
+  { from: 'reina',     to: 'narumi',   label: '修理依頼',   unlockScene: 'c6s03', type: 'normal'   },
+  { from: 'shiraishi', to: 'reina',    label: '調査接触',   unlockScene: 'c6s05', type: 'normal'   },
+  { from: 'narumi',    to: 'fujimura', label: '師弟',        unlockScene: 'c6s07', type: 'normal'   },
+  { from: 'kitazawa',  to: 'omae',     label: '旧鑑定関係', unlockScene: 'c6s12', type: 'normal'   },
+  { from: 'narumi',    to: 'omae',     label: '共犯',        unlockScene: 'c6s14', type: 'criminal' },
+  { from: 'shiraishi', to: 'kitazawa', label: '証言依頼',   unlockScene: 'c6s17', type: 'normal'   },
+  { from: 'fujimura',  to: 'narumi',   label: '裏切り？',   unlockScene: 'c6s13', type: 'danger',   hideIfScene: 'c6s15' },
+  { from: 'fujimura',  to: 'narumi',   label: '内部告発',   unlockScene: 'c6s15', type: 'warning'  },
+  { from: 'narumi',    to: 'reina',    label: 'すり替え',   unlockScene: 'c6s21', type: 'criminal' },
+];
+
 const CH5_KANKEI_NODES = [
   { id: 'aoi',    name: 'アオイ',  sub: '27歳', img: 'img/Chapter5/chara/image_merge_order_chara_27.png', unlockScene: 'c5s01', x: 50, y: 40 },
   { id: 'hana',   name: 'ハナ',   sub: '25歳', img: 'img/Chapter5/chara/image_merge_order_chara_29.png', unlockScene: 'c5s05', x: 15, y: 85 },
@@ -7121,6 +7157,7 @@ function updateKankeiChapterSelect() {
   const has3 = eventState.kanteGenUnlocked;
   const has4 = eventState.keikakuGenUnlocked;
   const has5 = eventState.snsGenUnlocked;
+  const has6 = eventState.clockGenUnlocked;
   function addOpt(val, text) {
     if (!list.querySelector(`[data-value="${val}"]`)) {
       const li = document.createElement('li');
@@ -7134,6 +7171,7 @@ function updateKankeiChapterSelect() {
   if (has3) addOpt(3, '第三章　相関図');
   if (has4) addOpt(4, '第四章　相関図');
   if (has5) addOpt(5, '第五章　相関図');
+  if (has6) addOpt(6, '第六章　相関図');
   syncKankeiChapterSelect();
 }
 
@@ -7157,6 +7195,9 @@ function updateKankeiAttention() {
     ...CH5_KANKEI_NODES.map(n => n.unlockScene),
     ...CH5_KANKEI_EDGES.map(e => e.unlockScene),
     ...CH5_KANKEI_BADGES.map(b => b.unlockScene),
+    ...CH6_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH6_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH6_KANKEI_BADGES.map(b => b.unlockScene),
   ];
   const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
   const btn = document.getElementById('kankei-open-btn');
@@ -7187,9 +7228,9 @@ function renderKankeiBoard() {
   nodesWrap.innerHTML = '';
 
   // 章に応じてデータを切り替え
-  const NODES  = currentKankeiChapter === 5 ? CH5_KANKEI_NODES  : currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
-  const EDGES  = currentKankeiChapter === 5 ? CH5_KANKEI_EDGES  : currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
-  const BADGES = currentKankeiChapter === 5 ? CH5_KANKEI_BADGES : currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
+  const NODES  = currentKankeiChapter === 6 ? CH6_KANKEI_NODES  : currentKankeiChapter === 5 ? CH5_KANKEI_NODES  : currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
+  const EDGES  = currentKankeiChapter === 6 ? CH6_KANKEI_EDGES  : currentKankeiChapter === 5 ? CH5_KANKEI_EDGES  : currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
+  const BADGES = currentKankeiChapter === 6 ? CH6_KANKEI_BADGES : currentKankeiChapter === 5 ? CH5_KANKEI_BADGES : currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
 
   // 解放済みノードセット
   const unlockedNodeIds = new Set(
