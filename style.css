@@ -3700,7 +3700,7 @@ body {
 /* フレーム: portrait の兄弟 → クリップされない（-22px × 1.25 = -28px） */
 .kankei-frame {
   position: absolute;
-  inset: -28px;
+  inset: -29px;
   background: url('img/UI/image_merge_kankei_frame.png') center / contain no-repeat;
   pointer-events: none;
   z-index: 2;
