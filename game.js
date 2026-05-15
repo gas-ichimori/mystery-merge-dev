@@ -2645,6 +2645,36 @@ document.getElementById('debug-daily-reset').addEventListener('click', () => {
   renderDailyMissionBadge();
   showToast('📋 デイリーミッションをリセットしました');
 });
+document.getElementById('debug-burst-unlock').addEventListener('click', () => {
+  eventState.burstUnlocked = true;
+  eventState.ch2RequestSolved = true;
+  eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
+  renderBurstSlot();
+  renderEventRequest();
+  showToast('依頼バースト 解放');
+});
+document.getElementById('debug-burst-max').addEventListener('click', () => {
+  if (!eventState.burstUnlocked) {
+    eventState.burstUnlocked = true;
+    eventState.ch2RequestSolved = true;
+    eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
+  }
+  eventState.burstCount = BURST_MAX;
+  renderBurstSlot();
+  showToast(`依頼バースト ${BURST_MAX}/${BURST_MAX} — CLEARボタンを押してください`);
+});
+document.getElementById('debug-burst-reset').addEventListener('click', () => {
+  eventState.burstUnlocked  = false;
+  eventState.burstCount     = 0;
+  eventState.burstFirstCleared = false;
+  eventState.burstStock     = [];
+  eventState.ch2RequestSolved = false;
+  eventState.requests.forEach(r => { r.burstPoints = 0; });
+  renderBurstSlot();
+  renderBurstStock();
+  renderEventRequest();
+  showToast('依頼バースト リセット');
+});
 
 // アドベンチャーシーン再生ボタン（各章）
 ['ch1', 'ch2', 'ch3', 'ch4'].forEach(ch => {
