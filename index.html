@@ -182,6 +182,30 @@
     </div>
   </div>
 
+  <!-- ストックポップアップ -->
+  <div id="stock-popup-overlay" class="hidden">
+    <div id="stock-popup">
+      <div id="stock-popup-header">
+        <span id="stock-popup-title">ストック</span>
+        <button id="stock-popup-close"><img class="catalog-close-img" src="img/UI/image_merge_navi_close.png" alt="閉じる"></button>
+      </div>
+      <div id="stock-grid-wrap">
+        <div id="stock-grid"></div>
+      </div>
+      <div id="stock-footer">
+        <button class="stock-tab-btn active" data-tab="0">
+          <img src="img/Chapter1/Icon/image_merge_icon1_01.png" alt="アイテム">
+        </button>
+        <button class="stock-tab-btn" data-tab="1">
+          <img src="img/Chapter1/Icon/image_merge_gene1_01.png" alt="ジェネレーター">
+        </button>
+        <button class="stock-tab-btn" data-tab="2">
+          <img src="img/UI/image_merge_daily_icon.png" alt="">
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- デバッグモード画面 -->
   <div id="debug-screen" class="hidden">
     <div id="debug-header">
@@ -640,6 +664,7 @@
       <button id="navi-coin-btn" class="hidden">
         <span id="navi-coin-label"><img class="icon-inline" src="img/UI/image_merge_icon_coin01.png" alt="💰"> 0</span>
       </button>
+      <button id="navi-stock-btn" class="hidden">📦</button>
     </div>
   </div>
 

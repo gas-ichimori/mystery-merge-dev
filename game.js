@@ -219,6 +219,14 @@ function getLevelUpXP(level) {
 }
 
 // ========================================
+// ストックシステム定数
+// ========================================
+const STOCK_MAX_SLOTS = 20;
+// スロット6〜15: 20/25/.../65💎, 16〜20: 70💎 each
+const STOCK_UNLOCK_COSTS = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 70, 70, 70, 70];
+const STOCK_GEN_MIN_PLAYER_LV = { 1: 10, 2: 15, 3: 20, 4: 25 };
+
+// ========================================
 // ゲーム状態
 // ========================================
 const COLS = 7;
@@ -5900,6 +5908,11 @@ let eventState = {
   seizoRevealed: {},       // 第二章アイテム: stage→true
   genDiscovered: {},       // ジェネレーター: 'ch1_N'/'ch2_N'→true（出現済み）
   genRevealed: {},         // ジェネレーター: 同キー→true（ダイヤ取得済み）
+  stockItems: [],          // アイテムタブ: [{item:{...}, imgSrc:''} or null] max 20
+  stockUnlockedSlots: 5,   // デフォルト5スロット解放
+  stockGens: [],           // ジェネレータータブ: [{item:{...}, imgSrc:''} or null]
+  stockGenUnlockedSlots: 5,
+  stockActiveTab: 0,       // 0=アイテム, 1=ジェネレーター, 2=将来
 };
 
 // タッチデバイス判定
@@ -5966,6 +5979,11 @@ function initEventMap() {
   eventState.genDiscovered      = {};
   eventState.genRevealed        = {};
   eventState.catalogTutShown    = false;
+  eventState.stockItems         = [];
+  eventState.stockUnlockedSlots = 5;
+  eventState.stockGens          = [];
+  eventState.stockGenUnlockedSlots = 5;
+  eventState.stockActiveTab     = 0;
 
   // チュートリアル中は霧アイテムを配置しない（transitionToMainGame で配置）
   // メモ帳ジェネレーターをボード中央エリア（row5,col2 = index37）に配置
@@ -7544,6 +7562,7 @@ function hideNaviHint() {
   document.getElementById('navi-diamond-btn')?.classList.add('hidden');
   document.getElementById('navi-trash-btn')?.classList.add('hidden');
   document.getElementById('navi-coin-btn')?.classList.add('hidden');
+  document.getElementById('navi-stock-btn')?.classList.add('hidden');
 }
 
 function _showNaviHintPanel(text, showLvBtn, persistent = false, infoContext = null) {
@@ -7565,6 +7584,7 @@ function _showNaviHintPanel(text, showLvBtn, persistent = false, infoContext = n
   document.getElementById('navi-diamond-btn')?.classList.add('hidden');
   document.getElementById('navi-trash-btn')?.classList.add('hidden');
   document.getElementById('navi-coin-btn')?.classList.add('hidden');
+  document.getElementById('navi-stock-btn')?.classList.add('hidden');
   panel.classList.remove('hidden');
   naviHintPersistent = persistent;
   if (naviHintTimer) clearTimeout(naviHintTimer);
@@ -7660,6 +7680,8 @@ function showNaviHintForItem(item, persistent = false) {
     if (coinLbl) coinLbl.innerHTML = `${COIN_ICON} ${reward}`;
     coinBtn?.classList.remove('hidden');
   }
+  // ストックボタン: 霧以外のアイテムは保管可能
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
 function showNaviHintForCoin(item) {
@@ -7670,6 +7692,7 @@ function showNaviHintForCoin(item) {
     ? `コインLv${lv}（最大）: ダブルタップで${COIN_ICON}+${reward}`
     : `コインLv${lv}: ダブルタップで${COIN_ICON}+${reward}。同じLvと重ねてLvアップ！`;
   _showNaviHintPanel(text, false, true);
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
 // しゃぼん玉アイテム用ナビヒント（ダイヤボタンを表示）
@@ -10705,6 +10728,181 @@ function openBurstPopup() {
   document.getElementById('burst-popup-overlay').classList.remove('hidden');
 }
 
+// ========================================
+// ストックシステム
+// ========================================
+function getStockItemImg(item) {
+  if (!item) return '';
+  if (item.isCoin) return COIN_IMAGES[Math.min(item.coinLv ?? 1, COIN_IMAGES.length - 1)] ?? 'img/UI/image_merge_icon_coin01.png';
+  if (item.isEventGen)   return EVENT_GEN_IMAGES[Math.min(item.genLevel ?? 0, EVENT_GEN_IMAGES.length - 1)];
+  if (item.isFireGen)    return SEIZO_GEN_IMAGES[Math.min(item.seizoLevel ?? 0, SEIZO_GEN_IMAGES.length - 1)];
+  if (item.isKanteGen)   return KANTEITA_GEN_IMAGES[Math.min(item.kanteLevel ?? 0, KANTEITA_GEN_IMAGES.length - 1)];
+  if (item.isKeikakuGen) return KEIKAKU_GEN_IMAGES[Math.min(item.keikakuLevel ?? 0, KEIKAKU_GEN_IMAGES.length - 1)];
+  const chain = item.chainId !== undefined ? CHAINS[item.chainId] : EVENT_CHAIN;
+  return chain?.stageImages?.[(item.stage ?? 1) - 1] ?? '';
+}
+
+function isGenItem(item) {
+  return !!(item?.isEventGen || item?.isFireGen || item?.isKanteGen || item?.isKeikakuGen);
+}
+
+function canStoreItemInStock(item) {
+  if (!item) return false;
+  if (item.isBubble) return false;
+  if (item.isFog) return false;
+  return true;
+}
+
+function canStoreGenInStock(item) {
+  const lv = state.playerLevel;
+  if (item.isEventGen)   return lv >= STOCK_GEN_MIN_PLAYER_LV[1];
+  if (item.isFireGen)    return lv >= STOCK_GEN_MIN_PLAYER_LV[2];
+  if (item.isKanteGen)   return lv >= STOCK_GEN_MIN_PLAYER_LV[3];
+  if (item.isKeikakuGen) return lv >= STOCK_GEN_MIN_PLAYER_LV[4];
+  return false;
+}
+
+function openStockPopup() {
+  eventState.stockActiveTab = 0;
+  document.querySelectorAll('.stock-tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === 0));
+  renderStockGrid();
+  document.getElementById('stock-popup-overlay').classList.remove('hidden');
+}
+
+function closeStockPopup() {
+  document.getElementById('stock-popup-overlay').classList.add('hidden');
+}
+
+function setStockTab(tabIdx) {
+  eventState.stockActiveTab = tabIdx;
+  document.querySelectorAll('.stock-tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === tabIdx));
+  renderStockGrid();
+}
+
+function renderStockGrid() {
+  const grid = document.getElementById('stock-grid');
+  if (!grid) return;
+  const tab = eventState.stockActiveTab;
+
+  if (tab === 2) {
+    grid.innerHTML = '<div id="stock-future-msg">準備中...</div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  const items = tab === 0 ? eventState.stockItems : eventState.stockGens;
+  const unlockedCount = tab === 0 ? eventState.stockUnlockedSlots : eventState.stockGenUnlockedSlots;
+
+  for (let i = 0; i < STOCK_MAX_SLOTS; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'stock-slot';
+
+    if (i >= unlockedCount) {
+      slot.classList.add('locked');
+      const costIdx = i - 5;
+      const cost = costIdx >= 0 && costIdx < STOCK_UNLOCK_COSTS.length
+        ? STOCK_UNLOCK_COSTS[costIdx]
+        : STOCK_UNLOCK_COSTS[STOCK_UNLOCK_COSTS.length - 1];
+      const unlockDiv = document.createElement('div');
+      unlockDiv.className = 'stock-unlock-btn';
+      unlockDiv.innerHTML = `<span>💎${cost}</span><span style="font-size:9px">開放</span>`;
+      unlockDiv.addEventListener('click', () => unlockStockSlot(tab, i));
+      slot.appendChild(unlockDiv);
+    } else {
+      const entry = items[i];
+      if (entry) {
+        const img = document.createElement('img');
+        img.className = 'stock-slot-img';
+        img.src = entry.imgSrc;
+        img.alt = 'アイテム';
+        slot.appendChild(img);
+        slot.addEventListener('click', () => takeItemFromStock(i, tab));
+      } else {
+        const plus = document.createElement('div');
+        plus.className = 'stock-slot-empty';
+        plus.textContent = '+';
+        slot.appendChild(plus);
+      }
+    }
+
+    grid.appendChild(slot);
+  }
+}
+
+function addItemToStock(boardIdx) {
+  const item = eventState.board[boardIdx];
+  if (!item || !canStoreItemInStock(item)) {
+    showToast('ストックに入れられません');
+    return;
+  }
+
+  const gen = isGenItem(item);
+
+  if (gen) {
+    if (!canStoreGenInStock(item)) {
+      const reqLv = item.isEventGen ? 10 : item.isFireGen ? 15 : item.isKanteGen ? 20 : 25;
+      showToast(`プレイヤーLv${reqLv}以上が必要です`);
+      return;
+    }
+    const maxSlots = eventState.stockGenUnlockedSlots;
+    const used = eventState.stockGens.filter(Boolean).length;
+    if (used >= maxSlots) { showToast('ジェネレーターストックが満杯です'); return; }
+    const emptyIdx = (() => {
+      for (let i = 0; i < maxSlots; i++) { if (!eventState.stockGens[i]) return i; }
+      return -1;
+    })();
+    const imgSrc = getStockItemImg(item);
+    if (emptyIdx !== -1) eventState.stockGens[emptyIdx] = { item: { ...item }, imgSrc };
+    else eventState.stockGens.push({ item: { ...item }, imgSrc });
+  } else {
+    const maxSlots = eventState.stockUnlockedSlots;
+    const used = eventState.stockItems.filter(Boolean).length;
+    if (used >= maxSlots) { showToast('ストックが満杯です'); return; }
+    const emptyIdx = (() => {
+      for (let i = 0; i < maxSlots; i++) { if (!eventState.stockItems[i]) return i; }
+      return -1;
+    })();
+    const imgSrc = getStockItemImg(item);
+    if (emptyIdx !== -1) eventState.stockItems[emptyIdx] = { item: { ...item }, imgSrc };
+    else eventState.stockItems.push({ item: { ...item }, imgSrc });
+  }
+
+  eventState.board[boardIdx] = null;
+  eventState.selectedCell = null;
+  hideNaviHint();
+  renderEventBoard();
+  showToast('ストックに入れました');
+}
+
+function takeItemFromStock(stockIdx, tabIdx) {
+  const items = tabIdx === 0 ? eventState.stockItems : eventState.stockGens;
+  const entry = items[stockIdx];
+  if (!entry) return;
+  const emptyIdx = eventState.board.findIndex(c => !c);
+  if (emptyIdx === -1) { showToast('盤面に空きがありません'); return; }
+  eventState.board[emptyIdx] = { ...entry.item };
+  items[stockIdx] = null;
+  closeStockPopup();
+  renderEventBoard();
+  showToast('盤面に配置しました');
+}
+
+function unlockStockSlot(tabIdx, slotIdx) {
+  const currentUnlocked = tabIdx === 0 ? eventState.stockUnlockedSlots : eventState.stockGenUnlockedSlots;
+  if (currentUnlocked >= STOCK_MAX_SLOTS) { showToast('すべてのスロットが解放済みです'); return; }
+  if (slotIdx !== currentUnlocked) return; // 順番に解放
+  const costIdx = currentUnlocked - 5;
+  const cost = costIdx >= 0 && costIdx < STOCK_UNLOCK_COSTS.length
+    ? STOCK_UNLOCK_COSTS[costIdx]
+    : STOCK_UNLOCK_COSTS[STOCK_UNLOCK_COSTS.length - 1];
+  if (state.diamond < cost) { showToast(`💎${cost}必要です`); return; }
+  state.diamond -= cost;
+  if (tabIdx === 0) eventState.stockUnlockedSlots++;
+  else eventState.stockGenUnlockedSlots++;
+  renderEventHeader();
+  renderStockGrid();
+}
+
 document.getElementById('burst-popup-close').addEventListener('click', () => {
   document.getElementById('burst-popup-overlay').classList.add('hidden');
 });
@@ -10742,4 +10940,32 @@ document.getElementById('daily-mission-screen').addEventListener('click', (e) =>
   if (e.target === document.getElementById('daily-mission-screen')) {
     document.getElementById('daily-mission-screen').classList.add('hidden');
   }
+});
+
+// ========================================
+// ストックポップアップ イベント
+// ========================================
+// ナビキャラクターをタップ → ストック表示
+document.getElementById('navi-hint-char-wrap').addEventListener('click', () => {
+  if (document.getElementById('event-screen')?.classList.contains('hidden')) return;
+  openStockPopup();
+});
+
+// 閉じるボタン
+document.getElementById('stock-popup-close').addEventListener('click', closeStockPopup);
+
+// 背景タップで閉じる
+document.getElementById('stock-popup-overlay').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('stock-popup-overlay')) closeStockPopup();
+});
+
+// タブ切り替え
+document.querySelectorAll('.stock-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => setStockTab(Number(btn.dataset.tab)));
+});
+
+// ストックに入れるボタン
+document.getElementById('navi-stock-btn').addEventListener('click', () => {
+  if (eventState.selectedCell === null) return;
+  addItemToStock(eventState.selectedCell);
 });
