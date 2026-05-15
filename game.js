@@ -10310,6 +10310,7 @@ function endEvDrag(x, y) {
 document.getElementById('event-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   document.getElementById('event-screen').classList.remove('hidden');
+  document.getElementById('navi-hint-char-wrap').classList.remove('stock-hidden');
   renderEventBoard();
   renderEventHeader();
   renderEventRequest();
@@ -10319,6 +10320,7 @@ document.getElementById('event-btn').addEventListener('click', () => {
 document.getElementById('event-close').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   document.getElementById('event-screen').classList.add('hidden');
+  document.getElementById('navi-hint-char-wrap').classList.add('stock-hidden');
   document.getElementById('tutorial-overlay').classList.add('hidden');
   document.getElementById('tutorial-panel').classList.add('hidden');
 });
@@ -10688,6 +10690,7 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
 
 // 起動時にイベントマップ①を最初に表示
 document.getElementById('event-screen').classList.remove('hidden');
+document.getElementById('navi-hint-char-wrap').classList.remove('stock-hidden');
 renderEventBoard();
 renderEventGenerators();
 renderEventHeader();
