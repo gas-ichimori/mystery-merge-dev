@@ -5948,11 +5948,23 @@ document.getElementById('debug-kankei-reset').addEventListener('click', () => {
   showToast('相関図をリセットしました');
 });
 document.getElementById('debug-kankei-all').addEventListener('click', () => {
-  // 第一章全シーンを既読にして全解放確認
   if (!state.seenScenes) state.seenScenes = [];
-  CH1_KANKEI_NODES.forEach(n => { if (!state.seenScenes.includes(n.unlockScene)) state.seenScenes.push(n.unlockScene); });
-  CH1_KANKEI_EDGES.forEach(e => { if (!state.seenScenes.includes(e.unlockScene)) state.seenScenes.push(e.unlockScene); });
-  CH1_KANKEI_BADGES.forEach(b => { if (!state.seenScenes.includes(b.unlockScene)) state.seenScenes.push(b.unlockScene); });
+  const allKankei = [
+    ...CH1_KANKEI_NODES, ...CH1_KANKEI_EDGES, ...CH1_KANKEI_BADGES,
+    ...CH2_KANKEI_NODES, ...CH2_KANKEI_EDGES, ...CH2_KANKEI_BADGES,
+    ...CH3_KANKEI_NODES, ...CH3_KANKEI_EDGES, ...CH3_KANKEI_BADGES,
+    ...CH4_KANKEI_NODES, ...CH4_KANKEI_EDGES, ...CH4_KANKEI_BADGES,
+    ...CH5_KANKEI_NODES, ...CH5_KANKEI_EDGES, ...CH5_KANKEI_BADGES,
+    ...CH6_KANKEI_NODES, ...CH6_KANKEI_EDGES, ...CH6_KANKEI_BADGES,
+  ];
+  allKankei.forEach(item => {
+    if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
+  });
+  eventState.fireGenUnlocked    = true;
+  eventState.kanteGenUnlocked   = true;
+  eventState.keikakuGenUnlocked = true;
+  eventState.snsGenUnlocked     = true;
+  eventState.clockGenUnlocked   = true;
   document.getElementById('debug-screen').classList.add('hidden');
   openKankeiScreen();
   showToast('相関図を全解放しました');
