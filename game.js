@@ -5848,6 +5848,11 @@ let eventState = {
   genMergeTutDone: false,       // 一度完了したら二度と出さない
   bubbleTutShown: false,        // しゃぼん玉説明ガイド表示済み
   energyTutShown: false,        // スタミナ不足説明ガイド表示済み
+  burstUnlocked: false,         // 依頼バースト解放済み
+  burstCount: 0,                // バースト蓄積数 (0-12)
+  burstFirstCleared: false,     // 最初のCLEARが完了したか（初回サイクル管理）
+  burstStock: [],               // ストック枠アイテム [{chainId?, stage}] max 99
+  ch2RequestSolved: false,      // 第二章依頼を1つでも解決したか（バースト解放条件）
   genPowerLevel: 0,             // 第一章ジェネレーター 現在選択中の出力パワーレベル
   firePowerLevel: 0,            // 第二章ジェネレーター 現在選択中の出力パワーレベル
   kantePowerLevel: 0,           // 第三章ジェネレーター 現在選択中の出力パワーレベル
@@ -5913,6 +5918,11 @@ function initEventMap() {
   eventState.kantePowerLevel    = 0;
   eventState.keikakuPowerLevel  = 0;
   eventState.snsPowerLevel      = 0;
+  eventState.burstUnlocked      = false;
+  eventState.burstCount         = 0;
+  eventState.burstFirstCleared  = false;
+  eventState.burstStock         = [];
+  eventState.ch2RequestSolved   = false;
   eventState.revealed           = {};
   eventState.seizoRevealed      = {};
   eventState.genDiscovered      = {};
@@ -7332,6 +7342,51 @@ function updateKeikakuNaviLvBtn(keikakuLevel) {
 }
 
 // ========================================
+// 依頼バーストシステム
+// ========================================
+const BURST_MAX = 12;
+// ステージ重み: Lv1=35 Lv2=25 Lv3=15 Lv4=10 Lv5=7 Lv6=4 Lv7=3 Lv8=1
+const BURST_STAGE_WEIGHTS = [35, 25, 15, 10, 7, 4, 3, 1];
+
+// 依頼にバーストポイントを計算（0/+1/+2）
+function calcBurstPoints(req) {
+  if (!eventState.burstUnlocked) return 0;
+  const maxStage = Math.max(...req.items.map(it => it.stage));
+  if (!eventState.burstFirstCleared) {
+    // 初回サイクル: Lv6〜8 → +1
+    return (maxStage >= 6 && maxStage <= 8) ? 1 : 0;
+  }
+  // 2サイクル目以降: Lv9〜12
+  if (maxStage < 9) return 0;
+  return maxStage >= 10 ? 2 : 1; // maxStage=9 → +1、10以上 → +2
+}
+
+// バースト解放チェック（第二章ジェネレーター出現 + ch2依頼1件解決）
+function checkBurstUnlock() {
+  if (eventState.burstUnlocked) return;
+  if (!eventState.fireGenUnlocked || !eventState.ch2RequestSolved) return;
+  eventState.burstUnlocked = true;
+  // 既存依頼にburstPointsを付与
+  eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
+  renderBurstSlot();
+  renderEventRequest();
+  showToast('依頼バースト解放！');
+}
+
+// バーストスロットUI更新
+function renderBurstSlot() {
+  const btn = document.getElementById('burst-slot-btn');
+  if (!btn) return;
+  if (!eventState.burstUnlocked) { btn.classList.add('hidden'); return; }
+  btn.classList.remove('hidden');
+  btn.classList.remove('ev-slot-placeholder');
+  const count = eventState.burstCount;
+  document.getElementById('burst-count-label').textContent = `${count}/${BURST_MAX}`;
+  document.getElementById('burst-meter-fill').style.width = `${(count / BURST_MAX) * 100}%`;
+  document.getElementById('burst-clear-overlay').classList.toggle('hidden', count < BURST_MAX);
+}
+
+// ========================================
 // ナビゲーターヒント表示（非ブロッキング）
 // ========================================
 let naviHintTimer = null;
@@ -8318,6 +8373,17 @@ function completeEventRequest(index) {
   }
   eventState.recentlySolvedKeys = newKeys; // 置き換え（前回分は自動クリア）
 
+  // バースト蓄積
+  const isCh2up = req.items.some(it => it.chainId !== undefined);
+  if (isCh2up && !eventState.ch2RequestSolved) {
+    eventState.ch2RequestSolved = true;
+    checkBurstUnlock();
+  }
+  if (eventState.burstUnlocked && req.burstPoints > 0) {
+    eventState.burstCount = Math.min(eventState.burstCount + req.burstPoints, BURST_MAX);
+    renderBurstSlot();
+  }
+
   eventState.requests.splice(index, 1);
   fillEventRequests();
   renderEventBoard();
@@ -8475,7 +8541,9 @@ function fillEventRequests() {
     const chars = getCharsForItems(items);
     if (chars.length === 0) { retry++; continue; }
     const char = chars[Math.floor(Math.random() * chars.length)];
-    eventState.requests.push({ characterId: char.id, items, coin: totalCoin });
+    const newReq = { characterId: char.id, items, coin: totalCoin };
+    newReq.burstPoints = calcBurstPoints(newReq);
+    eventState.requests.push(newReq);
     usedStageKeys.add(key1);
     usedCharIds.add(char.id);
     retry = 0;
@@ -8492,11 +8560,13 @@ function fillEventRequests() {
       const chars = getCharsForItems([reqItem1]);
       if (chars.length === 0) { fallbackRetry++; continue; }
       const char = chars[Math.floor(Math.random() * chars.length)];
-      eventState.requests.push({
+      const fallbackReq = {
         characterId: char.id,
         items: [reqItem1],
         coin: calcCoinReward(reqItem1.stage),
-      });
+      };
+      fallbackReq.burstPoints = calcBurstPoints(fallbackReq);
+      eventState.requests.push(fallbackReq);
       usedStageKeys.add(key1);
       usedCharIds.add(char.id);
       fallbackRetry = 0;
@@ -8599,11 +8669,15 @@ function renderEventRequest() {
         ? `<img class="req-char-img" src="${character.img}" alt="${character.name}">`
         : `<div class="req-char-figure">${character?.emoji || '👤'}</div>`);
 
+    const burstBadge = (eventState.burstUnlocked && req.burstPoints > 0)
+      ? `<span class="req-burst-badge">+${req.burstPoints}</span>`
+      : '';
     const div = document.createElement('div');
     div.className = 'request-slot' + (completable ? ' completable' : '');
     div.innerHTML = `
       <div class="req-char-wrap">${charHtml}</div>
       <div class="req-slot-frame">
+        ${burstBadge}
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
           <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>
@@ -8888,6 +8962,157 @@ function flyEventItemAnimation(fromIdx, toIdx, emoji) {
   }
 
   requestAnimationFrame(animate);
+}
+
+// ========================================
+// 依頼バースト — CLEAR発動・アイテム生成・アニメーション
+// ========================================
+
+// DOM要素（burst-slot-btn等）から盤面セルへのアーク飛翔アニメーション
+function flyFromElementToCell(fromEl, toIdx, imgSrc) {
+  const cells  = document.querySelectorAll('#event-board .cell');
+  const toCell = cells[toIdx];
+  if (!fromEl || !toCell) return;
+  const fr = fromEl.getBoundingClientRect();
+  const tr = toCell.getBoundingClientRect();
+  const startX = fr.left + fr.width  / 2;
+  const startY = fr.top  + fr.height / 2;
+  const endX   = tr.left + tr.width  / 2;
+  const endY   = tr.top  + tr.height / 2;
+  const dist   = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+  const cpX    = (startX + endX) / 2;
+  const cpY    = (startY + endY) / 2 - Math.max(50, dist * 0.45);
+
+  const el = document.createElement('div');
+  if (imgSrc) {
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.style.cssText = 'width:48px;height:48px;object-fit:contain;display:block;';
+    el.appendChild(img);
+  } else {
+    el.textContent = '?';
+  }
+  el.style.cssText = `position:fixed;left:0;top:0;font-size:0;pointer-events:none;z-index:200;opacity:0;will-change:transform,opacity;`;
+  document.body.appendChild(el);
+
+  const DURATION = 380;
+  const t0 = performance.now();
+  (function animate(now) {
+    const r = Math.min((now - t0) / DURATION, 1);
+    const x = (1-r)*(1-r)*startX + 2*(1-r)*r*cpX + r*r*endX;
+    const y = (1-r)*(1-r)*startY + 2*(1-r)*r*cpY + r*r*endY;
+    const sc = r < 0.4 ? 0.5 + r * 2.5 : 1.5 - (r - 0.4) * 1.2;
+    const op = r < 0.15 ? r/0.15 : r > 0.75 ? (1-r)/0.25 : 1;
+    el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) scale(${sc})`;
+    el.style.opacity   = op;
+    if (r < 1) requestAnimationFrame(animate);
+    else el.remove();
+  })(t0);
+}
+
+// アイテムの画像パスを取得
+function getBurstItemImgSrc(item) {
+  const chain = item.chainId !== undefined ? CHAINS[item.chainId] : EVENT_CHAIN;
+  return chain.stageImages?.[item.stage - 1] ?? null;
+}
+
+// バーストアイテム12個を重み付きランダム生成
+function generateBurstItems(count) {
+  const totalW = BURST_STAGE_WEIGHTS.reduce((a, b) => a + b, 0);
+  const chains = [null]; // ch1
+  if (eventState.fireGenUnlocked)    chains.push(SEIZO_CHAIN_ID);
+  if (eventState.kanteGenUnlocked)   chains.push(KANTEITA_CHAIN_ID);
+  if (eventState.keikakuGenUnlocked) chains.push(KEIKAKU_CHAIN_ID);
+
+  return Array.from({ length: count }, () => {
+    const chainId = chains[Math.floor(Math.random() * chains.length)];
+    let r = Math.random() * totalW;
+    let stage = 1;
+    for (let i = 0; i < BURST_STAGE_WEIGHTS.length; i++) {
+      r -= BURST_STAGE_WEIGHTS[i];
+      if (r <= 0) { stage = i + 1; break; }
+    }
+    const chain = chainId !== null ? CHAINS[chainId] : EVENT_CHAIN;
+    stage = Math.min(stage, chain.stages.length);
+    return chainId !== null ? { chainId, stage } : { stage };
+  });
+}
+
+// CLEARボタン押下 → 12個放出
+function onBurstClear() {
+  if (eventState.burstCount < BURST_MAX) return;
+  const items   = generateBurstItems(BURST_MAX);
+  const iconEl  = document.getElementById('burst-slot-btn');
+  items.forEach((item, i) => {
+    setTimeout(() => {
+      const emptyIdx = eventState.board.findIndex(c => c === null);
+      const imgSrc   = getBurstItemImgSrc(item);
+      if (emptyIdx !== -1) {
+        eventState.board[emptyIdx] = item; // 先に確保
+        flyFromElementToCell(iconEl, emptyIdx, imgSrc);
+        setTimeout(() => renderEventBoard(), 390);
+      } else {
+        addToBurstStock(item);
+      }
+    }, i * 110);
+  });
+  eventState.burstCount        = 0;
+  eventState.burstFirstCleared = true;
+  renderBurstSlot();
+  // 全アニメ完了後に依頼を再補充
+  setTimeout(() => { fillEventRequests(); renderEventRequest(); }, BURST_MAX * 110 + 450);
+}
+
+// ========================================
+// 依頼バースト — ストック枠
+// ========================================
+
+// ストックに追加（99個制限、超過はコイン変換）
+function addToBurstStock(item) {
+  if (eventState.burstStock.length >= 99) {
+    const reward = item.stage * 10;
+    addCoin(reward);
+    if (!isMenuPageOpen()) showToast(`ストック満杯！${COIN_ICON}+${reward} に変換`);
+    return;
+  }
+  eventState.burstStock.push(item);
+  renderBurstStock();
+}
+
+// ストック枠を描画
+function renderBurstStock() {
+  const area = document.getElementById('burst-stock-area');
+  const list = document.getElementById('burst-stock-list');
+  if (!area || !list) return;
+  if (eventState.burstStock.length === 0) { area.classList.add('hidden'); return; }
+  area.classList.remove('hidden');
+  list.innerHTML = '';
+  eventState.burstStock.forEach((item, idx) => {
+    const imgSrc = getBurstItemImgSrc(item);
+    const div = document.createElement('div');
+    div.className = 'burst-stock-item';
+    if (imgSrc) {
+      div.innerHTML = `<img src="${imgSrc}" alt="アイテム">`;
+    } else {
+      const chain = item.chainId !== undefined ? CHAINS[item.chainId] : EVENT_CHAIN;
+      div.textContent = chain.stages[item.stage - 1] || '?';
+    }
+    div.addEventListener('click', () => onBurstStockTap(idx));
+    list.appendChild(div);
+  });
+}
+
+// ストックアイテムをタップ → 盤面へ移動
+function onBurstStockTap(idx) {
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showToast('盤面が満杯です'); return; }
+  const item      = eventState.burstStock[idx];
+  const stockEl   = document.getElementById('burst-stock-list')?.children[idx];
+  const imgSrc    = getBurstItemImgSrc(item);
+  eventState.board[emptyIdx] = item;
+  if (stockEl) flyFromElementToCell(stockEl, emptyIdx, imgSrc);
+  eventState.burstStock.splice(idx, 1);
+  setTimeout(() => { renderEventBoard(); renderBurstStock(); }, 390);
 }
 
 // ========================================
@@ -10431,6 +10656,13 @@ setInterval(() => {
     if (!screen?.classList.contains('hidden')) renderEventBoard();
   }
 }, 5000);
+
+// 依頼バースト CLEARボタン
+document.getElementById('burst-slot-btn').addEventListener('click', () => {
+  if (eventState.burstUnlocked && eventState.burstCount >= BURST_MAX) {
+    onBurstClear();
+  }
+});
 
 // ========================================
 // デイリーミッション UI イベント

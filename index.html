@@ -664,8 +664,11 @@
           <img src="img/UI/image_merge_daily_icon.png" class="event-slot-img" alt="デイリー">
           <span class="event-slot-badge hidden" id="daily-mission-badge">!</span>
         </button>
-        <button class="event-slot-btn ev-slot-placeholder">
-          <img src="img/UI/image_merge_daily_icon.png" class="event-slot-img" alt="スロット2">
+        <button class="event-slot-btn ev-slot-placeholder hidden" id="burst-slot-btn">
+          <img src="img/UI/image_merge_burst_icon.png" class="event-slot-img" alt="依頼バースト">
+          <span class="burst-count-badge" id="burst-count-label">0/12</span>
+          <div id="burst-meter-bar-wrap"><div id="burst-meter-fill"></div></div>
+          <div id="burst-clear-overlay" class="hidden">CLEAR</div>
         </button>
         <button class="event-slot-btn ev-slot-placeholder">
           <img src="img/UI/image_merge_daily_icon.png" class="event-slot-img" alt="スロット3">
@@ -691,6 +694,10 @@
       </div>
       </div><!-- /#event-slots-outer -->
       <div id="event-req-panel"></div>
+    </div>
+    <div id="burst-stock-area" class="hidden">
+      <span id="burst-stock-label">ストック</span>
+      <div id="burst-stock-list"></div>
     </div>
     </div><!-- /#event-sticky-top -->
     <div id="event-board-wrap">
