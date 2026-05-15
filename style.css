@@ -3893,7 +3893,7 @@ body {
 #stock-popup-overlay.hidden { display: none; }
 
 #stock-popup {
-  background: #1e1206;
+  background: #1e1206 url('img/UI/image_merge_stock_bg.png') center center / cover no-repeat;
   border: 2px solid #c89b3c;
   border-radius: 16px;
   width: min(380px, 94vw);
