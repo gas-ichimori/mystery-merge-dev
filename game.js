@@ -10826,7 +10826,9 @@ function renderStockGrid() {
   const items = tab === 0 ? eventState.stockItems : eventState.stockGens;
   const unlockedCount = tab === 0 ? eventState.stockUnlockedSlots : eventState.stockGenUnlockedSlots;
 
-  for (let i = 0; i < STOCK_MAX_SLOTS; i++) {
+  // 全解放済みなら次の5枠（1行）を追加表示、繰り返す
+  const displaySlots = unlockedCount < STOCK_MAX_SLOTS ? STOCK_MAX_SLOTS : unlockedCount + 5;
+  for (let i = 0; i < displaySlots; i++) {
     const slot = document.createElement('div');
     slot.className = 'stock-slot';
 
@@ -10922,7 +10924,6 @@ function takeItemFromStock(stockIdx, tabIdx) {
 
 function unlockStockSlot(tabIdx, slotIdx) {
   const currentUnlocked = tabIdx === 0 ? eventState.stockUnlockedSlots : eventState.stockGenUnlockedSlots;
-  if (currentUnlocked >= STOCK_MAX_SLOTS) { showToast('すべてのスロットが解放済みです'); return; }
   if (slotIdx !== currentUnlocked) return; // 順番に解放
   const costIdx = currentUnlocked - 5;
   const cost = costIdx >= 0 && costIdx < STOCK_UNLOCK_COSTS.length
