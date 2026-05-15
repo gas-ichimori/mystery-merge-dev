@@ -3913,8 +3913,8 @@ body {
 }
 
 #stock-popup-title {
-  height: 40px;
-  width: auto;
+  max-width: calc(100% - 52px);
+  height: auto;
   display: block;
   object-fit: contain;
 }
