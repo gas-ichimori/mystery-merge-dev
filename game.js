@@ -2663,6 +2663,14 @@ document.getElementById('debug-burst-max').addEventListener('click', () => {
   renderBurstSlot();
   showToast(`依頼バースト ${BURST_MAX}/${BURST_MAX} — CLEARボタンを押してください`);
 });
+document.getElementById('debug-burst-badge-force').addEventListener('click', () => {
+  eventState.burstUnlocked = true;
+  eventState.ch2RequestSolved = true;
+  eventState.requests.forEach((r, i) => { r.burstPoints = (i % 2 === 0) ? 2 : 1; });
+  renderBurstSlot();
+  renderEventRequest();
+  showToast('依頼バッジ強制表示（+1/+2交互）');
+});
 document.getElementById('debug-burst-reset').addEventListener('click', () => {
   eventState.burstUnlocked  = false;
   eventState.burstCount     = 0;
