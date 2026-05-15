@@ -3078,7 +3078,7 @@ body {
 /* 依頼スロットのバーストバッジ画像（req-slot-frame上端・中央） */
 .req-burst-badge {
   position: absolute;
-  top: -24px;
+  top: -32px;
   left: 50%;
   transform: translateX(-50%);
   width: 48px;
