@@ -2907,12 +2907,7 @@ body {
 
 /* ページドットインジケーター */
 #ev-scroll-dots {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  flex-shrink: 0;
+  display: none; /* 3行全表示でスクロール不要のため非表示 */
 }
 .ev-dot {
   width: 7px;
@@ -2929,14 +2924,14 @@ body {
 
 #event-slots-panel {
   flex: 0 0 auto;
-  width: 175px;
+  width: 185px;
   padding: 2px 6px 2px 2px;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-content: start;
   gap: 2px;
-  max-height: 117px; /* 2行ぴったり（3行目が出ない） */
+  max-height: 184px; /* 3行ぴったり */
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -3073,28 +3068,28 @@ body {
   50%       { box-shadow: 0 0 12px rgba(255,160,30,0.9); }
 }
 
-/* 依頼スロットのバーストバッジ（右上隅） */
+/* 依頼スロットのバーストバッジ（キャラ右上） */
 .req-burst-badge {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  background: linear-gradient(135deg, #c83010, #f04818);
+  top: 6px;
+  right: -2px;
+  background: linear-gradient(135deg, #b02800, #e83c10);
   color: #fff;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: bold;
-  border-radius: 4px;
-  padding: 2px 4px;
+  border-radius: 6px;
+  padding: 3px 6px;
   pointer-events: none;
   z-index: 10;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 .req-burst-badge img {
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
   display: block;
 }
