@@ -3075,10 +3075,10 @@ body {
   50%       { box-shadow: 0 0 12px rgba(255,160,30,0.9); }
 }
 
-/* 依頼スロットのバーストバッジ（依頼枠の外側上部・中央） */
+/* 依頼スロットのバーストバッジ（req-slot-frame上端・中央） */
 .req-burst-badge {
   position: absolute;
-  top: -28px;
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
   background: none;
