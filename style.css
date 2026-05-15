@@ -3047,13 +3047,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 20px 16px;
+  padding: 0 20px 36px;
   gap: 0;
 }
 
 #burst-popup-title {
   position: absolute;
-  top: 14%;
+  top: 13%;
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(20px, 6vw, 26px);
@@ -3084,7 +3084,7 @@ body {
   border-radius: 20px;
   padding: 6px 10px;
   box-sizing: border-box;
-  margin-bottom: 24px;
+  margin-bottom: 42px;
 }
 #burst-popup-icon {
   width: 32px;
