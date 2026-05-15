@@ -259,6 +259,7 @@ let state = {
   ch3Count: 0,      // 第三章既読シーン数（0-26）
   ch4Count: 0,      // 第四章既読シーン数（0-30）
   ch5Count: 0,      // 第五章既読シーン数（0-30）
+  ch6Count: 0,      // 第六章既読シーン数（0-25）
   pendingUse: null,
   // 発見済みアイテム管理: discovered[chainId][stage] = true
   discovered: {},
@@ -2395,6 +2396,13 @@ const CHARACTERS = [
   { img: 'img/Chapter5/chara/image_merge_order_chara_30.png', name: 'リョウ', age: '32歳', desc: 'ITエンジニア・調査協力者' },
   { img: 'img/Chapter5/chara/image_merge_order_chara_31.png', name: 'マナミ', age: '44歳', desc: 'クリエイター事務所マネージャー' },
   { img: 'img/Chapter5/chara/image_merge_order_chara_32.png', name: 'ケンジ', age: '36歳', desc: 'ナオキの古い友人・共犯者' },
+  // 第六章
+  { img: 'img/Chapter6/chara/image_merge_order_chara_33.png', name: '玲奈',  age: '34歳', desc: 'フラワーアレンジメント教室講師・依頼人' },
+  { img: 'img/Chapter6/chara/image_merge_order_chara_34.png', name: '鳴海',  age: '57歳', desc: '鳴海時計店四代目・時計修理師' },
+  { img: 'img/Chapter6/chara/image_merge_order_chara_35.png', name: '白石',  age: '29歳', desc: '損害保険会社 特別調査部' },
+  { img: 'img/Chapter6/chara/image_merge_order_chara_36.png', name: '藤村',  age: '23歳', desc: '鳴海時計店 修理見習い' },
+  { img: 'img/Chapter6/chara/image_merge_order_chara_37.png', name: '大前',  age: '63歳', desc: 'アンティーク時計商' },
+  { img: 'img/Chapter6/chara/image_merge_order_chara_38.png', name: '北澤',  age: '49歳', desc: '元宝飾品鑑定士' },
 ];
 
 function renderCharacters() {
@@ -2404,6 +2412,7 @@ function renderCharacters() {
   const ch3Unlocked = !!eventState.kanteGenUnlocked;
   const ch4Unlocked = !!eventState.keikakuGenUnlocked;
   const ch5Unlocked = !!eventState.snsGenUnlocked;
+  const ch6Unlocked = !!eventState.clockGenUnlocked;
 
   // 章ラベルの挿入インデックスと表示条件
   const chapterDefs = [
@@ -2412,13 +2421,15 @@ function renderCharacters() {
     { startIdx: 11, label: '第三章', unlocked: ch3Unlocked },
     { startIdx: 18, label: '第四章', unlocked: ch4Unlocked },
     { startIdx: 23, label: '第五章', unlocked: ch5Unlocked },
+    { startIdx: 29, label: '第六章', unlocked: ch6Unlocked },
   ];
 
   CHARACTERS.forEach((c, idx) => {
     if (idx >= 6  && idx <= 10 && !ch2Unlocked) return;
     if (idx >= 11 && idx <= 17 && !ch3Unlocked) return;
     if (idx >= 18 && idx <= 22 && !ch4Unlocked) return;
-    if (idx >= 23 && !ch5Unlocked) return;
+    if (idx >= 23 && idx <= 28 && !ch5Unlocked) return;
+    if (idx >= 29 && !ch6Unlocked) return;
 
     const chDef = chapterDefs.find(d => d.startIdx === idx);
     if (chDef) {
@@ -2556,6 +2567,7 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
   eventState.kanteGenUnlocked   = true;
   eventState.keikakuGenUnlocked = true;
   eventState.snsGenUnlocked     = true;
+  eventState.clockGenUnlocked   = true;
   openKankeiScreen();
 });
 
@@ -4762,6 +4774,451 @@ const ADV_SCENES = {
     ],
   },
 
+  // ===== 第六章 c6s01〜c6s25 =====
+
+  // 第六章 Scene01：玲奈来訪・依頼受理
+  c6s01: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_33.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '玲奈', text: '...失礼します。宇野玲奈と申します...', side: 'right' },
+      { speaker: 'ヤス', text: 'どのようなご依頼でしょうか？', side: 'left' },
+      { speaker: '玲奈', text: '先日、亡くなった父の形見の時計を専門家の方に見ていただいたんです...', side: 'right' },
+      { speaker: 'ヤス', text: '...それで？', side: 'left' },
+      { speaker: '玲奈', text: '「これは偽物です」と言われました...父が大切にしていた時計が...', side: 'right' },
+      { speaker: 'ヤス', text: '偽物...詳しく聞かせてください...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene02：経緯の説明
+  c6s02: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_33.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '玲奈', text: '父は半年前に亡くなりました...その少し前に、長年お世話になっていた「鳴海時計店」に修理を依頼していたんです...', side: 'right' },
+      { speaker: 'ヤス', text: '鳴海時計店...老舗の修理店ですね...', side: 'left' },
+      { speaker: '玲奈', text: '修理から戻ってきた時計を、先日偶然知り合いの時計師に見せたところ...「ムーブメントが別物だ」と...', side: 'right' },
+      { speaker: 'ヤス', text: 'つまり、修理の間にすり替えられた可能性がある...', side: 'left' },
+      { speaker: '玲奈', text: 'はい...でも、鳴海さんは父が長く信頼していた方で...まさか、とも思って...', side: 'right' },
+      { speaker: 'ヤス', text: 'わかりました。調べてみましょう...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene03：鳴海時計店を訪問
+  c6s03: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
+    bg: 'img/bg/image_merge_bg_clockshop.png',
+    leftEntrance: 'slide', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '鳴海', text: 'これはこれは...宇野さんのお嬢さんですね...お父上にはお世話になりました...', side: 'right' },
+      { speaker: '玲奈', text: 'お久しぶりです、鳴海さん...こちらは私が相談している探偵の方です...', side: 'right' },
+      { speaker: '鳴海', text: '探偵さんですか！？...何を探偵さんにご相談されているのですかね？...当店と何か関係が？...', side: 'right' },
+      { speaker: 'ヤス', text: '（笑顔の裏に疲れた目...棚に並んだ時計の一本、ラベルが新しすぎる...）', side: 'left' },
+      { speaker: 'ヤス', text: '素晴らしいお店ですね。長く続いているだけあって、風格があります...', side: 'left' },
+      { speaker: '鳴海', text: 'おかげさまで...四代続けてこられました...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene04：保険調査員との遭遇
+  c6s04: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_road_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '白石', text: '...少しよろしいですか。さきほど鳴海時計店から出てこられましたね...', side: 'right' },
+      { speaker: 'ヤス', text: '...あなたは？', side: 'left' },
+      { speaker: '白石', text: '白石美波と申します。損害保険会社の特別調査部に所属しています...実は私も、あの店を調べているんです...', side: 'right' },
+      { speaker: 'ヤス', text: '保険会社...それは興味深い。どういった経緯で？', side: 'left' },
+      { speaker: '白石', text: 'お互い情報交換できるかもしれません。少しお時間をいただけますか...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene05：白石から情報・協力関係
+  c6s05: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '白石', text: '過去一年で、鳴海時計店の顧客から「盗難」を理由とした高額保険申請が5件出ています...', side: 'right' },
+      { speaker: 'ヤス', text: '5件...それは確かに多すぎますね...', side: 'left' },
+      { speaker: '白石', text: '申請された時計はいずれも高価なアンティーク品です。偶然にしては不自然で...', side: 'right' },
+      { speaker: 'ヤス', text: 'すべての被害者が鳴海時計店に修理を依頼していた...', side: 'left' },
+      { speaker: '白石', text: '...その通りです。でも証拠がない。だから正式には動けなくて...', side: 'right' },
+      { speaker: 'ヤス', text: 'わかりました。一緒に調べましょう...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene06：弟子・藤村に接触
+  c6s06: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_36.png',
+    bg: 'img/bg/image_merge_bg_road_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '藤村', text: 'あ...さっき店に来ていた方ですよね...何か...？', side: 'right' },
+      { speaker: 'ヤス', text: '鳴海時計店に入門されて、3年目のお弟子さんの藤村さんですね？...', side: 'left' },
+      { speaker: '藤村', text: '...どうして俺のことを...何が聞きたいんですか...', side: 'right' },
+      { speaker: 'ヤス', text: '店内で修理台帳を見せてもらいましたが、一部の記録が不自然に見えました...', side: 'left' },
+      { speaker: '藤村', text: '...師匠には関係ないですし...俺も何も話すことはないですよ...', side: 'right' },
+      { speaker: 'ヤス', text: '（師匠には関係ない...ではなく、自分は関係ない、と言わなかった...）', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene07：時計の精密鑑定結果
+  c6s07: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_33.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: 'お父様の時計を別の鑑定士に見てもらいました...', side: 'left' },
+      { speaker: '玲奈', text: '...結果は？', side: 'right' },
+      { speaker: 'ヤス', text: '「ムーブメントの素材が現代製のもの。文字盤は本物だが、内部だけ精巧に入れ替えられている」とのことです...', side: 'left' },
+      { speaker: '玲奈', text: 'やっぱり...本当に偽物だったんですね...', side: 'right' },
+      { speaker: 'ヤス', text: 'ケースと文字盤は本物を残し、内部だけを複製品に差し替えている...手間のかかる手口です...', side: 'left' },
+      { speaker: '玲奈', text: 'そこまでして...なぜ...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene08：鳴海の経営難と息子の借金
+  c6s08: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '白石', text: '鳴海の財務を調べました...3年前から急に資金繰りが悪化しています...', side: 'right' },
+      { speaker: 'ヤス', text: '3年前...何かあったんですかね...', side: 'left' },
+      { speaker: '白石', text: '息子さんが事業に失敗して多額の借金を抱えたようです...5000万円規模との話もあって...', side: 'right' },
+      { speaker: 'ヤス', text: '40年続けてきた店の信頼を...息子のために...', side: 'left' },
+      { speaker: '白石', text: '動機としては十分です。でも同情はできない...被害者がいる...', side: 'right' },
+      { speaker: 'ヤス', text: 'ええ...それは変わらない...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene09：大前恭一の存在
+  c6s09: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '白石', text: '鳴海の過去の取引先を洗ったところ、「大前恭一」という骨董時計商の名前が繰り返し出てきます...', side: 'right' },
+      { speaker: 'ヤス', text: '大前...聞いたことがあります。都内でアンティーク時計の競売を手がけている人物ですね...', side: 'left' },
+      { speaker: '白石', text: 'ここ最近、大前が扱う時計の量と単価が急に跳ね上がっています...', side: 'right' },
+      { speaker: 'ヤス', text: '鳴海が入手した本物を大前経由で競売にかけている...', side: 'left' },
+      { speaker: '白石', text: 'おそらく。でも大前は表向きは合法的な取引しかしていない...', side: 'right' },
+      { speaker: 'ヤス', text: '競売会場を直接確認してみましょう...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene10：競売会場への潜入
+  c6s10: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_37.png',
+    bg: 'img/bg/image_merge_bg_auction.png',
+    leftEntrance: 'slide', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（高級感を装った会場...常連らしき顔が並んでいる...）', side: 'left' },
+      { speaker: '大前', text: 'こちらの品は18世紀スイス製...保存状態は極めて良好。鑑定書付きです...', side: 'right' },
+      { speaker: 'ヤス', text: '（鑑定書...誰が発行したものか...）', side: 'left' },
+      { speaker: '大前', text: 'では、100万円からスタートです...', side: 'right' },
+      { speaker: 'ヤス', text: '（落札される時計...来歴を確認する方法が必要だ...）', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene11：カタログの一致
+  c6s11: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_33.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '競売会場のカタログを入手しました。これを見てください...', side: 'left' },
+      { speaker: '玲奈', text: '...！　この時計...裏蓋の傷の形が...父の時計と同じです...', side: 'right' },
+      { speaker: 'ヤス', text: '確かですか？', side: 'left' },
+      { speaker: '玲奈', text: '間違いありません。子どもの頃、私がぶつけてしまってできた傷です...父にひどく叱られて...', side: 'right' },
+      { speaker: 'ヤス', text: 'つながりました...鳴海が盗んだ本物が、大前の競売に流れている...', side: 'left' },
+      { speaker: '玲奈', text: 'お父さんの時計が...ここに...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene12：北澤剛の浮上
+  c6s12: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '白石', text: '競売の鑑定書の発行元を調べました。「北澤鑑定事務所」...代表は北澤剛...元宝飾品鑑定士です...', side: 'right' },
+      { speaker: 'ヤス', text: '元...なぜ現役でないんですか？', side: 'left' },
+      { speaker: '白石', text: '5年前、鑑定書の偽造疑惑があって業界を離れています。ただ、証拠不十分で不起訴に...', side: 'right' },
+      { speaker: 'ヤス', text: '前科のある鑑定士...それでも需要がある人間がいる...', side: 'left' },
+      { speaker: '白石', text: '大前がそれを知った上で使っているとしたら、偽物に本物の証明書を付けることができる...', side: 'right' },
+      { speaker: 'ヤス', text: '完璧なスキームです。鳴海・大前・北澤の三角構造...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene13：北澤の工房
+  c6s13: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_38.png',
+    bg: 'img/bg/image_merge_bg_road_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '（ビルの一角にある工房...深夜なのに明かりがついている...）', side: 'left' },
+      { speaker: 'ヤス', text: '（精密機械の駆動音...時計の部品を扱う音に間違いない...）', side: 'left' },
+      { speaker: '北澤', text: '...誰かいるのか...', side: 'right' },
+      { speaker: 'ヤス', text: '（気づかれた...引き上げよう。でも確認はできた...）', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene14：藤村への再接触
+  c6s14: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_36.png',
+    bg: 'img/bg/image_merge_bg_road_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '藤村', text: '...また来たんですか...', side: 'right' },
+      { speaker: 'ヤス', text: '大前と北澤のことはわかっています。もう時間は残っていない...', side: 'left' },
+      { speaker: '藤村', text: '...っ...', side: 'right' },
+      { speaker: 'ヤス', text: 'あなたが師匠を守りたいなら、今話すべきです。このままでは全員まとめて終わりになる...', side: 'left' },
+      { speaker: '藤村', text: '...俺は...俺は何も悪いことしてないと思ってた...荷物を運んだだけで...', side: 'right' },
+      { speaker: 'ヤス', text: '知っています。あなたは利用された...だから話してほしい...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene15：藤村の告白
+  c6s15: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_36.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '藤村', text: '1年前から...修理で預かったお客さんの時計を、師匠が夜中に取り出すことがあって...翌朝には戻っていて...', side: 'right' },
+      { speaker: '藤村', text: '俺は時々、荷物を指定の場所に届けるよう言われました...中は見るなって...', side: 'right' },
+      { speaker: 'ヤス', text: 'その荷物の中身が、本物の時計だった...', side: 'left' },
+      { speaker: '藤村', text: '...今思えばそうです...師匠は「経営のことだ、心配するな」としか言わなくて...', side: 'right' },
+      { speaker: 'ヤス', text: 'あなたを巻き込んだことは、師匠の責任でもある...', side: 'left' },
+      { speaker: '藤村', text: 'でも...俺は師匠が好きで時計師になったのに...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene16：台帳のコピー
+  c6s16: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_36.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '藤村', text: '...これ...6ヶ月前からこっそり取っていた修理台帳のコピーです...', side: 'right' },
+      { speaker: 'ヤス', text: 'なぜ取っておいたんですか...？', side: 'left' },
+      { speaker: '藤村', text: 'おかしいと気づいていたから...でも師匠を信じたかったから...どうしたらいいかわからなくて...', side: 'right' },
+      { speaker: 'ヤス', text: '（台帳を確認する...修理受付日の翌日に保険盗難申請...すべての日付が一致している...）', side: 'left' },
+      { speaker: 'ヤス', text: '...これは決定的な証拠になります...よく持っていてくれました...', side: 'left' },
+      { speaker: '藤村', text: '...師匠を...助けてあげられますか...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene17：玲奈への告白
+  c6s17: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_33.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '玲奈さん...全体像が見えてきました。お伝えしなければならないことがあります...', side: 'left' },
+      { speaker: '玲奈', text: '...鳴海さんが...やっていたんですね...', side: 'right' },
+      { speaker: 'ヤス', text: 'はい...共犯者もいます。ただ、弟子の藤村さんは事情を知らずに利用されていました...', side: 'left' },
+      { speaker: '玲奈', text: '父が40年信頼していた人が...なんで...', side: 'right' },
+      { speaker: 'ヤス', text: '息子さんの借金を返すためだったようです...理由が何であれ、許されることではないが...', side: 'left' },
+      { speaker: '玲奈', text: '...お父さんの時計を...返してほしい...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene18：証拠の整理
+  c6s18: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '白石', text: '整理しましょう...鳴海が預かり品をすり替え、大前が競売で売却、北澤が偽造鑑定書を発行...', side: 'right' },
+      { speaker: 'ヤス', text: '台帳コピーで日付の一致が証明できる。競売カタログで玲奈さんの時計も特定できている...', side: 'left' },
+      { speaker: '白石', text: '北澤の工房での機械音も目撃記録として残せます...あとは自白を取れれば...', side: 'right' },
+      { speaker: 'ヤス', text: '三人のうち、一番崩しやすいのは大前でしょう...商売人は自分の保身を優先する...', side: 'left' },
+      { speaker: '白石', text: '同意します。順番に当たりましょう...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene19：大前を問い詰める
+  c6s19: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_37.png',
+    bg: 'img/bg/image_merge_bg_auction.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '大前', text: '鳴海とは古い付き合いで、時々品物の仲介をしているだけですよ...何が問題なんですか...', side: 'right' },
+      { speaker: 'ヤス', text: 'ではこのカタログにある時計...宇野家のご遺族が父の形見だと確認しました...', side: 'left' },
+      { speaker: '大前', text: '...そ、それは鳴海から正規に...', side: 'right' },
+      { speaker: 'ヤス', text: '北澤さんはすでに話しています...', side: 'left' },
+      { speaker: '大前', text: '...っ...あの男が...わかりました。私は売却の仲介をしただけです...中身のことは...', side: 'right' },
+      { speaker: 'ヤス', text: '全て話してください...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene20：北澤の証言
+  c6s20: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_38.png',
+    bg: 'img/bg/image_merge_bg.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '北澤', text: '...否定はしません。鳴海から依頼を受けた。複製品に本物の証明書を付ける...それだけです...', side: 'right' },
+      { speaker: 'ヤス', text: '依頼された仕事、とおっしゃいましたね。被害者のことは考えなかった？', side: 'left' },
+      { speaker: '北澤', text: '私は技術を売った。善悪の判断は依頼人がするものだ...', side: 'right' },
+      { speaker: 'ヤス', text: '...それで良心は痛まなかった...', side: 'left' },
+      { speaker: '北澤', text: '（沈黙）...3年前から...鳴海が泣きついてきたときから始まった...あの男の弱さに付き合った俺が馬鹿だった...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene21：鳴海との対峙・前半
+  c6s21: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
+    bg: 'img/bg/image_merge_bg_clockshop.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '鳴海', text: '...また来られましたか...今日は何の用でしょう...', side: 'right' },
+      { speaker: 'ヤス', text: '大前さんと北澤さんには話を伺いました...', side: 'left' },
+      { speaker: '鳴海', text: '...何を言っているのか...私には関係のないことです...', side: 'right' },
+      { speaker: 'ヤス', text: '修理台帳と保険申請の日付が完全に一致しています...', side: 'left' },
+      { speaker: '鳴海', text: '...それは偶然で...', side: 'right' },
+      { speaker: 'ヤス', text: '鳴海さん...玲奈さんが来ています...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene22：台帳の提示・沈黙
+  c6s22: {
+    title: '',
+    leftImg:  'img/Chapter6/chara/image_merge_order_chara_36.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
+    bg: 'img/bg/image_merge_bg_clockshop.png',
+    leftEntrance: 'slide', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '藤村', text: '師匠...俺が取っていました...台帳のコピー...全部あります...', side: 'left' },
+      { speaker: '鳴海', text: '...翔太...お前が...', side: 'right' },
+      { speaker: '藤村', text: '師匠が好きだから弟子になった...でもこれ以上は...', side: 'left' },
+      { speaker: '鳴海', text: '（長い沈黙）...', side: 'right' },
+      { speaker: '鳴海', text: '...翔太に...罪はない。あの子は何も知らなかった...', side: 'right' },
+    ],
+  },
+
+  // 第六章 Scene23：鳴海の告白
+  c6s23: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
+    bg: 'img/bg/image_merge_bg_clockshop.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '鳴海', text: '...息子が...5000万の借金を抱えていました...取り立てが来て...このままでは家族が...', side: 'right' },
+      { speaker: '鳴海', text: '最初の一度だけのつもりだった...でも一度やってしまったら...止まれなかった...', side: 'right' },
+      { speaker: 'ヤス', text: '宇野さんのお父様の時計も、その中の一本でした...', side: 'left' },
+      { speaker: '鳴海', text: '...宗三さんには...本当に申し訳が...40年来のお付き合いだったのに...', side: 'right' },
+      { speaker: '鳴海', text: '時計師として生きてきた40年が...こんな終わり方になるとは...', side: 'right' },
+      { speaker: 'ヤス', text: '（時計師としての誇りが...まだ残っている...）', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene24：解決・摘発
+  c6s24: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_35.png',
+    bg: 'img/bg/image_merge_bg_road_light.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'fade', autoClose: false,
+    script: [
+      { speaker: '白石', text: '台帳コピー・競売記録・北澤の証言・大前の自白...証拠は揃いました...', side: 'right' },
+      { speaker: 'ヤス', text: '鳴海・大前・北澤の三名...ですね...', side: 'left' },
+      { speaker: '白石', text: '藤村さんには関与の認定はなし。当局にもその旨は伝えます...', side: 'right' },
+      { speaker: 'ヤス', text: 'ありがとうございます...彼は最後に勇気を出してくれた...', side: 'left' },
+      { speaker: '白石', text: '大前の手元に未流通の時計が複数残っていました。玲奈さんのお父様のものも、その中に...', side: 'right' },
+      { speaker: 'ヤス', text: '...それは良かった...', side: 'left' },
+    ],
+  },
+
+  // 第六章 Scene25：後日談・時計との再会
+  c6s25: {
+    title: '',
+    leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter6/chara/image_merge_order_chara_33.png',
+    bg: 'img/bg/image_merge_bg_hiruma.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '玲奈', text: '...戻ってきました...父の時計...本物が...', side: 'right' },
+      { speaker: 'ヤス', text: '良かった...お父様もきっと...', side: 'left' },
+      { speaker: '玲奈', text: 'この時計...父はいつも「時間だけは誰にも盗めない」と言っていたんです...', side: 'right' },
+      { speaker: 'ヤス', text: '...時間は盗めない...いい言葉ですね...', side: 'left' },
+      { speaker: '玲奈', text: 'ありがとうございました。本当に...ありがとう...', side: 'right' },
+      { speaker: 'ヤス', text: '（手の中の時計が静かに時を刻んでいる...誰かが止めようとしても、時は続いていく...）', side: 'left' },
+    ],
+  },
+
   // ===== 第一章スライド01（2,000コインで解放）=====
   scene02: {
     title:         '',
@@ -5379,6 +5836,16 @@ document.getElementById('story-ch4-next-btn')?.addEventListener('click', () => {
   closeStoryScreen();
   progressStory(4);
 });
+document.getElementById('story-ch5-next-btn')?.addEventListener('click', () => {
+  document.getElementById('story-ch5-next-btn')?.classList.remove('guide-attention');
+  closeStoryScreen();
+  progressStory(5);
+});
+document.getElementById('story-ch6-next-btn')?.addEventListener('click', () => {
+  document.getElementById('story-ch6-next-btn')?.classList.remove('guide-attention');
+  closeStoryScreen();
+  progressStory(6);
+});
 
 // デバッグ：ジェネレーター出現
 document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
@@ -5457,6 +5924,11 @@ document.getElementById('debug-adv-ch4-play').addEventListener('click', () => {
 });
 
 // デバッグ：アドベンチャーシーン（第五章）
+document.getElementById('debug-adv-ch6-play')?.addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch6-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
+  openAdventureScene(val);
+});
 document.getElementById('debug-adv-ch5-play').addEventListener('click', () => {
   const val = document.getElementById('debug-adv-ch5-select').value;
   if (!val) { showToast('シーンを選択してください'); return; }
@@ -6388,6 +6860,40 @@ const CH4_SCENE_LIST = [
   { id: 'c4s30', label: 'Ep.30（後日談）' },
 ];
 
+const CH5_SCENE_LIST = [
+  { id: 'c5s01', label: 'Ep.01' }, { id: 'c5s02', label: 'Ep.02' },
+  { id: 'c5s03', label: 'Ep.03' }, { id: 'c5s04', label: 'Ep.04' },
+  { id: 'c5s05', label: 'Ep.05' }, { id: 'c5s06', label: 'Ep.06' },
+  { id: 'c5s07', label: 'Ep.07' }, { id: 'c5s08', label: 'Ep.08' },
+  { id: 'c5s09', label: 'Ep.09' }, { id: 'c5s10', label: 'Ep.10' },
+  { id: 'c5s11', label: 'Ep.11' }, { id: 'c5s12', label: 'Ep.12' },
+  { id: 'c5s13', label: 'Ep.13' }, { id: 'c5s14', label: 'Ep.14' },
+  { id: 'c5s15', label: 'Ep.15' }, { id: 'c5s16', label: 'Ep.16' },
+  { id: 'c5s17', label: 'Ep.17' }, { id: 'c5s18', label: 'Ep.18' },
+  { id: 'c5s19', label: 'Ep.19' }, { id: 'c5s20', label: 'Ep.20' },
+  { id: 'c5s21', label: 'Ep.21' }, { id: 'c5s22', label: 'Ep.22' },
+  { id: 'c5s23', label: 'Ep.23' }, { id: 'c5s24', label: 'Ep.24' },
+  { id: 'c5s25', label: 'Ep.25' }, { id: 'c5s26', label: 'Ep.26' },
+  { id: 'c5s27', label: 'Ep.27' }, { id: 'c5s28', label: 'Ep.28' },
+  { id: 'c5s29', label: 'Ep.29（完結）' }, { id: 'c5s30', label: 'Ep.30（後日談）' },
+];
+
+const CH6_SCENE_LIST = [
+  { id: 'c6s01', label: 'Ep.01' }, { id: 'c6s02', label: 'Ep.02' },
+  { id: 'c6s03', label: 'Ep.03' }, { id: 'c6s04', label: 'Ep.04' },
+  { id: 'c6s05', label: 'Ep.05' }, { id: 'c6s06', label: 'Ep.06' },
+  { id: 'c6s07', label: 'Ep.07' }, { id: 'c6s08', label: 'Ep.08' },
+  { id: 'c6s09', label: 'Ep.09' }, { id: 'c6s10', label: 'Ep.10' },
+  { id: 'c6s11', label: 'Ep.11' }, { id: 'c6s12', label: 'Ep.12' },
+  { id: 'c6s13', label: 'Ep.13' }, { id: 'c6s14', label: 'Ep.14' },
+  { id: 'c6s15', label: 'Ep.15' }, { id: 'c6s16', label: 'Ep.16' },
+  { id: 'c6s17', label: 'Ep.17' }, { id: 'c6s18', label: 'Ep.18' },
+  { id: 'c6s19', label: 'Ep.19' }, { id: 'c6s20', label: 'Ep.20' },
+  { id: 'c6s21', label: 'Ep.21' }, { id: 'c6s22', label: 'Ep.22' },
+  { id: 'c6s23', label: 'Ep.23' }, { id: 'c6s24', label: 'Ep.24（完結）' },
+  { id: 'c6s25', label: 'Ep.25（後日談）' },
+];
+
 function openStoryScreen() {
   hideNaviHint();
   renderStoryScreen();
@@ -7088,6 +7594,88 @@ function renderStoryScreen() {
   } else {
     ch4Block?.classList.add('hidden');
   }
+
+  // ── 第五章 ──
+  const ch5Unlocked = eventState.snsGenUnlocked;
+  const ch5Complete = state.ch5Count >= CH5_SCENE_IDS.length;
+  const ch5Block     = document.getElementById('story-ch5-block');
+  const ch5NextWrap  = document.getElementById('story-ch5-next-wrap');
+  const ch5NextBtn   = document.getElementById('story-ch5-next-btn');
+  const ch5CostLbl   = document.getElementById('story-ch5-cost-label');
+  const ch5Complete_ = document.getElementById('story-ch5-complete');
+  const ch5LockedLbl = document.getElementById('story-ch5-locked');
+
+  if (ch5Unlocked) {
+    ch5Block?.classList.remove('hidden');
+    ch5LockedLbl?.classList.add('hidden');
+    if (ch5Complete) {
+      ch5NextWrap?.classList.add('hidden');
+      ch5Complete_?.classList.remove('hidden');
+      ch5NextBtn?.classList.remove('guide-attention');
+    } else {
+      ch5NextWrap?.classList.remove('hidden');
+      ch5Complete_?.classList.add('hidden');
+      if (ch5NextBtn) {
+        ch5NextBtn.disabled = !canAfford;
+        if (canAfford) ch5NextBtn.classList.add('guide-attention');
+        else ch5NextBtn.classList.remove('guide-attention');
+      }
+      if (ch5CostLbl) ch5CostLbl.innerHTML = costLabel;
+    }
+    {
+      const seenCh5 = (state.seenScenes ?? []).some(id => CH5_SCENE_LIST.some(s => s.id === id));
+      const ch5ReplayWrap = document.getElementById('story-ch5-replay-wrap');
+      if (seenCh5) {
+        ch5ReplayWrap?.classList.remove('hidden');
+        renderCh5ReplayList();
+      } else {
+        ch5ReplayWrap?.classList.add('hidden');
+      }
+    }
+  } else {
+    ch5Block?.classList.add('hidden');
+  }
+
+  // ── 第六章 ──
+  const ch6Unlocked3 = eventState.clockGenUnlocked;
+  const ch6Complete = state.ch6Count >= CH6_SCENE_IDS.length;
+  const ch6Block     = document.getElementById('story-ch6-block');
+  const ch6NextWrap  = document.getElementById('story-ch6-next-wrap');
+  const ch6NextBtn   = document.getElementById('story-ch6-next-btn');
+  const ch6CostLbl   = document.getElementById('story-ch6-cost-label');
+  const ch6Complete_ = document.getElementById('story-ch6-complete');
+  const ch6LockedLbl = document.getElementById('story-ch6-locked');
+
+  if (ch6Unlocked3) {
+    ch6Block?.classList.remove('hidden');
+    ch6LockedLbl?.classList.add('hidden');
+    if (ch6Complete) {
+      ch6NextWrap?.classList.add('hidden');
+      ch6Complete_?.classList.remove('hidden');
+      ch6NextBtn?.classList.remove('guide-attention');
+    } else {
+      ch6NextWrap?.classList.remove('hidden');
+      ch6Complete_?.classList.add('hidden');
+      if (ch6NextBtn) {
+        ch6NextBtn.disabled = !canAfford;
+        if (canAfford) ch6NextBtn.classList.add('guide-attention');
+        else ch6NextBtn.classList.remove('guide-attention');
+      }
+      if (ch6CostLbl) ch6CostLbl.innerHTML = costLabel;
+    }
+    {
+      const seenCh6 = (state.seenScenes ?? []).some(id => CH6_SCENE_LIST.some(s => s.id === id));
+      const ch6ReplayWrap = document.getElementById('story-ch6-replay-wrap');
+      if (seenCh6) {
+        ch6ReplayWrap?.classList.remove('hidden');
+        renderCh6ReplayList();
+      } else {
+        ch6ReplayWrap?.classList.add('hidden');
+      }
+    }
+  } else {
+    ch6Block?.classList.add('hidden');
+  }
 }
 
 function renderCh3ReplayList() {
@@ -7125,6 +7713,56 @@ function renderCh4ReplayList() {
     const li = document.createElement('li');
     li.className = 'story-replay-item';
     li.textContent = `第四章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
+  }
+}
+
+function renderCh5ReplayList() {
+  const list = document.getElementById('story-ch5-replay-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH5_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第五章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
+  }
+}
+
+function renderCh6ReplayList() {
+  const list = document.getElementById('story-ch6-replay-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH6_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第六章 ${s.label}`;
     li.addEventListener('click', () => {
       closeStoryScreen();
       openAdventureScene(s.id);
@@ -8111,6 +8749,7 @@ const CH2_SCENE_IDS = ['c2s01','c2s02','c2s03','c2s04','c2s05','c2s06','c2s07','
 const CH3_SCENE_IDS = ['c3s01','c3s02','c3s03','c3s04','c3s05','c3s06','c3s07','c3s08','c3s09','c3s10','c3s11','c3s12','c3s13','c3s14','c3s15','c3s16','c3s17','c3s18','c3s19','c3s20','c3s21','c3s22','c3s23','c3s24','c3s25','c3s26'];
 const CH4_SCENE_IDS = ['c4s01','c4s02','c4s03','c4s04','c4s05','c4s06','c4s07','c4s08','c4s09','c4s10','c4s11','c4s12','c4s13','c4s14','c4s15','c4s16','c4s17','c4s18','c4s19','c4s20','c4s21','c4s22','c4s23','c4s24','c4s25','c4s26','c4s27','c4s28','c4s29','c4s30'];
 const CH5_SCENE_IDS = ['c5s01','c5s02','c5s03','c5s04','c5s05','c5s06','c5s07','c5s08','c5s09','c5s10','c5s11','c5s12','c5s13','c5s14','c5s15','c5s16','c5s17','c5s18','c5s19','c5s20','c5s21','c5s22','c5s23','c5s24','c5s25','c5s26','c5s27','c5s28','c5s29','c5s30'];
+const CH6_SCENE_IDS = ['c6s01','c6s02','c6s03','c6s04','c6s05','c6s06','c6s07','c6s08','c6s09','c6s10','c6s11','c6s12','c6s13','c6s14','c6s15','c6s16','c6s17','c6s18','c6s19','c6s20','c6s21','c6s22','c6s23','c6s24','c6s25'];
 
 // ストーリー進行処理（chapter: 1/2/3）
 function progressStory(chapter = 1) {
@@ -8134,6 +8773,9 @@ function progressStory(chapter = 1) {
   } else if (chapter === 5) {
     sceneId = CH5_SCENE_IDS[state.ch5Count] ?? CH5_SCENE_IDS[CH5_SCENE_IDS.length - 1];
     state.ch5Count = Math.min(state.ch5Count + 1, CH5_SCENE_IDS.length);
+  } else if (chapter === 6) {
+    sceneId = CH6_SCENE_IDS[state.ch6Count] ?? CH6_SCENE_IDS[CH6_SCENE_IDS.length - 1];
+    state.ch6Count = Math.min(state.ch6Count + 1, CH6_SCENE_IDS.length);
   } else {
     sceneId = CH4_SCENE_IDS[state.ch4Count] ?? CH4_SCENE_IDS[CH4_SCENE_IDS.length - 1];
     state.ch4Count = Math.min(state.ch4Count + 1, CH4_SCENE_IDS.length);
