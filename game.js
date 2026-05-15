@@ -4818,7 +4818,7 @@ const ADV_SCENES = {
     title: '',
     leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
-    bg: 'img/bg/image_merge_bg_clockshop.png',
+    bg: 'img/Chapter6/bg/image_merge_bg_clockshop.png',
     leftEntrance: 'slide', flipLeft: true,
     rightEntrance: 'slide', autoClose: false,
     script: [
@@ -4943,7 +4943,7 @@ const ADV_SCENES = {
     title: '',
     leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg: 'img/Chapter6/chara/image_merge_order_chara_37.png',
-    bg: 'img/bg/image_merge_bg_auction.png',
+    bg: 'img/Chapter6/bg/image_merge_bg_auction.png',
     leftEntrance: 'slide', flipLeft: true,
     rightEntrance: 'slide', autoClose: false,
     script: [
@@ -5101,7 +5101,7 @@ const ADV_SCENES = {
     title: '',
     leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg: 'img/Chapter6/chara/image_merge_order_chara_37.png',
-    bg: 'img/bg/image_merge_bg_auction.png',
+    bg: 'img/Chapter6/bg/image_merge_bg_auction.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance: 'fade', autoClose: false,
     script: [
@@ -5136,7 +5136,7 @@ const ADV_SCENES = {
     title: '',
     leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
-    bg: 'img/bg/image_merge_bg_clockshop.png',
+    bg: 'img/Chapter6/bg/image_merge_bg_clockshop.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance: 'fade', autoClose: false,
     script: [
@@ -5154,7 +5154,7 @@ const ADV_SCENES = {
     title: '',
     leftImg:  'img/Chapter6/chara/image_merge_order_chara_36.png',
     rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
-    bg: 'img/bg/image_merge_bg_clockshop.png',
+    bg: 'img/Chapter6/bg/image_merge_bg_clockshop.png',
     leftEntrance: 'slide', flipLeft: true,
     rightEntrance: 'fade', autoClose: false,
     script: [
@@ -5171,7 +5171,7 @@ const ADV_SCENES = {
     title: '',
     leftImg:  'img/Chapter1/Chara/image_merge_order_chara_00.png',
     rightImg: 'img/Chapter6/chara/image_merge_order_chara_34.png',
-    bg: 'img/bg/image_merge_bg_clockshop.png',
+    bg: 'img/Chapter6/bg/image_merge_bg_clockshop.png',
     leftEntrance: 'fade', flipLeft: true,
     rightEntrance: 'fade', autoClose: false,
     script: [
