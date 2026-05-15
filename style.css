@@ -3265,7 +3265,7 @@ body {
   flex-shrink: 0;
 }
 #burst-stock-area::-webkit-scrollbar { display: none; }
-#burst-stock-area.hidden { display: none; }
+#burst-stock-area.hidden { visibility: hidden; }
 
 #burst-stock-label {
   height: 38px;

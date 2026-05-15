@@ -10337,14 +10337,6 @@ function endEvDrag(x, y) {
 // ========================================
 // イベント画面ナビゲーション
 // ========================================
-function scrollToBoardDefault() {
-  setTimeout(() => {
-    const screen = document.getElementById('event-screen');
-    const board  = document.getElementById('event-board-wrap');
-    if (screen && board) screen.scrollTo({ top: board.offsetTop, behavior: 'instant' });
-  }, 200);
-}
-
 document.getElementById('event-btn').addEventListener('click', () => {
   if (isTutorialInProgress()) return;
   document.getElementById('event-screen').classList.remove('hidden');
@@ -10353,7 +10345,6 @@ document.getElementById('event-btn').addEventListener('click', () => {
   renderEventHeader();
   renderEventRequest();
   renderTutorialPanel();
-  scrollToBoardDefault();
 });
 
 document.getElementById('event-close').addEventListener('click', () => {
@@ -10739,7 +10730,6 @@ renderTutorialPanel();
 // DOM描画完了後にヘッダー高さを計測（2段RFAで確実にレイアウト後に実行）
 requestAnimationFrame(() => requestAnimationFrame(updateStickyHeights));
 setTimeout(updateStickyHeights, 300);
-scrollToBoardDefault();
 
 // しゃぼん玉 → コイン変換タイマー（5秒ごとにチェック、60秒経過でLv1コインに変換）
 setInterval(() => {
