@@ -8713,11 +8713,11 @@ function renderEventRequest() {
     const div = document.createElement('div');
     div.className = 'request-slot' + (completable ? ' completable' : '');
     div.innerHTML = `
+      ${burstBadge}
       <div class="req-char-wrap">
         ${charHtml}
       </div>
       <div class="req-slot-frame">
-        ${burstBadge}
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
           <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>
