@@ -3009,6 +3009,133 @@ body {
 .event-slot-badge.hidden { display: none; }
 
 /* ========================================
+   依頼バースト — ポップアップ
+======================================== */
+#burst-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.72);
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#burst-popup-overlay.hidden { display: none; }
+
+#burst-popup {
+  position: relative;
+  width: min(340px, 88vw);
+  aspect-ratio: 3/4;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+
+#burst-popup-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+#burst-popup-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px 28px;
+  gap: 10px;
+}
+
+#burst-popup-title {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(20px, 6vw, 26px);
+  font-weight: bold;
+  color: #fff8dc;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8), 0 0 12px rgba(210,150,10,0.8);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  font-family: 'Zen Kurenaido', sans-serif;
+}
+
+#burst-popup-desc {
+  font-size: 13px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.7;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  margin: 0;
+}
+#burst-popup-rule {
+  font-size: 11px;
+  color: #ffd080;
+}
+
+#burst-popup-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: rgba(0,0,0,0.5);
+  border-radius: 20px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+}
+#burst-popup-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+#burst-popup-bar-wrap {
+  flex: 1;
+  height: 14px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 7px;
+  overflow: hidden;
+}
+#burst-popup-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(to right, #e8920a, #f9dc40);
+  border-radius: 7px;
+  transition: width 0.4s ease;
+}
+#burst-popup-count-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: right;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+}
+
+#burst-popup-close {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #8b5e1a, #c8922a);
+  border: 2px solid #f0c840;
+  border-radius: 24px;
+  color: #fff8dc;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Zen Kurenaido', sans-serif;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+#burst-popup-close:active { opacity: 0.75; }
+
+/* ========================================
    依頼バースト — スロットUI
 ======================================== */
 #burst-slot-btn { position: relative; }

@@ -10697,10 +10697,30 @@ setInterval(() => {
   }
 }, 5000);
 
-// 依頼バースト CLEARボタン
+// 依頼バーストポップアップを開く
+function openBurstPopup() {
+  const count = eventState.burstCount;
+  document.getElementById('burst-popup-count-label').textContent = `${count}/${BURST_MAX}`;
+  document.getElementById('burst-popup-bar-fill').style.width = `${(count / BURST_MAX) * 100}%`;
+  document.getElementById('burst-popup-overlay').classList.remove('hidden');
+}
+
+document.getElementById('burst-popup-close').addEventListener('click', () => {
+  document.getElementById('burst-popup-overlay').classList.add('hidden');
+});
+document.getElementById('burst-popup-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('burst-popup-overlay')) {
+    document.getElementById('burst-popup-overlay').classList.add('hidden');
+  }
+});
+
+// 依頼バースト ボタン：CLEAR→アイテム放出 / それ以外→ポップアップ表示
 document.getElementById('burst-slot-btn').addEventListener('click', () => {
-  if (eventState.burstUnlocked && eventState.burstCount >= BURST_MAX) {
+  if (!eventState.burstUnlocked) return;
+  if (eventState.burstCount >= BURST_MAX) {
     onBurstClear();
+  } else {
+    openBurstPopup();
   }
 });
 
