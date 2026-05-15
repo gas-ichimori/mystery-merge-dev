@@ -2710,6 +2710,12 @@ body {
   transition: background 0.15s;
 }
 #navi-stock-btn:active { background: #0f3a22; }
+#navi-stock-btn.stock-drop-over {
+  background: #2aaa66;
+  border-color: #80ffb0;
+  transform: scale(1.18);
+  transition: transform 0.1s, background 0.1s;
+}
 
 /* ゴミ箱ボタン（Lv1アイテム削除） */
 #navi-trash-btn {

@@ -7617,6 +7617,7 @@ function showNaviHintForGen(genLevel, persistent = false) {
     : '第一章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   updateNaviLvBtn(genLevel);
   _showNaviHintPanel(text, true, persistent, { type: 'ch1gen', level: genLevel });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
 function showNaviHintForFireGen(item, persistent = false) {
@@ -7628,6 +7629,7 @@ function showNaviHintForFireGen(item, persistent = false) {
     : '第二章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   updateFireNaviLvBtn(sLv);
   _showNaviHintPanel(text, true, persistent, { type: 'ch2gen', level: sLv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
 function showNaviHintForKanteGen(item, persistent = false) {
@@ -7639,6 +7641,7 @@ function showNaviHintForKanteGen(item, persistent = false) {
     : '第三章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   updateKanteNaviLvBtn(kLv);
   _showNaviHintPanel(text, true, persistent, { type: 'ch3gen', level: kLv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
 function showNaviHintForKeikakuGen(item, persistent = false) {
@@ -7650,6 +7653,7 @@ function showNaviHintForKeikakuGen(item, persistent = false) {
     : '第四章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
   updateKeikakuNaviLvBtn(kkLv);
   _showNaviHintPanel(text, true, persistent, { type: 'ch4gen', level: kkLv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
 function showNaviHintForItem(item, persistent = false) {
@@ -9205,7 +9209,8 @@ function onEventCellClick(index) {
   }
 
   if (!item) {
-    hideNaviHint();
+    _showNaviHintPanel('何もないパネルを選択しています。', false, true);
+    document.getElementById('navi-stock-btn')?.classList.remove('hidden');
     eventState.selectedCell = null;
     renderEventBoard();
     return;
@@ -10121,8 +10126,20 @@ function onEvDragEndTouch(e) {
   document.removeEventListener('touchcancel', onEvDragEndTouch);
 }
 
+function isOverElement(x, y, el) {
+  if (!el) return false;
+  const r = el.getBoundingClientRect();
+  return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+}
+
 function highlightEvDropTarget(x, y) {
   document.querySelectorAll('#event-board .cell').forEach(c => c.classList.remove('drop-over'));
+  const stockBtn = document.getElementById('navi-stock-btn');
+  if (stockBtn && !stockBtn.classList.contains('hidden') && isOverElement(x, y, stockBtn)) {
+    stockBtn.classList.add('stock-drop-over');
+    return;
+  }
+  stockBtn?.classList.remove('stock-drop-over');
   const idx = getEvCellIndexAt(x, y);
   if (idx !== null && idx !== evDrag.fromIdx) {
     document.querySelectorAll('#event-board .cell')[idx]?.classList.add('drop-over');
@@ -10142,7 +10159,20 @@ function getEvCellIndexAt(x, y) {
 
 function endEvDrag(x, y) {
   if (evDrag.ghost) { evDrag.ghost.remove(); evDrag.ghost = null; }
+  const stockBtn = document.getElementById('navi-stock-btn');
+  stockBtn?.classList.remove('stock-drop-over');
   if (!evDrag.active) return;
+
+  // ストックボタンへのドロップ
+  if (evDrag.hasMoved && stockBtn && !stockBtn.classList.contains('hidden') && isOverElement(x, y, stockBtn)) {
+    const fromIdx = evDrag.fromIdx;
+    evDrag.active  = false;
+    evDrag.fromIdx = null;
+    evDrag.tapHandled = true;
+    document.querySelectorAll('#event-board .cell').forEach(c => c.classList.remove('drop-over'));
+    addItemToStock(fromIdx);
+    return;
+  }
 
   const toIdx   = getEvCellIndexAt(x, y);
   const fromIdx = evDrag.fromIdx;
@@ -10948,12 +10978,6 @@ document.getElementById('daily-mission-screen').addEventListener('click', (e) =>
 // ========================================
 // ストックポップアップ イベント
 // ========================================
-// ナビキャラクターをタップ → ストック表示
-document.getElementById('navi-hint-char-wrap').addEventListener('click', () => {
-  if (document.getElementById('event-screen')?.classList.contains('hidden')) return;
-  openStockPopup();
-});
-
 // 閉じるボタン
 document.getElementById('stock-popup-close').addEventListener('click', closeStockPopup);
 
@@ -10967,8 +10991,7 @@ document.querySelectorAll('.stock-tab-btn').forEach(btn => {
   btn.addEventListener('click', () => setStockTab(Number(btn.dataset.tab)));
 });
 
-// ストックに入れるボタン
+// ストックボタン: タップでポップアップ表示
 document.getElementById('navi-stock-btn').addEventListener('click', () => {
-  if (eventState.selectedCell === null) return;
-  addItemToStock(eventState.selectedCell);
+  openStockPopup();
 });
