@@ -3257,6 +3257,7 @@ body {
   align-items: center;
   gap: 5px;
   padding: 3px 8px;
+  min-height: 44px;
   background: rgba(50,25,5,0.75);
   border-top: 1px solid rgba(200,155,35,0.3);
   overflow-x: auto;
@@ -3265,7 +3266,7 @@ body {
   flex-shrink: 0;
 }
 #burst-stock-area::-webkit-scrollbar { display: none; }
-#burst-stock-area.hidden { visibility: hidden; }
+#burst-stock-area.hidden { display: flex !important; visibility: hidden; }
 
 #burst-stock-label {
   height: 38px;
