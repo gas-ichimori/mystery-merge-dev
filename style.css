@@ -2907,7 +2907,12 @@ body {
 
 /* ページドットインジケーター */
 #ev-scroll-dots {
-  display: none; /* 3行全表示でスクロール不要のため非表示 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-shrink: 0;
 }
 .ev-dot {
   width: 7px;
@@ -2924,14 +2929,14 @@ body {
 
 #event-slots-panel {
   flex: 0 0 auto;
-  width: 185px;
+  width: 175px;
   padding: 2px 6px 2px 2px;
   margin: 0;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   align-content: start;
   gap: 2px;
-  max-height: 184px; /* 3行ぴったり */
+  max-height: 117px; /* 2行ぴったり（3行目が出ない） */
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
