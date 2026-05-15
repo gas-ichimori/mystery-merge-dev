@@ -3901,7 +3901,17 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
+#stock-popup::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 5, 0, 0.62);
+  pointer-events: none;
+  z-index: 0;
+}
+#stock-popup > * { position: relative; z-index: 1; }
 
 #stock-popup-header {
   display: flex;
