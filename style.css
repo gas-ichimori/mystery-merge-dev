@@ -3060,13 +3060,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
-  font-weight: bold;
-  color: #fff;
-  letter-spacing: 0.05em;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255,160,30,0.9);
   z-index: 3;
   animation: burst-clear-pulse 0.9s ease-in-out infinite;
+}
+#burst-clear-overlay img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
 }
 #burst-clear-overlay.hidden { display: none; }
 @keyframes burst-clear-pulse {
