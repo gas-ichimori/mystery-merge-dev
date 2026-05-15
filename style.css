@@ -3047,13 +3047,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 20px 20px;
-  gap: 10px;
+  padding: 0 20px 16px;
+  gap: 0;
 }
 
 #burst-popup-title {
   position: absolute;
-  top: 11%;
+  top: 14%;
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(20px, 6vw, 26px);
@@ -3066,11 +3066,11 @@ body {
 }
 
 #burst-popup-desc {
-  font-size: 13px;
-  color: #c8a040;
+  font-size: 14px;
+  color: #fff;
   text-align: center;
   line-height: 1.7;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.7);
   margin: 0;
   font-weight: bold;
 }
@@ -3084,6 +3084,7 @@ body {
   border-radius: 20px;
   padding: 6px 10px;
   box-sizing: border-box;
+  margin-bottom: 24px;
 }
 #burst-popup-icon {
   width: 32px;
