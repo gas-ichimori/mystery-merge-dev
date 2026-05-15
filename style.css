@@ -3268,9 +3268,9 @@ body {
 #burst-stock-area.hidden { display: none; }
 
 #burst-stock-label {
-  font-size: 9px;
-  color: #c8a05a;
-  white-space: nowrap;
+  height: 38px;
+  width: auto;
+  object-fit: contain;
   flex-shrink: 0;
 }
 #burst-stock-list {
