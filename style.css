@@ -3055,7 +3055,7 @@ body {
 #burst-clear-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(210, 80, 10, 0.90);
+  background: none;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -3064,6 +3064,7 @@ body {
   font-weight: bold;
   color: #fff;
   letter-spacing: 0.05em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(255,160,30,0.9);
   z-index: 3;
   animation: burst-clear-pulse 0.9s ease-in-out infinite;
 }
