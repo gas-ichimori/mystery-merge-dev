@@ -10338,11 +10338,11 @@ function endEvDrag(x, y) {
 // イベント画面ナビゲーション
 // ========================================
 function scrollToBoardDefault() {
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     const screen = document.getElementById('event-screen');
     const board  = document.getElementById('event-board-wrap');
     if (screen && board) screen.scrollTo({ top: board.offsetTop, behavior: 'instant' });
-  });
+  }, 200);
 }
 
 document.getElementById('event-btn').addEventListener('click', () => {
