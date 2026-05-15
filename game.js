@@ -8715,9 +8715,9 @@ function renderEventRequest() {
     div.innerHTML = `
       <div class="req-char-wrap">
         ${charHtml}
-        ${burstBadge}
       </div>
       <div class="req-slot-frame">
+        ${burstBadge}
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
           <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>

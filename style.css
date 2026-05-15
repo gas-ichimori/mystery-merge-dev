@@ -3073,11 +3073,11 @@ body {
   50%       { box-shadow: 0 0 12px rgba(255,160,30,0.9); }
 }
 
-/* 依頼スロットのバーストバッジ（キャラ右上） */
+/* 依頼スロットのバーストバッジ（req-slot-frame左上・キャラに重なる） */
 .req-burst-badge {
   position: absolute;
   top: 6px;
-  right: -2px;
+  left: -24px;
   background: linear-gradient(135deg, #b02800, #e83c10);
   color: #fff;
   font-size: 12px;
