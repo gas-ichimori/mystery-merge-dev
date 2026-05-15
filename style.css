@@ -3047,13 +3047,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding: 0 20px 28px;
+  padding: 0 20px 20px;
   gap: 10px;
 }
 
 #burst-popup-title {
   position: absolute;
-  top: 6%;
+  top: 11%;
   left: 50%;
   transform: translateX(-50%);
   font-size: clamp(20px, 6vw, 26px);
@@ -3067,15 +3067,12 @@ body {
 
 #burst-popup-desc {
   font-size: 13px;
-  color: #fff;
+  color: #c8a040;
   text-align: center;
   line-height: 1.7;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
   margin: 0;
-}
-#burst-popup-rule {
-  font-size: 11px;
-  color: #ffd080;
+  font-weight: bold;
 }
 
 #burst-popup-progress-wrap {
@@ -3119,21 +3116,22 @@ body {
 }
 
 #burst-popup-close {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, #8b5e1a, #c8922a);
-  border: 2px solid #f0c840;
-  border-radius: 24px;
-  color: #fff8dc;
-  font-size: 16px;
-  font-weight: bold;
-  font-family: 'Zen Kurenaido', sans-serif;
-  letter-spacing: 0.1em;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
 }
-#burst-popup-close:active { opacity: 0.75; }
+#burst-popup-close:active { opacity: 0.7; }
 
 /* ========================================
    依頼バースト — スロットUI
