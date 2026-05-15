@@ -8700,7 +8700,7 @@ function renderEventRequest() {
         : `<div class="req-char-figure">${character?.emoji || '👤'}</div>`);
 
     const burstBadge = (eventState.burstUnlocked && req.burstPoints > 0)
-      ? `<span class="req-burst-badge">+${req.burstPoints}</span>`
+      ? `<span class="req-burst-badge"><img src="img/UI/image_merge_burst_icon_only.png" alt="">+${req.burstPoints}</span>`
       : '';
     const div = document.createElement('div');
     div.className = 'request-slot' + (completable ? ' completable' : '');
