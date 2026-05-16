@@ -81,13 +81,17 @@ def generate_image(prompt, save_path, size="1024x1024"):
     print(f"  🎨 生成中: {save_path.name}")
     try:
         resp = client.images.generate(
-            model="dall-e-3",
+            model="gpt-image-1",
             prompt=prompt,
             size=size,
-            quality="standard",
             n=1
         )
-        img_bytes = requests.get(resp.data[0].url, timeout=30).content
+        item = resp.data[0]
+        if hasattr(item, 'b64_json') and item.b64_json:
+            import base64
+            img_bytes = base64.b64decode(item.b64_json)
+        else:
+            img_bytes = requests.get(item.url, timeout=30).content
         save_path.write_bytes(img_bytes)
         print(f"  ✅ 保存: {save_path.name}")
         time.sleep(2)  # APIレート制限対策
