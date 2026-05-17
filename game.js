@@ -2697,48 +2697,53 @@ document.getElementById('debug-burst-reset').addEventListener('click', () => {
 document.getElementById('debug-notify-play').addEventListener('click', () => {
   const val = document.getElementById('debug-notify-select').value;
   if (!val) return;
-  switch (val) {
-    case 'toast':
-      showToast('サンプル：汎用トースト通知');
-      break;
-    case 'toast-red':
-      showToastRed('サンプル：赤トースト通知');
-      break;
-    case 'reward-panel':
-      showRewardInPanel('依頼完了！', null);
-      break;
-    case 'toast-near-panel': {
-      const panelEl = document.getElementById('event-req-panel');
-      showToastNearPanel('依頼完了！（チュートリアル）', panelEl);
-      break;
+  // デバッグ画面を閉じてゲーム画面に戻してから発火
+  document.getElementById('debug-screen').classList.add('hidden');
+  setTimeout(() => {
+    switch (val) {
+      case 'toast':
+        showToast('サンプル：汎用トースト通知');
+        break;
+      case 'toast-red':
+        showToastRed('サンプル：赤トースト通知');
+        break;
+      case 'reward-panel':
+        showRewardInPanel('依頼完了！', null);
+        break;
+      case 'toast-near-panel': {
+        const panelEl = document.getElementById('event-req-panel');
+        showToastNearPanel('依頼完了！（チュートリアル）', panelEl);
+        break;
+      }
+      case 'above-navi':
+        showAboveNaviToast('サンプル：ナビパネル上部トースト');
+        break;
+      case 'special-cell': {
+        const cellIdx = eventState.board.findIndex(c => c !== null);
+        showSpecialOnCell(cellIdx !== -1 ? cellIdx : 0, 'event-board', 'Lucky! Lv3出現！', '#f0c040');
+        break;
+      }
+      case 'float-near-el': {
+        const el = document.getElementById('ev-energy') ?? document.getElementById('event-board-wrap');
+        showFloatNearEl('+1 💎', '#a0e0ff', el);
+        break;
+      }
+      case 'board-full':
+        showBoardFullToast(null, true);
+        break;
+      case 'chapter-banner':
+        showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2000);
+        break;
     }
-    case 'above-navi':
-      showAboveNaviToast('サンプル：ナビパネル上部トースト');
-      break;
-    case 'special-cell': {
-      const cellIdx = eventState.board.findIndex(c => c !== null);
-      showSpecialOnCell(cellIdx !== -1 ? cellIdx : 0, 'event-board', 'Lucky! Lv3出現！', '#f0c040');
-      break;
-    }
-    case 'float-near-el': {
-      const btn = document.getElementById('debug-notify-play');
-      showFloatNearEl('+1 💎', '#a0e0ff', btn);
-      break;
-    }
-    case 'board-full':
-      showBoardFullToast(null, true);
-      break;
-    case 'chapter-banner':
-      showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2000);
-      break;
-  }
+  }, 300);
 });
 
 // ゲーム停止ガイド確認プルダウン
 document.getElementById('debug-guide-play').addEventListener('click', () => {
   const val = document.getElementById('debug-guide-select').value;
   if (!val) return;
-  switch (val) {
+  document.getElementById('debug-screen').classList.add('hidden');
+  setTimeout(() => { switch (val) {
     case 'fog-intro':
       startGuide([
         '蜘蛛の巣に覆われている“メモ”アイテムです。',
@@ -2810,7 +2815,7 @@ document.getElementById('debug-guide-play').addEventListener('click', () => {
         '盤面にマージアイテムが大量に放出されます...',
       ], '#burst-slot-btn', null);
       break;
-  }
+  } }, 300);
 });
 
 // アドベンチャーシーン再生ボタン（各章）
