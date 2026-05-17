@@ -2693,6 +2693,85 @@ document.getElementById('debug-burst-reset').addEventListener('click', () => {
   showToast('依頼バースト リセット');
 });
 
+// ゲーム停止ガイド確認プルダウン
+document.getElementById('debug-guide-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-guide-select').value;
+  if (!val) return;
+  switch (val) {
+    case 'fog-intro':
+      startGuide([
+        '蜘蛛の巣に覆われている“メモ”アイテムです。',
+        '最初に出現する“メモ”アイテムとマージすることができます。',
+        'そのほかにも蜘蛛の巣に覆われているアイテムはマージすることができますので、試してみてください。',
+      ], null, null);
+      break;
+    case 'fog-reminder':
+      startGuide([
+        '蜘蛛の巣に覆われているマージアイテムがまだ残っています...',
+        '早く蜘蛛の巣から取り除いてあげてください...',
+      ], null, null);
+      break;
+    case 'ch2-unlock':
+      startGuide([
+        '新たな章が出現しました。',
+        '別の章のストーリーを見ることができます。',
+      ], '#fire-gen-tile', null);
+      break;
+    case 'ch3-unlock':
+      startGuide([
+        '第三章が解放されました。',
+        '新たな事件の幕が上がります。',
+      ], '#kante-gen-tile', null);
+      break;
+    case 'ch4-unlock':
+      startGuide([
+        '第四章が解放されました。',
+        '新たな事件の調査が始まります。',
+      ], '#keikaku-gen-tile', null);
+      break;
+    case 'ch5-unlock':
+      startGuide([
+        '第五章が解放されました。',
+        'SNS炎上事件の調査が始まります。',
+      ], null, null);
+      break;
+    case 'ch6-unlock':
+      startGuide([
+        '第六章が解放されました。',
+        '時計店の謎を解き明かす時が来ました。',
+      ], null, null);
+      break;
+    case 'ch7-unlock':
+      startGuide([
+        '第七章が解放されました。',
+        '里親の嘘、最後の謎を追います。',
+      ], null, null);
+      break;
+    case 'hp-shortage':
+      startGuide([
+        'スタミナが不足すると、マージアイテムは出ません...',
+        '時間が経過するとスタミナは少しずつ回復します...',
+        '早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することができます...',
+      ], '#ev-energy', null);
+      break;
+    case 'bubble-guide':
+      startGuide([
+        'しゃぼん玉のアイテムはマージできません...',
+        '時間が経過するとコインになります...',
+        'しゃぼん玉のアイテムが欲しい場合は、ダイヤを消費してしゃぼん玉を割って、アイテムをGETしてください...',
+      ], null, null);
+      break;
+    case 'burst-unlock':
+      startGuide([
+        '依頼バーストが出現しました...',
+        '依頼バーストは、バーストアイコンが付いた依頼人の依頼を解決するとバーストゲージが溜まります...',
+        'バーストゲージが満タンになるとCLEARです...',
+        '盤面にマージアイテムが大量に放出されます...',
+      ], '#burst-slot-btn', null);
+      break;
+  }
+});
+
 // アドベンチャーシーン再生ボタン（各章）
 ['ch1', 'ch2', 'ch3', 'ch4'].forEach(ch => {
   const btn = document.getElementById(`debug-adv-${ch}-play`);
