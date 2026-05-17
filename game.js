@@ -10424,12 +10424,23 @@ function onBurstClear() {
   if (eventState.burstCount < BURST_MAX) return;
 
   // フリーズオーバーレイを作成（z-index:190 でゲームをブロック）
+  const burstStyle = document.createElement('style');
+  burstStyle.id = 'burst-clear-style';
+  burstStyle.textContent = `
+    @keyframes burst-icon-pulse {
+      0%   { transform: scale(1);    filter: drop-shadow(0 0 0px #ffcc00); }
+      50%  { transform: scale(1.18); filter: drop-shadow(0 0 24px #ffcc00) drop-shadow(0 0 48px #ff8800); }
+      100% { transform: scale(1);    filter: drop-shadow(0 0 0px #ffcc00); }
+    }
+  `;
+  document.head.appendChild(burstStyle);
+
   const freeze = document.createElement('div');
   freeze.id = 'burst-clear-freeze';
   freeze.style.cssText = 'position:fixed;inset:0;z-index:190;pointer-events:all;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
   const centerIcon = document.createElement('img');
   centerIcon.src = 'img/UI/image_merge_burst_icon.png';
-  centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;';
+  centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;animation:burst-icon-pulse 0.8s ease-in-out infinite;';
   freeze.appendChild(centerIcon);
   document.body.appendChild(freeze);
 
@@ -10457,6 +10468,7 @@ function onBurstClear() {
     const totalMs = BURST_RELEASE_COUNT * 110 + 400 + 2000;
     setTimeout(() => {
       freeze.remove();
+      burstStyle.remove();
       fillEventRequests();
       renderEventRequest();
     }, totalMs);
