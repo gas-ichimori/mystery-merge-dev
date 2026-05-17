@@ -1131,16 +1131,16 @@ function showSpecialOnCell(cellIdx, boardId, text, color) {
       top: ${rect.top}px;
       transform: translate(-50%, -100%) scale(1.2);
       color: ${color};
-      font-size: 13px;
+      font-size: 15px;
       font-weight: bold;
       pointer-events: none;
       z-index: 200;
       text-shadow: 0 1px 4px #000;
       white-space: nowrap;
-      animation: lucky-fade 1.4s ease-out forwards;
+      animation: lucky-fade 4s ease-out forwards;
     `;
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 1400);
+    setTimeout(() => el.remove(), 4000);
   }, 750);
 }
 
@@ -1669,32 +1669,12 @@ function discoverSeizoItem(stage) {
   if (eventState.seizoDiscovered[stage]) return;
   eventState.seizoDiscovered[stage] = true;
   updateCatalogBadge();
-  // 第二章マージアイテムが初めて出現したときに赤いメッセージを表示
+  // 第二章マージアイテムが初めて出現したときにメッセージを表示
   if (!eventState.seizoFirstItemShown) {
     eventState.seizoFirstItemShown = true;
     setTimeout(() => {
       if (isMenuPageOpen()) return;
-      const genTile = document.getElementById('fire-gen-tile');
-      if (genTile) {
-        const rect = genTile.getBoundingClientRect();
-        const el = document.createElement('div');
-        el.innerHTML = '第二章のマージアイテムが出現しました！依頼に活用しましょう！';
-        el.style.cssText = `
-          position:fixed;
-          left:${rect.left + rect.width / 2}px;
-          top:${rect.bottom + 8}px;
-          transform:translate(-50%, 0);
-          background:rgba(180,0,0,0.92); color:#fff; padding:8px 18px;
-          border-radius:16px; font-size:13px; font-weight:bold; z-index:500;
-          pointer-events:none; max-width:80vw; text-align:center;
-          white-space:normal; word-break:break-all;
-          animation:toast-pop 3s ease-out forwards;
-        `;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 3000);
-      } else {
-        showToastRed('第二章のマージアイテムが出現しました！依頼に活用しましょう！');
-      }
+      showToastRed('第二章のマージアイテムが出現しました！依頼に活用しましょう！');
     }, 600);
   }
 }
@@ -2084,18 +2064,32 @@ function isMenuPageOpen() {
   return el && !el.classList.contains('hidden');
 }
 
+// ナビヒントパネルの真上Y座標を返すヘルパー（各通知の位置計算に共用）
+function _naviAboveY() {
+  const panel = document.getElementById('navi-hint-panel');
+  if (panel && !panel.classList.contains('hidden')) {
+    return panel.getBoundingClientRect().top - 8;
+  }
+  const board = document.getElementById('event-board-wrap') || document.getElementById('board-wrap');
+  const rect = board?.getBoundingClientRect();
+  return rect ? rect.bottom - 40 : window.innerHeight - 80;
+}
+
 function showToast(msg) {
+  const topY = _naviAboveY();
   const el = document.createElement('div');
   el.innerHTML = msg;
   el.style.cssText = `
-    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
-    background: rgba(0,0,0,0.82); color: #fff; padding: 6px 14px;
-    border-radius: 16px; font-size: 12px; z-index: 500;
+    position: fixed; left: 50%; top: ${topY}px;
+    background: transparent; color: #fff; padding: 6px 14px;
+    border-radius: 16px; font-size: 15px; font-weight: bold; z-index: 500;
     pointer-events: none; max-width: 80vw; text-align: center;
     white-space: normal; word-break: break-all;
+    text-shadow: 0 1px 4px #000;
+    animation: toast-pop 4s ease-out forwards;
   `;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2000);
+  setTimeout(() => el.remove(), 4000);
 }
 
 // ========================================
@@ -2157,18 +2151,20 @@ function showChapterCompleteBanner(imgSrc, displayMs = 1800) {
 // ジェネレータータイルの直上にトーストを表示（ボード満杯などの通知用）
 // パネル要素のすぐ下にトーストを表示（依頼完了など）
 function showToastRed(msg) {
+  const topY = _naviAboveY();
   const el = document.createElement('div');
   el.innerHTML = msg;
   el.style.cssText = `
-    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
-    background: rgba(180,0,0,0.92); color: #fff; padding: 8px 18px;
-    border-radius: 16px; font-size: 13px; font-weight: bold; z-index: 500;
+    position: fixed; left: 50%; top: ${topY}px;
+    background: transparent; color: #ff4444; padding: 8px 18px;
+    border-radius: 16px; font-size: 15px; font-weight: bold; z-index: 500;
     pointer-events: none; max-width: 80vw; text-align: center;
     white-space: normal; word-break: break-all;
-    animation: toast-pop 3s ease-out forwards;
+    text-shadow: 0 1px 4px #000;
+    animation: toast-pop 4s ease-out forwards;
   `;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+  setTimeout(() => el.remove(), 4000);
 }
 
 function showToastNearPanel(msg, panelEl) {
@@ -2185,63 +2181,53 @@ function showToastNearPanel(msg, panelEl) {
     color:#fff;
     padding:6px 18px;
     border-radius:20px;
-    font-size:14px;
+    font-size:15px;
     font-weight:bold;
     pointer-events:none;
     z-index:9999;
     white-space:nowrap;
-    animation:toast-pop 2s ease-out forwards;
+    text-shadow:0 1px 4px #000;
+    animation:toast-pop 4s ease-out forwards;
   `;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2100);
+  setTimeout(() => el.remove(), 4000);
 }
 
 // ナビパネルの直上（盤面下部）にトーストを表示（ジェネレーターLvアップ体力ボーナスなど）
 function showAboveNaviToast(msg) {
   if (isMenuPageOpen()) return;
-  const panel = document.getElementById('navi-hint-panel');
-  let topY;
-  if (panel && !panel.classList.contains('hidden')) {
-    const rect = panel.getBoundingClientRect();
-    topY = rect.top - 8;
-  } else {
-    const board = document.getElementById('event-board-wrap');
-    const rect = board?.getBoundingClientRect();
-    topY = rect ? rect.bottom - 40 : window.innerHeight - 80;
-  }
+  const topY = _naviAboveY();
   const el = document.createElement('div');
   el.innerHTML = msg;
   el.style.cssText = `
     position:fixed; left:50%; top:${topY}px;
-    transform:translate(-50%, -100%);
-    background:rgba(0,0,0,0.82); color:#fff; padding:6px 14px;
-    border-radius:16px; font-size:12px; z-index:500;
+    background:transparent; color:#fff; padding:6px 14px;
+    border-radius:16px; font-size:15px; font-weight:bold; z-index:500;
     pointer-events:none; max-width:80vw; text-align:center;
     white-space:normal; word-break:break-all;
-    animation:toast-pop 0.25s ease-out;
+    text-shadow:0 1px 4px #000;
+    animation:toast-pop 4s ease-out forwards;
   `;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2000);
+  setTimeout(() => el.remove(), 4000);
 }
 
-// 依頼人パネルの中央にトーストを表示（依頼完了メッセージ）
+// 依頼完了メッセージ（ナビパネル上部に表示）
 function showRewardInPanel(msg, panelEl, textColor = '#fff') {
-  if (!panelEl) { showToast(msg); return; }
-  const rect = panelEl.getBoundingClientRect();
+  const topY = _naviAboveY();
   const el = document.createElement('div');
   el.textContent = msg;
   el.style.cssText = `
     position:fixed;
-    left:${rect.left + rect.width / 2}px;
-    top:${rect.top + rect.height / 2}px;
-    transform:translate(-50%, -50%);
+    left:50%; top:${topY}px;
     background:rgba(10,30,70,0.92); color:${textColor}; padding:8px 18px;
-    border-radius:20px; font-size:14px; font-weight:bold;
+    border-radius:20px; font-size:15px; font-weight:bold;
     pointer-events:none; z-index:9999; white-space:nowrap;
-    animation:toast-pop 2s ease-out forwards;
+    text-shadow:0 1px 4px #000;
+    animation:toast-pop 4s ease-out forwards;
   `;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2100);
+  setTimeout(() => el.remove(), 4000);
 }
 
 // 任意のDOM要素の近くにフロートテキストを表示（lucky-fade アニメ適用）
@@ -2262,10 +2248,10 @@ function showFloatNearEl(text, color, el, fontSize = 15) {
     z-index: 9999;
     text-shadow: 0 1px 5px #000, 0 0 8px rgba(0,0,0,0.6);
     white-space: nowrap;
-    animation: lucky-fade 1.4s ease-out forwards;
+    animation: lucky-fade 4s ease-out forwards;
   `;
   document.body.appendChild(div);
-  setTimeout(() => div.remove(), 1400);
+  setTimeout(() => div.remove(), 4000);
 }
 
 // デバッグ用：デバッグ画面を閉じずにその場で表示するフロートテキスト
@@ -2303,15 +2289,14 @@ function showEnergyGain(amount) {
   showFloatNearEl(`+${amount}`, '#ff8c00', energyEl, 24);
 }
 
-// 「捜査盤面が満杯です」専用トースト（赤・立体・背景透明）
+// 「捜査盤面が満杯です」専用トースト
 function showBoardFullToast(cellIdx, isEventBoard) {
-  const boardId = isEventBoard ? 'event-board' : 'board';
-  const cells = document.querySelectorAll(`#${boardId} .cell`);
-  const cell = (cellIdx !== null && cellIdx >= 0) ? cells[cellIdx] : null;
+  const topY = _naviAboveY();
   const el = document.createElement('div');
   el.textContent = '捜査盤面が満杯です';
   el.style.cssText = `
     position: fixed;
+    left: 50%; top: ${topY}px;
     background: transparent;
     color: #ff2222;
     font-size: 15px;
@@ -2325,19 +2310,10 @@ function showBoardFullToast(cellIdx, isEventBoard) {
     pointer-events: none;
     text-align: center;
     white-space: nowrap;
+    animation: toast-pop 4s ease-out forwards;
   `;
-  if (cell) {
-    const rect = cell.getBoundingClientRect();
-    el.style.left = `${rect.left + rect.width / 2}px`;
-    el.style.top  = `${Math.max(rect.top - 8, 10)}px`;
-    el.style.transform = 'translate(-50%, -100%)';
-  } else {
-    el.style.left = '50%';
-    el.style.top  = '40%';
-    el.style.transform = 'translate(-50%, -50%)';
-  }
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 2200);
+  setTimeout(() => el.remove(), 4000);
 }
 
 function showCellToast(msg, cellIdx, isEventBoard) {
