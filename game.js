@@ -8600,7 +8600,8 @@ function updateKeikakuNaviLvBtn(keikakuLevel) {
 // ========================================
 // 依頼バーストシステム
 // ========================================
-const BURST_MAX = 12;
+const BURST_MAX = 12;          // ゲージ満タン値
+const BURST_RELEASE_COUNT = 20; // CLEAR時の放出アイテム数
 // ステージ重み: Lv1=35 Lv2=25 Lv3=15 Lv4=10 Lv5=7 Lv6=4 Lv7=3 Lv8=1
 const BURST_STAGE_WEIGHTS = [35, 25, 15, 10, 7, 4, 3, 1];
 
@@ -8626,7 +8627,13 @@ function checkBurstUnlock() {
   eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
   renderBurstSlot();
   renderEventRequest();
-  showToast('依頼バースト解放！');
+  if (isDebugModeActive()) { showToast('依頼バースト解放！'); return; }
+  startGuide([
+    '依頼バーストが出現しました...',
+    '依頼バーストは、バーストアイコンが付いた依頼人の依頼を解決するとバーストゲージが溜まります...',
+    'バーストゲージが満タンになるとCLEARです...',
+    '盤面にマージアイテムが大量に放出されます...',
+  ], '#burst-slot-btn', null);
 }
 
 // バーストスロットUI更新
@@ -10415,26 +10422,45 @@ function generateBurstItems(count) {
 // CLEARボタン押下 → 12個放出
 function onBurstClear() {
   if (eventState.burstCount < BURST_MAX) return;
-  const items   = generateBurstItems(BURST_MAX);
-  const iconEl  = document.getElementById('burst-slot-btn');
-  items.forEach((item, i) => {
-    setTimeout(() => {
-      const emptyIdx = eventState.board.findIndex(c => c === null);
-      const imgSrc   = getBurstItemImgSrc(item);
-      if (emptyIdx !== -1) {
-        eventState.board[emptyIdx] = item; // 先に確保
-        flyFromElementToCell(iconEl, emptyIdx, imgSrc);
-        setTimeout(() => renderEventBoard(), 390);
-      } else {
-        addToBurstStock(item);
-      }
-    }, i * 110);
-  });
+
+  // フリーズオーバーレイを作成（z-index:190 でゲームをブロック）
+  const freeze = document.createElement('div');
+  freeze.id = 'burst-clear-freeze';
+  freeze.style.cssText = 'position:fixed;inset:0;z-index:190;pointer-events:all;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
+  const centerIcon = document.createElement('img');
+  centerIcon.src = 'img/UI/image_merge_burst_icon.png';
+  centerIcon.style.cssText = 'width:80px;height:80px;object-fit:contain;pointer-events:none;';
+  freeze.appendChild(centerIcon);
+  document.body.appendChild(freeze);
+
   eventState.burstCount        = 0;
   eventState.burstFirstCleared = true;
   renderBurstSlot();
-  // 全アニメ完了後に依頼を再補充
-  setTimeout(() => { fillEventRequests(); renderEventRequest(); }, BURST_MAX * 110 + 450);
+
+  requestAnimationFrame(() => {
+    const items = generateBurstItems(BURST_RELEASE_COUNT);
+    items.forEach((item, i) => {
+      setTimeout(() => {
+        const emptyIdx = eventState.board.findIndex(c => c === null);
+        const imgSrc   = getBurstItemImgSrc(item);
+        if (emptyIdx !== -1) {
+          eventState.board[emptyIdx] = item;
+          flyFromElementToCell(centerIcon, emptyIdx, imgSrc);
+          setTimeout(() => renderEventBoard(), 390);
+        } else {
+          addToBurstStock(item);
+        }
+      }, i * 110);
+    });
+
+    // 全アニメ完了（20アイテム×110ms + 400ms余裕）+ 2秒待機後に再開
+    const totalMs = BURST_RELEASE_COUNT * 110 + 400 + 2000;
+    setTimeout(() => {
+      freeze.remove();
+      fillEventRequests();
+      renderEventRequest();
+    }, totalMs);
+  });
 }
 
 // ========================================
