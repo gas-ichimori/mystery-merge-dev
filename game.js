@@ -10429,7 +10429,7 @@ function onBurstClear() {
   freeze.style.cssText = 'position:fixed;inset:0;z-index:190;pointer-events:all;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
   const centerIcon = document.createElement('img');
   centerIcon.src = 'img/UI/image_merge_burst_icon.png';
-  centerIcon.style.cssText = 'width:80px;height:80px;object-fit:contain;pointer-events:none;';
+  centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;';
   freeze.appendChild(centerIcon);
   document.body.appendChild(freeze);
 
