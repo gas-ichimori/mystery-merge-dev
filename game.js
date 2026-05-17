@@ -10095,6 +10095,8 @@ function handleAnyGenTap(i) {
     if (eventState.selectedCell !== null && eventState.selectedCell !== i) {
       const selItem = eventState.board[eventState.selectedCell];
       if (selItem && selItem.isEventGen && !selItem.isFireGen &&
+          !item.isKanteGen && !selItem.isKanteGen &&
+          !item.isKeikakuGen && !selItem.isKeikakuGen &&
           (selItem.genLevel ?? 0) === (item.genLevel ?? 0)) {
         mergeEventGenerators(eventState.selectedCell, i);
         eventState.selectedCell = null;
@@ -11615,6 +11617,8 @@ function endEvDrag(x, y) {
       eventState.board[fromIdx] = null;
     }
   } else if (!fromItem.isFireGen && !toItem.isFireGen &&
+             !fromItem.isKanteGen && !toItem.isKanteGen &&
+             !fromItem.isKeikakuGen && !toItem.isKeikakuGen &&
              fromItem.isEventGen && toItem.isEventGen &&
              (fromItem.genLevel ?? 0) === (toItem.genLevel ?? 0)) {
     // メモ帳ジェネレータータイル同士のマージ → Lvアップ
