@@ -2693,6 +2693,47 @@ document.getElementById('debug-burst-reset').addEventListener('click', () => {
   showToast('依頼バースト リセット');
 });
 
+// ポップアップ・通知確認プルダウン
+document.getElementById('debug-notify-play').addEventListener('click', () => {
+  const val = document.getElementById('debug-notify-select').value;
+  if (!val) return;
+  switch (val) {
+    case 'toast':
+      showToast('サンプル：汎用トースト通知');
+      break;
+    case 'toast-red':
+      showToastRed('サンプル：赤トースト通知');
+      break;
+    case 'reward-panel':
+      showRewardInPanel('依頼完了！', null);
+      break;
+    case 'toast-near-panel': {
+      const panelEl = document.getElementById('event-req-panel');
+      showToastNearPanel('依頼完了！（チュートリアル）', panelEl);
+      break;
+    }
+    case 'above-navi':
+      showAboveNaviToast('サンプル：ナビパネル上部トースト');
+      break;
+    case 'special-cell': {
+      const cellIdx = eventState.board.findIndex(c => c !== null);
+      showSpecialOnCell(cellIdx !== -1 ? cellIdx : 0, 'event-board', 'Lucky! Lv3出現！', '#f0c040');
+      break;
+    }
+    case 'float-near-el': {
+      const btn = document.getElementById('debug-notify-play');
+      showFloatNearEl('+1 💎', '#a0e0ff', btn);
+      break;
+    }
+    case 'board-full':
+      showBoardFullToast(null, true);
+      break;
+    case 'chapter-banner':
+      showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2000);
+      break;
+  }
+});
+
 // ゲーム停止ガイド確認プルダウン
 document.getElementById('debug-guide-play').addEventListener('click', () => {
   const val = document.getElementById('debug-guide-select').value;

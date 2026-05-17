@@ -235,6 +235,24 @@
           <button id="debug-guide-play" class="debug-loop-btn">▶</button>
         </div>
       </div>
+      <div class="debug-section-label">ポップアップ・通知確認</div>
+      <div id="debug-gen-level-row">
+        <div class="debug-gen-row">
+          <select id="debug-notify-select" class="debug-select" style="flex:1;margin-right:6px;">
+            <option value="">-- 通知を選択 --</option>
+            <option value="toast">1. showToast（汎用トースト）</option>
+            <option value="toast-red">2. showToastRed（赤トースト）</option>
+            <option value="reward-panel">3. showRewardInPanel（依頼完了！）</option>
+            <option value="toast-near-panel">4. showToastNearPanel（チュートリアル依頼完了）</option>
+            <option value="above-navi">5. showAboveNaviToast（ナビパネル上部）</option>
+            <option value="special-cell">6. showSpecialOnCell（セル上フロート）</option>
+            <option value="float-near-el">7. showFloatNearEl（要素付近フロート）</option>
+            <option value="board-full">8. showBoardFullToast（盤面満杯）</option>
+            <option value="chapter-banner">9. showChapterCompleteBanner（章完了バナー）</option>
+          </select>
+          <button id="debug-notify-play" class="debug-loop-btn">▶</button>
+        </div>
+      </div>
       <div class="debug-section-label">ポップアップ文字確認</div>
       <div id="debug-gen-level-row">
         <div class="debug-gen-row">
