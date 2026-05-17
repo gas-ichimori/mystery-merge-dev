@@ -10464,8 +10464,8 @@ function onBurstClear() {
       }, i * 110);
     });
 
-    // 全アニメ完了（20アイテム×110ms + 400ms余裕）+ 2秒待機後に再開
-    const totalMs = BURST_RELEASE_COUNT * 110 + 400 + 2000;
+    // 全アニメ完了（20アイテム×110ms + 400ms余裕）+ 1秒待機後に再開
+    const totalMs = BURST_RELEASE_COUNT * 110 + 400 + 1000;
     setTimeout(() => {
       freeze.remove();
       burstStyle.remove();
