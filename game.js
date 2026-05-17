@@ -2708,7 +2708,7 @@ document.getElementById('debug-guide-play').addEventListener('click', () => {
     case 'fog-reminder':
       startGuide([
         '蜘蛛の巣に覆われているマージアイテムがまだ残っています...',
-        '早く蜘蛛の巣から取り除いてあげてください...',
+        '早く蜘蛛の巣を取り除いてください...',
       ], null, null);
       break;
     case 'ch2-unlock':
@@ -7156,7 +7156,7 @@ function checkFogReminder() {
   startGuide(
     [
       '蜘蛛の巣に覆われているマージアイテムがまだ残っています...',
-      '早く蜘蛛の巣から取り除いてあげてください...',
+      '早く蜘蛛の巣を取り除いてください...',
     ],
     `#event-board .cell[data-index="${fogIdx}"]`,
     null
