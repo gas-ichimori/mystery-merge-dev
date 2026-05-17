@@ -7076,7 +7076,8 @@ function checkFogReminder() {
   if (fogIdx === -1) return; // 霧なし → スキップ
   startGuide(
     [
-      '蜘蛛の巣に覆われているマージアイテムがまだ残っています...早く蜘蛛の巣から取り除いてあげてください。',
+      '蜘蛛の巣に覆われているマージアイテムがまだ残っています...',
+      '早く蜘蛛の巣から取り除いてあげてください...',
     ],
     `#event-board .cell[data-index="${fogIdx}"]`,
     null
@@ -9477,7 +9478,7 @@ function progressStory(chapter = 1) {
       requestAnimationFrame(() => {
         startGuide([
           '新たな章が出現しました。',
-          '別の章のストーリーも見ることができます。',
+          '別の章のストーリーを見ることができます。',
         ], '#fire-gen-tile', null);
       });
     });
@@ -10216,7 +10217,9 @@ function onEventGenTap(tappedCellIdx = null) {
     if (!eventState.energyTutShown && !isDebugModeActive()) {
       eventState.energyTutShown = true;
       startGuide([
-        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+        'スタミナが不足すると、マージアイテムは出ません...',
+        '時間が経過するとスタミナは少しずつ回復します...',
+        '早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することができます...',
       ], '#ev-energy', null);
     } else {
       const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen);
@@ -10780,7 +10783,9 @@ function doEventMerge(fromIdx, toIdx) {
           if (cell) {
             cell.classList.add('bubble-tut-target');
             startGuide([
-              'しゃぼん玉のアイテムはマージできません。時間が経過するとコインになります。アイテムを欲しい場合は、ダイヤを消費してしゃぼん玉を割ってください。'
+              'しゃぼん玉のアイテムはマージできません...',
+              '時間が経過するとコインになります...',
+              'しゃぼん玉のアイテムが欲しい場合は、ダイヤを消費してしゃぼん玉を割って、アイテムをGETしてください...',
             ], '.bubble-tut-target', () => {
               cell.classList.remove('bubble-tut-target');
             });
@@ -11034,7 +11039,9 @@ function onEventFireGenTap(tappedCellIdx = null) {
     if (!eventState.energyTutShown && !isDebugModeActive()) {
       eventState.energyTutShown = true;
       startGuide([
-        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+        'スタミナが不足すると、マージアイテムは出ません...',
+        '時間が経過するとスタミナは少しずつ回復します...',
+        '早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することができます...',
       ], '#ev-energy', null);
     } else {
       const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isFireGen);
@@ -11100,7 +11107,9 @@ function onEventKanteGenTap(tappedCellIdx = null) {
     if (!eventState.energyTutShown && !isDebugModeActive()) {
       eventState.energyTutShown = true;
       startGuide([
-        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+        'スタミナが不足すると、マージアイテムは出ません...',
+        '時間が経過するとスタミナは少しずつ回復します...',
+        '早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することができます...',
       ], '#ev-energy', null);
     } else {
       const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isKanteGen);
@@ -11242,7 +11251,9 @@ function onEventKeikakuGenTap(tappedCellIdx = null) {
     if (!eventState.energyTutShown && !isDebugModeActive()) {
       eventState.energyTutShown = true;
       startGuide([
-        'スタミナが不足すると、マージアイテムは出ません。時間が経過するとスタミナは少しずつ回復します。早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することもできます。'
+        'スタミナが不足すると、マージアイテムは出ません...',
+        '時間が経過するとスタミナは少しずつ回復します...',
+        '早く回復したい場合は、ショップで購入するか、ある条件を満たすと回復することができます...',
       ], '#ev-energy', null);
     } else {
       const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isKeikakuGen);
