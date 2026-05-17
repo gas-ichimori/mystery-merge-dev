@@ -260,6 +260,7 @@ let state = {
   ch4Count: 0,      // 第四章既読シーン数（0-30）
   ch5Count: 0,      // 第五章既読シーン数（0-30）
   ch6Count: 0,      // 第六章既読シーン数（0-25）
+  ch7Count: 0,      // 第七章既読シーン数（0-25）
   pendingUse: null,
   // 発見済みアイテム管理: discovered[chainId][stage] = true
   discovered: {},
@@ -2403,6 +2404,12 @@ const CHARACTERS = [
   { img: 'img/Chapter6/chara/image_merge_order_chara_36.png', name: '藤村',  age: '23歳', desc: '鳴海時計店 修理見習い' },
   { img: 'img/Chapter6/chara/image_merge_order_chara_37.png', name: '大前',  age: '63歳', desc: 'アンティーク時計商' },
   { img: 'img/Chapter6/chara/image_merge_order_chara_38.png', name: '北澤',  age: '49歳', desc: '元宝飾品鑑定士' },
+  // 第七章
+  { img: 'img/Chapter7/chara/image_merge_order_chara_39.png', name: '神崎美咲', age: '32歳', desc: 'フリーライター・依頼人' },
+  { img: 'img/Chapter7/chara/image_merge_order_chara_41.png', name: '榊原恭子', age: '62歳', desc: 'NPO「ひだまりの会」理事長' },
+  { img: 'img/Chapter7/chara/image_merge_order_chara_42.png', name: '大森健太', age: '45歳', desc: '市議会議員・黒幕' },
+  { img: 'img/Chapter7/chara/image_merge_order_chara_43.png', name: '白石凛',   age: '28歳', desc: 'NPO職員・施設出身者' },
+  { img: 'img/Chapter7/chara/image_merge_order_chara_44.png', name: '神崎隆三', age: '58歳', desc: '美咲の父・元沈黙者' },
 ];
 
 function renderCharacters() {
@@ -2413,6 +2420,7 @@ function renderCharacters() {
   const ch4Unlocked = !!eventState.keikakuGenUnlocked;
   const ch5Unlocked = !!eventState.snsGenUnlocked;
   const ch6Unlocked = !!eventState.clockGenUnlocked;
+  const ch7Unlocked = !!eventState.ch7GenUnlocked;
 
   // 章ラベルの挿入インデックスと表示条件
   const chapterDefs = [
@@ -2422,6 +2430,7 @@ function renderCharacters() {
     { startIdx: 18, label: '第四章', unlocked: ch4Unlocked },
     { startIdx: 23, label: '第五章', unlocked: ch5Unlocked },
     { startIdx: 29, label: '第六章', unlocked: ch6Unlocked },
+    { startIdx: 35, label: '第七章', unlocked: ch7Unlocked },
   ];
 
   CHARACTERS.forEach((c, idx) => {
@@ -2429,7 +2438,8 @@ function renderCharacters() {
     if (idx >= 11 && idx <= 17 && !ch3Unlocked) return;
     if (idx >= 18 && idx <= 22 && !ch4Unlocked) return;
     if (idx >= 23 && idx <= 28 && !ch5Unlocked) return;
-    if (idx >= 29 && !ch6Unlocked) return;
+    if (idx >= 29 && idx <= 34 && !ch6Unlocked) return;
+    if (idx >= 35 && !ch7Unlocked) return;
 
     const chDef = chapterDefs.find(d => d.startIdx === idx);
     if (chDef) {
@@ -2559,6 +2569,7 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
     ...CH4_KANKEI_NODES, ...CH4_KANKEI_EDGES, ...CH4_KANKEI_BADGES,
     ...CH5_KANKEI_NODES, ...CH5_KANKEI_EDGES, ...CH5_KANKEI_BADGES,
     ...CH6_KANKEI_NODES, ...CH6_KANKEI_EDGES, ...CH6_KANKEI_BADGES,
+    ...CH7_KANKEI_NODES, ...CH7_KANKEI_EDGES, ...CH7_KANKEI_BADGES,
   ];
   allKankei.forEach(item => {
     if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
@@ -2569,6 +2580,7 @@ document.getElementById('dbf-kankei').addEventListener('click', () => {
   eventState.keikakuGenUnlocked = true;
   eventState.snsGenUnlocked     = true;
   eventState.clockGenUnlocked   = true;
+  eventState.ch7GenUnlocked     = true;
   openKankeiScreen();
 });
 
@@ -5220,6 +5232,418 @@ const ADV_SCENES = {
     ],
   },
 
+  // ===== 第七章 c7s01〜c7s25 =====
+  c7s01: {
+    title: '雨の墓前',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_39.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_rainy_cemetery.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎美咲', text: '…あなたが、探偵のヤスさんですね。こんな雨の中、来ていただいてすみません。', side: 'right' },
+      { speaker: 'ヤス', text: '神崎美咲さんですね。墓参りの最中に失礼します。', side: 'left' },
+      { speaker: '神崎美咲', text: 'いいえ…この子に、やっと報告できると思って。弟の墓です。20年前に死にました。', side: 'right' },
+      { speaker: 'ヤス', text: '依頼の件、詳しく聞かせてください。', side: 'left' },
+      { speaker: '神崎美咲', text: '先週、藤原誠一さんという方が殺されました。彼は弟の死の真相を知っていた。そして…私に全てを話そうとしていた矢先に。', side: 'right' },
+      { speaker: 'ヤス', text: '告発者が殺された。つまり、隠蔽は今も続いているということですか。', side: 'left' },
+    ],
+  },
+  c7s02: {
+    title: '20年前の記憶',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_39.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_rainy_cemetery.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '弟さんのこと、教えていただけますか。', side: 'left' },
+      { speaker: '神崎美咲', text: '弟の名前は翔太。当時5歳でした。母が病死して、父は働き詰めで…私たちを育てられなくなって。', side: 'right' },
+      { speaker: 'ヤス', text: 'それで里親に出された。', side: 'left' },
+      { speaker: '神崎美咲', text: 'ええ。「ひだまりの会」というNPOを通じて。私は12歳だったから親戚に引き取られたけど、翔太は…里親家庭に。', side: 'right' },
+      { speaker: 'ヤス', text: 'その後、何があったんですか。', side: 'left' },
+      { speaker: '神崎美咲', text: '里親に引き取られて3ヶ月後、「事故死」と聞かされました。階段から落ちたと。でも藤原さんは電話で言ったんです。「あれは事故じゃなかった」と。', side: 'right' },
+    ],
+  },
+  c7s03: {
+    title: '遺体発見現場',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '白石凛', text: 'あ、あの…関係者以外は立入禁止って聞いてるんですけど…', side: 'right' },
+      { speaker: 'ヤス', text: '私立探偵のヤスです。藤原さんの件で調査を依頼されています。あなたは？', side: 'left' },
+      { speaker: '白石凛', text: '白石凛です。NPOの職員で…藤原さんに仕事を教わっていました。第一発見者は、私なんです。', side: 'right' },
+      { speaker: 'ヤス', text: '発見時の状況を教えてください。', side: 'left' },
+      { speaker: '白石凛', text: '朝、事務所に来たら…藤原さんがデスクに突っ伏していて。最初は寝ているのかと思ったんです。でも、首に…絞められた痕が。', side: 'right' },
+      { speaker: 'ヤス', text: '何か気づいたことは？', side: 'left' },
+      { speaker: '白石凛', text: '机の上が荒らされていました。藤原さんがいつも大事にしていたファイルが…なくなっていたんです。', side: 'right' },
+    ],
+  },
+  c7s04: {
+    title: 'NPO「ひだまりの会」',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_41.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '榊原恭子', text: '探偵さん、でしたか。警察の捜査には全面的に協力しております。民間の方にお話しすることは。', side: 'right' },
+      { speaker: 'ヤス', text: '遺族からの依頼です。藤原誠一さんは20年間、このNPOに勤めていたそうですね。', side: 'left' },
+      { speaker: '榊原恭子', text: 'ええ。真面目で誠実な職員でした。なぜこんなことに…', side: 'right' },
+      { speaker: 'ヤス', text: '20年前、里親家庭で子どもが死亡した事故があったと聞いています。', side: 'left' },
+      { speaker: '榊原恭子', text: '…何のことでしょう。当会でそのような事故は把握しておりません。', side: 'right' },
+      { speaker: 'ヤス', text: '藤原さんは告発しようとしていた。それが動機だとしたら？', side: 'left' },
+      { speaker: '榊原恭子', text: '仮定の話にはお答えしかねます。失礼ですが、お引き取りを。', side: 'right' },
+    ],
+  },
+  c7s05: {
+    title: '市議会議員の事務所',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_42.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_city_council_office.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '大森健太', text: 'やあやあ、わざわざどうも。探偵さんが来るなんて、何かの冗談ですか？', side: 'right' },
+      { speaker: 'ヤス', text: '大森健太さん。20年前、里親として子どもを引き取っていましたね。', side: 'left' },
+      { speaker: '大森健太', text: '…ええ、若い頃の話です。妻と二人で、恵まれない子どもたちの力になりたくて。', side: 'right' },
+      { speaker: 'ヤス', text: '神崎翔太くん。覚えていますか。', side: 'left' },
+      { speaker: '大森健太', text: '…その名前を出すのは、何か意図があってのことですか？', side: 'right' },
+      { speaker: 'ヤス', text: '彼はあなたの家で死んだ。そして今、その件を告発しようとした藤原誠一さんも死んだ。', side: 'left' },
+      { speaker: '大森健太', text: '翔太くんの件は不幸な事故でした。私たちも深く傷ついた。それ以上でも以下でもありません。', side: 'right' },
+    ],
+  },
+  c7s06: {
+    title: '古い事故報告書',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '白石さん、少し調べてほしいことがあります。', side: 'left' },
+      { speaker: '白石凛', text: '私に、ですか？でも私、まだ入職して3年で…', side: 'right' },
+      { speaker: 'ヤス', text: 'だからこそです。20年前の事故報告書、残っていませんか。', side: 'left' },
+      { speaker: '白石凛', text: '古い書類は倉庫に…でも、勝手に見たら怒られます。', side: 'right' },
+      { speaker: 'ヤス', text: '藤原さんが持っていたファイル、何が入っていたか心当たりは？', side: 'left' },
+      { speaker: '白石凛', text: '…藤原さん、最近よく倉庫に籠もっていました。「昔の過ちを正す」って。私、何か手伝えることがあれば…藤原さんのためにも。', side: 'right' },
+    ],
+  },
+  c7s07: {
+    title: '父親との対峙',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_44.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_rainy_cemetery.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎隆三', text: '…美咲から聞いた。探偵を雇ったと。', side: 'right' },
+      { speaker: 'ヤス', text: '神崎隆三さんですね。当時、翔太くんを里親に出す決断をされた。', side: 'left' },
+      { speaker: '神崎隆三', text: 'あの頃は…どうしようもなかった。妻を亡くし、借金を抱え、子ども二人を育てる余裕なんて。', side: 'right' },
+      { speaker: 'ヤス', text: '「ひだまりの会」を紹介されたのは誰からですか。', side: 'left' },
+      { speaker: '神崎隆三', text: '市役所の福祉課だ。評判のいいNPOだと言われた。…信じた俺が馬鹿だった。', side: 'right' },
+      { speaker: 'ヤス', text: '翔太くんが亡くなった後、何か説明は？', side: 'left' },
+      { speaker: '神崎隆三', text: '「不幸な事故でした」の一点張りだ。遺体も…顔を見せてもらえなかった。「損傷が激しいから」と。', side: 'right' },
+    ],
+  },
+  c7s08: {
+    title: '藤原の日記',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_39.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎美咲', text: 'ヤスさん、見てください。藤原さんの自宅から見つかったんです。', side: 'right' },
+      { speaker: 'ヤス', text: '日記帳…かなり古いものですね。', side: 'left' },
+      { speaker: '神崎美咲', text: '20年前から書き続けていたみたいです。この日付を見てください。弟が死んだ日の翌日です。', side: 'right' },
+      { speaker: 'ヤス', text: '「私は見てしまった。あの子の体に残された無数の痣を。これは事故ではない。しかし理事長は、全てを闇に葬ろうとしている」', side: 'left' },
+      { speaker: '神崎美咲', text: 'やっぱり…弟は殺されたんだ。', side: 'right' },
+      { speaker: 'ヤス', text: '藤原さんはなぜ20年間、沈黙していたのでしょう。', side: 'left' },
+    ],
+  },
+  c7s09: {
+    title: '沈黙の理由',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '白石凛', text: '倉庫で見つけました。20年前の「内部調査報告書」です。', side: 'right' },
+      { speaker: 'ヤス', text: 'これは…公式の事故報告書とは全く違う内容だ。', side: 'left' },
+      { speaker: '白石凛', text: '藤原さんの署名があります。「虐待の疑いあり。しかし里親家庭の社会的地位を考慮し、事故として処理することを理事会で決定」', side: 'right' },
+      { speaker: 'ヤス', text: '藤原さんも隠蔽に加担していた。', side: 'left' },
+      { speaker: '白石凛', text: 'だから苦しんでいたんですね…最近の藤原さん、よく「もう逃げられない」って呟いていました。', side: 'right' },
+      { speaker: 'ヤス', text: '20年経って、なぜ今告発を決意したのか。それが鍵だ。', side: 'left' },
+    ],
+  },
+  c7s10: {
+    title: '元妻の証言',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_42.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_city_council_office.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '大森さん、当時の奥様にお話を伺いました。', side: 'left' },
+      { speaker: '大森健太', text: '元妻に？あいつは精神を病んでいる。何を言ったか知らないが、信用に値しない。', side: 'right' },
+      { speaker: 'ヤス', text: '「夫が翔太を殴っているのを何度も見た。止めようとしたら私も殴られた」と。', side: 'left' },
+      { speaker: '大森健太', text: 'でたらめだ！離婚のときに揉めたから、逆恨みしているんだ。', side: 'right' },
+      { speaker: 'ヤス', text: '離婚の原因は何だったんですか。', side: 'left' },
+      { speaker: '大森健太', text: '…そんなこと、あなたに話す義務はない。これ以上続けるなら、弁護士を通してもらう。', side: 'right' },
+    ],
+  },
+  c7s11: {
+    title: '理事長の過去',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_41.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '榊原理事長、20年前はどのような立場でしたか。', side: 'left' },
+      { speaker: '榊原恭子', text: '当時は事務局長でした。現場の責任者として、日々の運営に追われていましたわ。', side: 'right' },
+      { speaker: 'ヤス', text: '神崎翔太くんの死について、内部調査報告書が存在しますね。', side: 'left' },
+      { speaker: '榊原恭子', text: '…どこでそれを。', side: 'right' },
+      { speaker: 'ヤス', text: '虐待を認識しながら隠蔽した。その決定に、あなたも関わっていた。', side: 'left' },
+      { speaker: '榊原恭子', text: 'NPOは寄付と信頼で成り立っています。一つのスキャンダルで、何百人もの子どもたちの支援が途絶える。私は…全体を守る選択をしたのです。', side: 'right' },
+      { speaker: 'ヤス', text: '一人の子どもの命を犠牲にして？', side: 'left' },
+    ],
+  },
+  c7s12: {
+    title: '白石凛の告白',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '白石凛', text: 'ヤスさん、実は…私のこと、調べましたか？', side: 'right' },
+      { speaker: 'ヤス', text: '白石凛。28歳。3年前にこのNPOに就職した。それ以前の経歴が、不自然に空白ですね。', side: 'left' },
+      { speaker: '白石凛', text: '…私、施設育ちなんです。「ひだまりの会」を通じて、里親家庭を転々としました。', side: 'right' },
+      { speaker: 'ヤス', text: 'このNPOに就職した理由は？', side: 'left' },
+      { speaker: '白石凛', text: '藤原さんが、私の担当だったんです。子どもの頃、唯一優しくしてくれた大人。だから…彼のそばで働きたかった。', side: 'right' },
+      { speaker: 'ヤス', text: '藤原さんから、過去の事件について聞いていましたか。', side: 'left' },
+      { speaker: '白石凛', text: '最近になって、少しだけ。「昔、守れなかった子がいる。その子の姉に、全てを話すつもりだ」と。', side: 'right' },
+    ],
+  },
+  c7s13: {
+    title: '政治家の弱み',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_42.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_city_council_office.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '大森さん、来月の市長選に立候補されるそうですね。', side: 'left' },
+      { speaker: '大森健太', text: 'ええ、多くの市民から推薦をいただきまして。', side: 'right' },
+      { speaker: 'ヤス', text: '藤原さんが告発していたら、どうなっていましたか。', side: 'left' },
+      { speaker: '大森健太', text: '仮定の話はやめていただきたい。', side: 'right' },
+      { speaker: 'ヤス', text: '20年前の児童虐待死。それが公になれば、政治生命は終わりだ。動機としては十分ですね。', side: 'left' },
+      { speaker: '大森健太', text: '私は殺していない！あの夜はパーティに出席していた。100人以上の証人がいる。', side: 'right' },
+      { speaker: 'ヤス', text: 'アリバイがあることは承知しています。だから疑問なんです。誰があなたの代わりに手を汚したのか。', side: 'left' },
+    ],
+  },
+  c7s14: {
+    title: '消えた証拠',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_39.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎美咲', text: 'ヤスさん、大変です。藤原さんの自宅が荒らされていました。', side: 'right' },
+      { speaker: 'ヤス', text: '日記帳を持ち出した後で良かった。他に何か盗まれていましたか？', side: 'left' },
+      { speaker: '神崎美咲', text: '警察の話では、パソコンと、大量の書類が。', side: 'right' },
+      { speaker: 'ヤス', text: '証拠隠滅が続いている。犯人はまだ動いている。', side: 'left' },
+      { speaker: '神崎美咲', text: '怖いです…でも、ここで引くわけにはいかない。翔太のためにも。', side: 'right' },
+      { speaker: 'ヤス', text: '美咲さん、しばらく安全な場所に身を隠してください。あなたにも危険が及ぶ可能性がある。', side: 'left' },
+    ],
+  },
+  c7s15: {
+    title: '理事会の闇',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_41.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '榊原さん、20年前の理事会メンバーを調べました。', side: 'left' },
+      { speaker: '榊原恭子', text: '…それが何か。', side: 'right' },
+      { speaker: 'ヤス', text: '大森健太氏の父親、大森正義氏。当時の理事長でしたね。', side: 'left' },
+      { speaker: '榊原恭子', text: 'ご存知でしたか。正義氏は5年前に他界されました。', side: 'right' },
+      { speaker: 'ヤス', text: '息子が里親をしていた家庭で子どもが死んだ。父親が理事長として隠蔽した。見事な構図ですね。', side: 'left' },
+      { speaker: '榊原恭子', text: '私は…指示に従っただけです。', side: 'right' },
+      { speaker: 'ヤス', text: 'そして今、息子の健太氏は市長選に出馬しようとしている。あなたの沈黙は、彼を守るためだったのか。', side: 'left' },
+    ],
+  },
+  c7s16: {
+    title: '藤原の決意',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '白石凛', text: 'これ、藤原さんが私に預けていたものです。「もし自分に何かあったら」って。', side: 'right' },
+      { speaker: 'ヤス', text: 'USBメモリ…中身は？', side: 'left' },
+      { speaker: '白石凛', text: '20年前の写真です。翔太くんの…遺体の写真。', side: 'right' },
+      { speaker: 'ヤス', text: 'これは…全身に痣がある。事故ではありえない。', side: 'left' },
+      { speaker: '白石凛', text: '藤原さんは密かに撮影して、ずっと持っていたんですね。告発のための証拠として。', side: 'right' },
+      { speaker: 'ヤス', text: 'なぜ今まで出さなかったのか。彼を縛っていたものは何だったのか。', side: 'left' },
+    ],
+  },
+  c7s17: {
+    title: '脅迫の手紙',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_44.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_detective_office_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎隆三', text: '探偵さん、これを見てくれ。昔の手紙だ。', side: 'right' },
+      { speaker: 'ヤス', text: '消印は20年前。差出人は…「ひだまりの会」。', side: 'left' },
+      { speaker: '神崎隆三', text: '「翔太くんの件で騒ぎ立てるなら、美咲さんの将来にも影響が出るかもしれません」と書いてある。', side: 'right' },
+      { speaker: 'ヤス', text: '脅迫だ。あなたはこれで沈黙を強いられた。', side: 'left' },
+      { speaker: '神崎隆三', text: '娘まで巻き込まれると思ったら…何も言えなくなった。20年間、ずっと自分を責めてきた。', side: 'right' },
+      { speaker: 'ヤス', text: 'この手紙、誰が書いたかわかりますか。', side: 'left' },
+    ],
+  },
+  c7s18: {
+    title: '筆跡の一致',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_41.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_npo_office_crime_scene.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '榊原さん、この手紙に見覚えは？', side: 'left' },
+      { speaker: '榊原恭子', text: '…これは。', side: 'right' },
+      { speaker: 'ヤス', text: '20年前、神崎家に送られた脅迫状です。あなたの筆跡と一致しました。', side: 'left' },
+      { speaker: '榊原恭子', text: '私は…組織を守ろうとしただけです。', side: 'right' },
+      { speaker: 'ヤス', text: '組織のために、遺族を脅し、口封じをした。そして今回、藤原さんも？', side: 'left' },
+      { speaker: '榊原恭子', text: '違います！藤原さんを殺したのは私ではありません。隠蔽には関わりましたが、殺人だけは。', side: 'right' },
+    ],
+  },
+  c7s19: {
+    title: '目撃証言',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_41.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_hidamari_headquarters.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '誰が来ていたんですか。', side: 'left' },
+      { speaker: '榊原恭子', text: '大森健太氏の秘書です。若い男で、いつも大森氏の指示で動いている。', side: 'right' },
+      { speaker: 'ヤス', text: 'その秘書がなぜ事務所に？', side: 'left' },
+      { speaker: '榊原恭子', text: 'わかりません。ただ、藤原さんと言い争う声が聞こえました。私は怖くなって、そのまま帰ったのです。', side: 'right' },
+      { speaker: 'ヤス', text: 'なぜ今まで黙っていた。', side: 'left' },
+      { speaker: '榊原恭子', text: '大森氏を敵に回せば、私も終わりです。でも…もう限界です。20年間、嘘をつき続けることに疲れました。', side: 'right' },
+    ],
+  },
+  c7s20: {
+    title: '秘書の正体',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_42.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_city_council_office.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '大森さん、あなたの秘書について聞きたい。', side: 'left' },
+      { speaker: '大森健太', text: '秘書がどうかしましたか。', side: 'right' },
+      { speaker: 'ヤス', text: '事件の夜、NPOの事務所にいた。藤原さんと会っていた。', side: 'left' },
+      { speaker: '大森健太', text: '…彼は私の指示で動いただけだ。', side: 'right' },
+      { speaker: 'ヤス', text: '何を指示したんですか。', side: 'left' },
+      { speaker: '大森健太', text: '藤原に金を渡して黙らせろと。それだけだ。殺せとは言っていない。', side: 'right' },
+      { speaker: 'ヤス', text: 'では、秘書が独断で殺したと？', side: 'left' },
+      { speaker: '大森健太', text: '知らない！あいつが勝手にやったことだ！', side: 'right' },
+    ],
+  },
+  c7s21: {
+    title: '秘書の告白',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_detective_office_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '白石凛', text: 'ヤスさん、秘書の人が警察に出頭したそうです。', side: 'right' },
+      { speaker: 'ヤス', text: '何と言っているんですか。', side: 'left' },
+      { speaker: '白石凛', text: '「大森議員に命じられて藤原を殺した」と。でも大森さんは否定している。', side: 'right' },
+      { speaker: 'ヤス', text: '水掛け論か。しかし、何かがおかしい。', side: 'left' },
+      { speaker: '白石凛', text: '何がですか？', side: 'right' },
+      { speaker: 'ヤス', text: '秘書が単独犯なら、なぜ藤原さんの自宅まで荒らす必要があった。', side: 'left' },
+    ],
+  },
+  c7s22: {
+    title: '真実への収束',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_39.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_detective_office_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎美咲', text: 'ヤスさん、まだ真犯人がいるかもしれないと。', side: 'right' },
+      { speaker: 'ヤス', text: '美咲さん、藤原さんと最後に会った時、他に誰かいませんでしたか。', side: 'left' },
+      { speaker: '神崎美咲', text: 'いいえ、二人きり…あ、でも。帰り際、女性とすれ違いました。藤原さんに会釈していた。', side: 'right' },
+      { speaker: 'ヤス', text: 'その女性の特徴は。', side: 'left' },
+      { speaker: '神崎美咲', text: '明るい茶色の髪で、ポニーテールの…若い女性でした。', side: 'right' },
+      { speaker: 'ヤス', text: '（…その特徴は、まさか）', side: 'left' },
+    ],
+  },
+  c7s23: {
+    title: '最後のピース',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_detective_office_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: '白石さん、少し話があります。', side: 'left' },
+      { speaker: '白石凛', text: 'はい、何でしょう。', side: 'right' },
+      { speaker: 'ヤス', text: 'あなたは藤原さんを慕っていた。でも、あなたも「ひだまりの会」の被害者だった。', side: 'left' },
+      { speaker: '白石凛', text: '…何のことですか。', side: 'right' },
+      { speaker: 'ヤス', text: 'あなたが里親家庭を転々としたのは、斡旋に問題があったからだ。藤原さんはそれを知ってずっと罪悪感を抱えていた。', side: 'left' },
+      { speaker: '白石凛', text: '…全部、知っていたんですね。', side: 'right' },
+    ],
+  },
+  c7s24: {
+    title: '20年越しの告発',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_43.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_detective_office_night.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: 'ヤス', text: 'あなたは藤原さんを殺してはいない。でも、大森の秘書に情報を流していた。', side: 'left' },
+      { speaker: '白石凛', text: '私は…大森さんに脅されていたんです。昔の私の記録をばらすと。でも、藤原さんが死ぬなんて思わなかった。', side: 'right' },
+      { speaker: 'ヤス', text: 'あなたも被害者だ。でも、真実を話す義務がある。', side: 'left' },
+      { speaker: '白石凛', text: 'わかっています。藤原さんは言っていました。「嘘をつき続けることが、一番自分を壊す」と。私も…もう嘘はつきたくない。', side: 'right' },
+      { speaker: 'ヤス', text: '事件の全容が見えました。藤原さんの告発は、20年越しにようやく届く。', side: 'left' },
+      { speaker: '神崎美咲', text: 'ありがとうございます、ヤスさん。翔太、聞こえた？やっと、本当のことが明るみに出るよ。', side: 'right' },
+    ],
+  },
+  c7s25: {
+    title: 'ひだまりの向こう側',
+    leftImg: 'img/Chapter1/Chara/image_merge_order_chara_00.png',
+    rightImg: 'img/Chapter7/chara/image_merge_order_chara_39.png',
+    bg: 'img/Chapter7/bg/image_merge_bg_rainy_cemetery.png',
+    leftEntrance: 'fade', flipLeft: true,
+    rightEntrance: 'slide', autoClose: false,
+    script: [
+      { speaker: '神崎美咲', text: '大森健太は逮捕され、榊原理事長も隠蔽の罪で起訴されました。NPOは解散するそうです。', side: 'right' },
+      { speaker: 'ヤス', text: '多くの子どもたちの支援が途絶えるのは皮肉ですね。', side: 'left' },
+      { speaker: '神崎美咲', text: 'でも、新しい団体を立ち上げる動きがあるんです。白石さんが中心になって。', side: 'right' },
+      { speaker: 'ヤス', text: '彼女が？', side: 'left' },
+      { speaker: '神崎美咲', text: '父も協力するそうです。20年間黙っていた償いだと。ヤスさん、本当にありがとうございました。', side: 'right' },
+      { speaker: 'ヤス', text: '真実は時に残酷だ。でも、嘘の中で生きるよりはずっといい。弟さんの魂が安らかであることを祈ります。', side: 'left' },
+    ],
+  },
+
   // ===== 第一章スライド01（2,000コインで解放）=====
   scene02: {
     title:         '',
@@ -5847,6 +6271,11 @@ document.getElementById('story-ch6-next-btn')?.addEventListener('click', () => {
   closeStoryScreen();
   progressStory(6);
 });
+document.getElementById('story-ch7-next-btn')?.addEventListener('click', () => {
+  document.getElementById('story-ch7-next-btn')?.classList.remove('guide-attention');
+  closeStoryScreen();
+  progressStory(7);
+});
 
 // デバッグ：ジェネレーター出現
 document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
@@ -5930,6 +6359,11 @@ document.getElementById('debug-adv-ch6-play')?.addEventListener('click', () => {
   if (!val) { showToast('シーンを選択してください'); return; }
   openAdventureScene(val);
 });
+document.getElementById('debug-adv-ch7-play')?.addEventListener('click', () => {
+  const val = document.getElementById('debug-adv-ch7-select').value;
+  if (!val) { showToast('シーンを選択してください'); return; }
+  openAdventureScene(val);
+});
 document.getElementById('debug-adv-ch5-play').addEventListener('click', () => {
   const val = document.getElementById('debug-adv-ch5-select').value;
   if (!val) { showToast('シーンを選択してください'); return; }
@@ -5956,6 +6390,7 @@ document.getElementById('debug-kankei-all').addEventListener('click', () => {
     ...CH4_KANKEI_NODES, ...CH4_KANKEI_EDGES, ...CH4_KANKEI_BADGES,
     ...CH5_KANKEI_NODES, ...CH5_KANKEI_EDGES, ...CH5_KANKEI_BADGES,
     ...CH6_KANKEI_NODES, ...CH6_KANKEI_EDGES, ...CH6_KANKEI_BADGES,
+    ...CH7_KANKEI_NODES, ...CH7_KANKEI_EDGES, ...CH7_KANKEI_BADGES,
   ];
   allKankei.forEach(item => {
     if (!state.seenScenes.includes(item.unlockScene)) state.seenScenes.push(item.unlockScene);
@@ -5965,6 +6400,7 @@ document.getElementById('debug-kankei-all').addEventListener('click', () => {
   eventState.keikakuGenUnlocked = true;
   eventState.snsGenUnlocked     = true;
   eventState.clockGenUnlocked   = true;
+  eventState.ch7GenUnlocked     = true;
   document.getElementById('debug-screen').classList.add('hidden');
   openKankeiScreen();
   showToast('相関図を全解放しました');
@@ -6389,6 +6825,7 @@ let eventState = {
   kantePowerLevel: 0,           // 第三章ジェネレーター 現在選択中の出力パワーレベル
   keikakuPowerLevel: 0,         // 第四章ジェネレーター 現在選択中の出力パワーレベル
   snsPowerLevel: 0,             // 第五章ジェネレーター 現在選択中の出力パワーレベル
+  ch7GenUnlocked: false,        // 第七章ジェネレーター解放済み
   revealed: {},            // 第一章アイテム: stage→true（ダイヤ取得済み）
   seizoRevealed: {},       // 第二章アイテム: stage→true
   genDiscovered: {},       // ジェネレーター: 'ch1_N'/'ch2_N'→true（出現済み）
@@ -7038,6 +7475,31 @@ const CH6_KANKEI_EDGES = [
   { from: 'narumi',    to: 'reina',    label: 'すり替え',   unlockScene: 'c6s21', type: 'criminal' },
 ];
 
+const CH7_KANKEI_NODES = [
+  { id: 'misaki',    name: '神崎美咲', sub: '32歳', img: 'img/Chapter7/chara/image_merge_order_chara_39.png', unlockScene: 'c7s01', x: 50, y: 10 },
+  { id: 'shiraishi', name: '白石凛',   sub: '28歳', img: 'img/Chapter7/chara/image_merge_order_chara_43.png', unlockScene: 'c7s03', x: 20, y: 50 },
+  { id: 'sakakibara',name: '榊原恭子', sub: '62歳', img: 'img/Chapter7/chara/image_merge_order_chara_41.png', unlockScene: 'c7s04', x: 80, y: 50 },
+  { id: 'omori',    name: '大森健太', sub: '45歳', img: 'img/Chapter7/chara/image_merge_order_chara_42.png', unlockScene: 'c7s05', x: 80, y: 85 },
+  { id: 'ryuzo',    name: '神崎隆三', sub: '父',   img: 'img/Chapter7/chara/image_merge_order_chara_44.png', unlockScene: 'c7s07', x: 20, y: 85 },
+];
+
+const CH7_KANKEI_BADGES = [
+  { nodeId: 'misaki',    label: '依頼人',   color: '#4a90d9', unlockScene: 'c7s01' },
+  { nodeId: 'shiraishi', label: '内部協力', color: '#e8a838', unlockScene: 'c7s12' },
+  { nodeId: 'sakakibara',label: '隠蔽主犯', color: '#c0392b', unlockScene: 'c7s18' },
+  { nodeId: 'omori',     label: '黒幕',     color: '#8e44ad', unlockScene: 'c7s20' },
+  { nodeId: 'ryuzo',     label: '沈黙の父', color: '#7f8c8d', unlockScene: 'c7s17' },
+];
+
+const CH7_KANKEI_EDGES = [
+  { from: 'misaki',    to: 'ryuzo',      label: '父娘',     unlockScene: 'c7s07', type: 'normal' },
+  { from: 'misaki',    to: 'shiraishi',  label: '協力',     unlockScene: 'c7s09', type: 'normal' },
+  { from: 'sakakibara',to: 'omori',      label: '共犯',     unlockScene: 'c7s15', type: 'danger' },
+  { from: 'omori',     to: 'shiraishi',  label: '脅迫',     unlockScene: 'c7s20', type: 'danger' },
+  { from: 'sakakibara',to: 'ryuzo',      label: '脅迫状',   unlockScene: 'c7s17', type: 'criminal' },
+  { from: 'misaki',    to: 'sakakibara', label: '告発対象', unlockScene: 'c7s18', type: 'warning' },
+];
+
 const CH5_KANKEI_NODES = [
   { id: 'aoi',    name: 'アオイ',  sub: '27歳', img: 'img/Chapter5/chara/image_merge_order_chara_27.png', unlockScene: 'c5s01', x: 50, y: 40 },
   { id: 'hana',   name: 'ハナ',   sub: '25歳', img: 'img/Chapter5/chara/image_merge_order_chara_29.png', unlockScene: 'c5s05', x: 15, y: 85 },
@@ -7170,6 +7632,7 @@ function updateKankeiChapterSelect() {
   const has4 = eventState.keikakuGenUnlocked;
   const has5 = eventState.snsGenUnlocked;
   const has6 = eventState.clockGenUnlocked;
+  const has7 = eventState.ch7GenUnlocked;
   function addOpt(val, text) {
     if (!list.querySelector(`[data-value="${val}"]`)) {
       const li = document.createElement('li');
@@ -7184,6 +7647,7 @@ function updateKankeiChapterSelect() {
   if (has4) addOpt(4, '第四章　相関図');
   if (has5) addOpt(5, '第五章　相関図');
   if (has6) addOpt(6, '第六章　相関図');
+  if (has7) addOpt(7, '第七章　相関図');
   syncKankeiChapterSelect();
 }
 
@@ -7210,6 +7674,9 @@ function updateKankeiAttention() {
     ...CH6_KANKEI_NODES.map(n => n.unlockScene),
     ...CH6_KANKEI_EDGES.map(e => e.unlockScene),
     ...CH6_KANKEI_BADGES.map(b => b.unlockScene),
+    ...CH7_KANKEI_NODES.map(n => n.unlockScene),
+    ...CH7_KANKEI_EDGES.map(e => e.unlockScene),
+    ...CH7_KANKEI_BADGES.map(b => b.unlockScene),
   ];
   const hasNew = allKankeiScenes.some(s => seen.includes(s) && !viewed.includes(s));
   const btn = document.getElementById('kankei-open-btn');
@@ -7240,9 +7707,9 @@ function renderKankeiBoard() {
   nodesWrap.innerHTML = '';
 
   // 章に応じてデータを切り替え
-  const NODES  = currentKankeiChapter === 6 ? CH6_KANKEI_NODES  : currentKankeiChapter === 5 ? CH5_KANKEI_NODES  : currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
-  const EDGES  = currentKankeiChapter === 6 ? CH6_KANKEI_EDGES  : currentKankeiChapter === 5 ? CH5_KANKEI_EDGES  : currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
-  const BADGES = currentKankeiChapter === 6 ? CH6_KANKEI_BADGES : currentKankeiChapter === 5 ? CH5_KANKEI_BADGES : currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
+  const NODES  = currentKankeiChapter === 7 ? CH7_KANKEI_NODES  : currentKankeiChapter === 6 ? CH6_KANKEI_NODES  : currentKankeiChapter === 5 ? CH5_KANKEI_NODES  : currentKankeiChapter === 4 ? CH4_KANKEI_NODES  : currentKankeiChapter === 3 ? CH3_KANKEI_NODES  : currentKankeiChapter === 2 ? CH2_KANKEI_NODES  : CH1_KANKEI_NODES;
+  const EDGES  = currentKankeiChapter === 7 ? CH7_KANKEI_EDGES  : currentKankeiChapter === 6 ? CH6_KANKEI_EDGES  : currentKankeiChapter === 5 ? CH5_KANKEI_EDGES  : currentKankeiChapter === 4 ? CH4_KANKEI_EDGES  : currentKankeiChapter === 3 ? CH3_KANKEI_EDGES  : currentKankeiChapter === 2 ? CH2_KANKEI_EDGES  : CH1_KANKEI_EDGES;
+  const BADGES = currentKankeiChapter === 7 ? CH7_KANKEI_BADGES : currentKankeiChapter === 6 ? CH6_KANKEI_BADGES : currentKankeiChapter === 5 ? CH5_KANKEI_BADGES : currentKankeiChapter === 4 ? CH4_KANKEI_BADGES : currentKankeiChapter === 3 ? CH3_KANKEI_BADGES : currentKankeiChapter === 2 ? CH2_KANKEI_BADGES : CH1_KANKEI_BADGES;
 
   // 解放済みノードセット
   const unlockedNodeIds = new Set(
@@ -7729,6 +8196,47 @@ function renderStoryScreen() {
   } else {
     ch6Block?.classList.add('hidden');
   }
+
+  // ── 第七章 ──
+  const ch7Unlocked4 = eventState.ch7GenUnlocked;
+  const ch7Complete = state.ch7Count >= CH7_SCENE_IDS.length;
+  const ch7Block     = document.getElementById('story-ch7-block');
+  const ch7NextWrap  = document.getElementById('story-ch7-next-wrap');
+  const ch7NextBtn   = document.getElementById('story-ch7-next-btn');
+  const ch7CostLbl   = document.getElementById('story-ch7-cost-label');
+  const ch7Complete_ = document.getElementById('story-ch7-complete');
+  const ch7LockedLbl = document.getElementById('story-ch7-locked');
+
+  if (ch7Unlocked4) {
+    ch7Block?.classList.remove('hidden');
+    ch7LockedLbl?.classList.add('hidden');
+    if (ch7Complete) {
+      ch7NextWrap?.classList.add('hidden');
+      ch7Complete_?.classList.remove('hidden');
+      ch7NextBtn?.classList.remove('guide-attention');
+    } else {
+      ch7NextWrap?.classList.remove('hidden');
+      ch7Complete_?.classList.add('hidden');
+      if (ch7NextBtn) {
+        ch7NextBtn.disabled = !canAfford;
+        if (canAfford) ch7NextBtn.classList.add('guide-attention');
+        else ch7NextBtn.classList.remove('guide-attention');
+      }
+      if (ch7CostLbl) ch7CostLbl.innerHTML = costLabel;
+    }
+    {
+      const seenCh7 = (state.seenScenes ?? []).some(id => CH7_SCENE_LIST.some(s => s.id === id));
+      const ch7ReplayWrap = document.getElementById('story-ch7-replay-wrap');
+      if (seenCh7) {
+        ch7ReplayWrap?.classList.remove('hidden');
+        renderCh7ReplayList();
+      } else {
+        ch7ReplayWrap?.classList.add('hidden');
+      }
+    }
+  } else {
+    ch7Block?.classList.add('hidden');
+  }
 }
 
 function renderCh3ReplayList() {
@@ -7816,6 +8324,31 @@ function renderCh6ReplayList() {
     const li = document.createElement('li');
     li.className = 'story-replay-item';
     li.textContent = `第六章 ${s.label}`;
+    li.addEventListener('click', () => {
+      closeStoryScreen();
+      openAdventureScene(s.id);
+    });
+    list.appendChild(li);
+  });
+  if (list.children.length === 0) {
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.style.color = '#888';
+    li.textContent = '（まだ読んだストーリーがありません）';
+    list.appendChild(li);
+  }
+}
+
+function renderCh7ReplayList() {
+  const list = document.getElementById('story-ch7-replay-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const seen = state.seenScenes ?? [];
+  CH7_SCENE_LIST.forEach(s => {
+    if (!seen.includes(s.id)) return;
+    const li = document.createElement('li');
+    li.className = 'story-replay-item';
+    li.textContent = `第七章 ${s.title}`;
     li.addEventListener('click', () => {
       closeStoryScreen();
       openAdventureScene(s.id);
@@ -8804,8 +9337,58 @@ const CH4_SCENE_IDS = ['c4s01','c4s02','c4s03','c4s04','c4s05','c4s06','c4s07','
 const CH5_SCENE_IDS = ['c5s01','c5s02','c5s03','c5s04','c5s05','c5s06','c5s07','c5s08','c5s09','c5s10','c5s11','c5s12','c5s13','c5s14','c5s15','c5s16','c5s17','c5s18','c5s19','c5s20','c5s21','c5s22','c5s23','c5s24','c5s25','c5s26','c5s27','c5s28','c5s29','c5s30'];
 const CH6_SCENE_IDS = ['c6s01','c6s02','c6s03','c6s04','c6s05','c6s06','c6s07','c6s08','c6s09','c6s10','c6s11','c6s12','c6s13','c6s14','c6s15','c6s16','c6s17','c6s18','c6s19','c6s20','c6s21','c6s22','c6s23','c6s24','c6s25'];
 
+const CH7_SCENE_IDS = ['c7s01','c7s02','c7s03','c7s04','c7s05','c7s06','c7s07','c7s08','c7s09','c7s10','c7s11','c7s12','c7s13','c7s14','c7s15','c7s16','c7s17','c7s18','c7s19','c7s20','c7s21','c7s22','c7s23','c7s24','c7s25'];
+
+const CH7_SCENE_LIST = [
+  {id:'c7s01',title:'雨の墓前'},
+  {id:'c7s02',title:'20年前の記憶'},
+  {id:'c7s03',title:'遺体発見現場'},
+  {id:'c7s04',title:'NPO「ひだまりの会」'},
+  {id:'c7s05',title:'市議会議員の事務所'},
+  {id:'c7s06',title:'古い事故報告書'},
+  {id:'c7s07',title:'父親との対峙'},
+  {id:'c7s08',title:'藤原の日記'},
+  {id:'c7s09',title:'沈黙の理由'},
+  {id:'c7s10',title:'元妻の証言'},
+  {id:'c7s11',title:'理事長の過去'},
+  {id:'c7s12',title:'白石凛の告白'},
+  {id:'c7s13',title:'政治家の弱み'},
+  {id:'c7s14',title:'消えた証拠'},
+  {id:'c7s15',title:'理事会の闇'},
+  {id:'c7s16',title:'藤原の決意'},
+  {id:'c7s17',title:'脅迫の手紙'},
+  {id:'c7s18',title:'筆跡の一致'},
+  {id:'c7s19',title:'目撃証言'},
+  {id:'c7s20',title:'秘書の正体'},
+  {id:'c7s21',title:'秘書の告白'},
+  {id:'c7s22',title:'真実への収束'},
+  {id:'c7s23',title:'最後のピース'},
+  {id:'c7s24',title:'20年越しの告発'},
+  {id:'c7s25',title:'ひだまりの向こう側'},
+];
+
 // ストーリー進行処理（chapter: 1/2/3）
 function progressStory(chapter = 1) {
+  // Scene8以降の読み制限（コイン消費前）
+  if (chapter === 2 && state.ch2Count >= 7 && state.ch1Count < CH1_SCENE_IDS.length) {
+    showToast('第一章を全話読了してから続きを読めます'); return;
+  }
+  if (chapter === 3 && state.ch3Count >= 7 && state.ch2Count < CH2_SCENE_IDS.length) {
+    showToast('第二章を全話読了してから続きを読めます'); return;
+  }
+  if (chapter === 4 && state.ch4Count >= 7 && state.ch3Count < CH3_SCENE_IDS.length) {
+    showToast('第三章を全話読了してから続きを読めます'); return;
+  }
+  if (chapter === 5 && state.ch5Count >= 7 && state.ch4Count < CH4_SCENE_IDS.length) {
+    showToast('第四章を全話読了してから続きを読めます'); return;
+  }
+  if (chapter === 6 && state.ch6Count >= 7 && state.ch4Count < CH4_SCENE_IDS.length) {
+    showToast('第四章を全話読了してから続きを読めます'); return;
+  }
+  if (chapter === 7 && state.ch7Count >= 7 && state.ch5Count < CH5_SCENE_IDS.length) {
+    showToast('第五章を全話読了してから続きを読めます'); return;
+  }
+
   const cost = getStoryCost(state.playerLevel);
   if (state.coin < cost) { showToast('コインが足りません'); return; }
   state.coin    -= cost;
@@ -8829,6 +9412,9 @@ function progressStory(chapter = 1) {
   } else if (chapter === 6) {
     sceneId = CH6_SCENE_IDS[state.ch6Count] ?? CH6_SCENE_IDS[CH6_SCENE_IDS.length - 1];
     state.ch6Count = Math.min(state.ch6Count + 1, CH6_SCENE_IDS.length);
+  } else if (chapter === 7) {
+    sceneId = CH7_SCENE_IDS[state.ch7Count] ?? CH7_SCENE_IDS[CH7_SCENE_IDS.length - 1];
+    state.ch7Count = Math.min(state.ch7Count + 1, CH7_SCENE_IDS.length);
   } else {
     sceneId = CH4_SCENE_IDS[state.ch4Count] ?? CH4_SCENE_IDS[CH4_SCENE_IDS.length - 1];
     state.ch4Count = Math.min(state.ch4Count + 1, CH4_SCENE_IDS.length);
@@ -8901,8 +9487,8 @@ function progressStory(chapter = 1) {
     });
   }
 
-  // ── 第二章ジェネレーター解放：第一章 Scene8 終了時
-  if (chapter === 1 && state.ch1Count === 8 && !eventState.fireGenUnlocked) {
+  // ── 第二章ジェネレーター解放：第一章 Scene6 終了時
+  if (chapter === 1 && state.ch1Count === 6 && !eventState.fireGenUnlocked) {
     _chain(() => {
       unlockFireGenerator();
       requestAnimationFrame(() => {
@@ -8944,8 +9530,8 @@ function progressStory(chapter = 1) {
     }
   }
 
-  // ── 第三章ジェネレーター解放：第二章 Scene8 終了時
-  if (chapter === 2 && state.ch2Count === 8 && !eventState.kanteGenUnlocked) {
+  // ── 第三章ジェネレーター解放：第二章 Scene6 終了時
+  if (chapter === 2 && state.ch2Count === 6 && !eventState.kanteGenUnlocked) {
     _chain(() => {
       unlockKanteGenerator();
       requestAnimationFrame(() => {
@@ -8966,12 +9552,10 @@ function progressStory(chapter = 1) {
     }
   }
 
-  // ── 第四章ジェネレーター解放：第三章 Scene8 終了時 かつ 第一章全話完了済み
-  //    ※ どちらが先に満たされても対応（両条件を都度チェック）
-  const ch4Unlockable = state.ch3Count >= 8 &&
-                        state.ch1Count >= CH1_SCENE_IDS.length &&
+  // ── 第四章ジェネレーター解放：第三章 Scene6 終了時
+  const ch4Unlockable = state.ch3Count >= 6 &&
                         !eventState.keikakuGenUnlocked;
-  if (ch4Unlockable && (chapter === 3 || chapter === 1)) {
+  if (ch4Unlockable && chapter === 3) {
     _chain(() => {
       unlockKeikakuGenerator();
       requestAnimationFrame(() => {
@@ -8990,6 +9574,54 @@ function progressStory(chapter = 1) {
       const t = state.ch4Count;
       _chain(() => _spawnChGenLvUpTile(4, t, eventState.keikakuLvTriggered));
     }
+  }
+
+  // ── 第五章解放：第四章 Scene6 終了時 かつ 第一章全話完了済み
+  const ch5Unlockable = state.ch4Count >= 6 &&
+                        state.ch1Count >= CH1_SCENE_IDS.length &&
+                        !eventState.snsGenUnlocked;
+  if (ch5Unlockable && (chapter === 4 || chapter === 1)) {
+    _chain(() => {
+      unlockSnsGenerator();
+      requestAnimationFrame(() => {
+        startGuide([
+          '第五章が解放されました。',
+          'SNS炎上事件の調査が始まります。',
+        ], null, null);
+      });
+    });
+  }
+
+  // ── 第六章解放：第五章 Scene6 終了時 かつ 第二章全話完了済み
+  const ch6Unlockable = state.ch5Count >= 6 &&
+                        state.ch2Count >= CH2_SCENE_IDS.length &&
+                        !eventState.clockGenUnlocked;
+  if (ch6Unlockable && (chapter === 5 || chapter === 2)) {
+    _chain(() => {
+      unlockClockGenerator();
+      requestAnimationFrame(() => {
+        startGuide([
+          '第六章が解放されました。',
+          '時計店の謎を解き明かす時が来ました。',
+        ], null, null);
+      });
+    });
+  }
+
+  // ── 第七章解放：第六章 Scene6 終了時 かつ 第三章全話完了済み
+  const ch7Unlockable = state.ch6Count >= 6 &&
+                        state.ch3Count >= CH3_SCENE_IDS.length &&
+                        !eventState.ch7GenUnlocked;
+  if (ch7Unlockable && (chapter === 6 || chapter === 3)) {
+    _chain(() => {
+      unlockCh7Generator();
+      requestAnimationFrame(() => {
+        startGuide([
+          '第七章が解放されました。',
+          '里親の嘘、最後の謎を追います。',
+        ], null, null);
+      });
+    });
   }
 
   openAdventureScene(sceneId, postSceneCallback || undefined);
@@ -9503,6 +10135,8 @@ function handleAnyGenTap(i) {
     const selItem = eventState.board[eventState.selectedCell];
     if (selItem && selItem.isEventGen) {
       if (!isFireGen && !selItem.isFireGen &&
+          !item.isKanteGen && !selItem.isKanteGen &&
+          !item.isKeikakuGen && !selItem.isKeikakuGen &&
           (selItem.genLevel ?? 0) === (item.genLevel ?? 0)) {
         mergeEventGenerators(eventState.selectedCell, i);
         eventState.selectedCell = null;
@@ -10512,6 +11146,30 @@ function unlockKeikakuGenerator() {
   showToast('第四章ジェネレーター解放！');
   renderEventBoard();
   renderEventRequest();
+}
+
+// SNS解析機ジェネレーター解放（第五章ストーリー解放時）
+function unlockSnsGenerator() {
+  eventState.snsGenUnlocked = true;
+  showToast('第五章が解放されました！');
+  renderStoryScreen();
+  updateKankeiChapterSelect();
+}
+
+// 時計修復台ジェネレーター解放（第六章ストーリー解放時）
+function unlockClockGenerator() {
+  eventState.clockGenUnlocked = true;
+  showToast('第六章が解放されました！');
+  renderStoryScreen();
+  updateKankeiChapterSelect();
+}
+
+// 第七章ジェネレーター解放（第七章ストーリー解放時）
+function unlockCh7Generator() {
+  eventState.ch7GenUnlocked = true;
+  showToast('第七章が解放されました！');
+  renderStoryScreen();
+  updateKankeiChapterSelect();
 }
 
 // 設計台ジェネレーターLvアップ判定：プレイヤーLvベース
