@@ -23,9 +23,10 @@ REMOVEBG_API_KEY  = os.getenv('REMOVEBG_API_KEY')
 # キャラクター共通スタイル（ヤスに合わせたテンプレート）
 CHAR_STYLE = (
     "high quality Japanese visual novel character illustration, "
-    "square composition (1:1 aspect ratio), bust portrait from chest to top of head, "
-    "full head and hair completely visible, 20% empty white space above the hair, "
-    "character height fills about 75% of the image, head is NOT near the top edge, "
+    "square composition (1:1 aspect ratio), wide upper-body shot, "
+    "showing full figure from waist to top of head, "
+    "wide shot zoomed out, large white margins on all four sides, "
+    "head occupies only the upper-center portion of the image, "
     "detailed anime art style, soft gradient shading, "
     "detailed layered hair with natural highlights and shadow tones, "
     "smooth skin with soft shading, subtle thin outlines, "
@@ -119,25 +120,44 @@ def add_padding(image_path, top_ratio=0.15, other_ratio=0.06):
     new_img.paste(img, (pad_other, pad_top))
     new_img.save(image_path)
 
-def remove_background(image_path, subject_type='auto'):
-    """rembg でローカル背景透過 → フリンジ除去まで実施"""
+def remove_background(image_path, subject_type='auto', use_api=False):
+    """背景透過: remove.bg API(use_api=True の時のみ) → isnet-anime"""
+    import io
+    import numpy as np
+    from PIL import Image
     print(f"  🔲 透過中: {image_path.name}")
+
+    # remove.bg API（明示的に有効化した場合のみ使用）
+    if use_api and REMOVEBG_API_KEY:
+        try:
+            resp = requests.post(
+                'https://api.remove.bg/v1.0/removebg',
+                headers={'X-Api-Key': REMOVEBG_API_KEY},
+                files={'image_file': open(image_path, 'rb')},
+                data={'size': 'auto'},
+                timeout=60,
+            )
+            if resp.status_code == 200:
+                img = Image.open(io.BytesIO(resp.content)).convert('RGBA')
+                img.save(image_path)
+                print(f"  ✅ 透過完了（remove.bg API）: {image_path.name}")
+                return
+            print(f"  ⚠️  remove.bg API 失敗({resp.status_code})、isnet-anime にフォールバック")
+        except Exception as e:
+            print(f"  ⚠️  remove.bg API エラー({e})、isnet-anime にフォールバック")
+
+    # isnet-anime（アニメ特化モデル）
     try:
-        import numpy as np
         from rembg import remove, new_session
-        from PIL import Image
         with open(image_path, 'rb') as f:
             input_data = f.read()
-        model = 'u2net_human_seg' if subject_type == 'person' else 'u2net'
-        session = new_session(model)
+        session = new_session('isnet-anime')
         output_data = remove(input_data, session=session)
-
-        # フリンジ(半透過ピクセル)を除去: alpha < 128 → 0, >= 128 → 255
-        img = Image.open(__import__('io').BytesIO(output_data)).convert('RGBA')
+        img = Image.open(io.BytesIO(output_data)).convert('RGBA')
         arr = np.array(img)
         arr[:, :, 3] = np.where(arr[:, :, 3] < 128, 0, 255).astype(np.uint8)
         Image.fromarray(arr).save(image_path)
-        print(f"  ✅ 透過完了: {image_path.name}")
+        print(f"  ✅ 透過完了（isnet-anime）: {image_path.name}")
     except Exception as e:
         print(f"  ❌ 透過失敗: {e}")
 
@@ -290,10 +310,9 @@ def main():
                 print(f"  ⏭️ スキップ（既存ファイルあり）: {filename.name}")
                 continue
             if generate_image(cp['prompt'], filename, size="1024x1024"):
-                remove_background(filename, 'person')
-                # ヤスと同じ 500×500 にリサイズ
+                # 白背景のまま 500×500 にリサイズ（透過処理はスキップ）
                 from PIL import Image as _Img
-                _Img.open(filename).resize((500, 500), _Img.LANCZOS).save(filename)
+                _Img.open(filename).convert('RGB').resize((500, 500), _Img.LANCZOS).save(filename)
         cache['char_file_names'] = char_file_names
         save_cache()
     else:
@@ -313,11 +332,12 @@ def main():
             f"Lv1は最もシンプルな道具、Lv7は最も高機能・印象的な機器にしてください。\n"
             f"各LvのDALL-E 3プロンプト（英語）をJSON配列で出力してください（説明文不要）:\n"
             f'[{{"lv":1,"name":"名前（日本語）","prompt":"英語プロンプト"}}]\n'
-            f"プロンプトの条件: pure white background, detailed Japanese mobile game item illustration, "
+            f"プロンプトの条件: pure white background #FFFFFF, detailed Japanese mobile game item illustration, "
             f"soft cel-shaded style with clean outlines, rich colors with shading and highlights, "
             f"slightly isometric or front-facing view, game card art style, no text, no person, "
             f"entire object fully visible with generous padding on all sides, "
-            f"object occupies no more than 75% of the image area, NEVER crop any part of the object"
+            f"object occupies no more than 75% of the image area, NEVER crop any part of the object, "
+            f"NO flames, NO fire, NO smoke, NO dark background, NO atmospheric effects, NO glowing aura"
         )
         gen_prompts = parse_json_from_text(gen_prompts_text)
         if gen_prompts:
@@ -327,7 +347,7 @@ def main():
                 print(f"\n【ジェネレーター Lv{lv}: {gp.get('name','')}】")
                 if generate_image(gp['prompt'], filename):
                     add_padding(filename, top_ratio=0.18, other_ratio=0.15)
-                    remove_background(filename, 'product')
+                    remove_background(filename, 'product', use_api=False)
 
     # ══════════════════════════════════════════════════════════════
     # フェーズ4: マージアイテム画像生成（Lv1〜12）
@@ -340,11 +360,12 @@ def main():
             f"Lv1は最もシンプル、Lv12は最も価値が高く印象的なアイテムにしてください。\n"
             f"各LvのDALL-E 3プロンプト（英語）をJSON配列で出力してください（説明文不要）:\n"
             f'[{{"lv":1,"name":"名前（日本語）","prompt":"英語プロンプト"}}]\n'
-            f"プロンプトの条件: pure white background, detailed Japanese mobile game item illustration, "
+            f"プロンプトの条件: pure white background #FFFFFF, detailed Japanese mobile game item illustration, "
             f"soft cel-shaded style with clean outlines, rich colors with shading and highlights, "
             f"slightly isometric or front-facing view, game card art style, no text, no person, "
             f"entire object fully visible with generous padding on all sides, "
-            f"object occupies no more than 75% of the image area, NEVER crop any part of the object"
+            f"object occupies no more than 75% of the image area, NEVER crop any part of the object, "
+            f"NO flames, NO fire, NO smoke, NO dark background, NO atmospheric effects, NO glowing aura"
         )
         item_prompts = parse_json_from_text(item_prompts_text)
         if item_prompts:
@@ -354,7 +375,7 @@ def main():
                 print(f"\n【アイテム Lv{lv}: {ip.get('name','')}】")
                 if generate_image(ip['prompt'], filename):
                     add_padding(filename, top_ratio=0.18, other_ratio=0.15)
-                    remove_background(filename, 'product')
+                    remove_background(filename, 'product', use_api=False)
 
     # ══════════════════════════════════════════════════════════════
     # フェーズ5: 脚本生成（25話）

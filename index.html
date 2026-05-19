@@ -228,6 +228,7 @@
             <option value="ch5-unlock">第五章解放</option>
             <option value="ch6-unlock">第六章解放</option>
             <option value="ch7-unlock">第七章解放</option>
+            <option value="ch8-unlock">第八章解放</option>
             <option value="hp-shortage">HP不足ガイド</option>
             <option value="bubble-guide">しゃぼん玉アイテムガイド</option>
             <option value="burst-unlock">依頼バースト解放ガイド</option>
@@ -704,6 +705,38 @@
           </select>
           <button id="debug-adv-ch7-play" class="debug-loop-btn">▶</button>
         </div>
+        <div class="debug-row">
+          <span class="debug-label">Ch8 ADV</span>
+          <select id="debug-adv-ch8-select" class="debug-select">
+            <option value="">-- 選択 --</option>
+            <option value="c8s01">Ch8 Scene01（深夜の依頼）</option>
+            <option value="c8s02">Ch8 Scene02（途切れた配信）</option>
+            <option value="c8s03">Ch8 Scene03（マネージャーの本音）</option>
+            <option value="c8s04">Ch8 Scene04（冷たい計算）</option>
+            <option value="c8s05">Ch8 Scene05（推しへの執着）</option>
+            <option value="c8s06">Ch8 Scene06（ガチ恋の闇）</option>
+            <option value="c8s07">Ch8 Scene07（仲良しの仮面）</option>
+            <option value="c8s08">Ch8 Scene08（嫉妬の証拠）</option>
+            <option value="c8s09">Ch8 Scene09（匿名の悪意）</option>
+            <option value="c8s10">Ch8 Scene10（住所特定の闇）</option>
+            <option value="c8s11">Ch8 Scene11（莉子の部屋）</option>
+            <option value="c8s12">Ch8 Scene12（隠されたUSB）</option>
+            <option value="c8s13">Ch8 Scene13（脅迫の証拠）</option>
+            <option value="c8s14">Ch8 Scene14（過去の傷）</option>
+            <option value="c8s15">Ch8 Scene15（内部告発）</option>
+            <option value="c8s16">Ch8 Scene16（共犯の影）</option>
+            <option value="c8s17">Ch8 Scene17（守護者の正体）</option>
+            <option value="c8s18">Ch8 Scene18（歪んだ愛）</option>
+            <option value="c8s19">Ch8 Scene19（もう一人の訪問者）</option>
+            <option value="c8s20">Ch8 Scene20（契約の裏側）</option>
+            <option value="c8s21">Ch8 Scene21（隠された場所）</option>
+            <option value="c8s22">Ch8 Scene22（逃避行の果て）</option>
+            <option value="c8s23">Ch8 Scene23（配信者の涙）</option>
+            <option value="c8s24">Ch8 Scene24（光の中へ）</option>
+            <option value="c8s25">Ch8 Scene25（再起の配信）</option>
+          </select>
+          <button id="debug-adv-ch8-play" class="debug-loop-btn">▶</button>
+        </div>
         <!-- 相関図デバッグ -->
         <div class="debug-row">
           <span class="debug-label">相関図</span>
@@ -994,6 +1027,18 @@
         <div id="story-ch7-locked" class="story-locked-label hidden"></div>
         <div id="story-ch7-replay-wrap" class="story-replay-wrap hidden">
           <ul id="story-ch7-replay-list" class="story-replay-list"></ul>
+        </div>
+      </div>
+      <div id="story-ch8-block" class="story-chapter-block hidden">
+        <div class="story-chapter-heading">第八章</div>
+        <div id="story-ch8-next-wrap">
+          <button id="story-ch8-next-btn" class="story-read-btn" disabled><img src="img/UI/image_merge_story_read_btn.png" alt="ストーリーを読む" class="story-read-btn-img"></button>
+          <div id="story-ch8-cost-label" class="story-cost-label">💰 2,000消費</div>
+        </div>
+        <div id="story-ch8-complete" class="story-complete-label hidden">✅ 第八章クリア！</div>
+        <div id="story-ch8-locked" class="story-locked-label hidden"></div>
+        <div id="story-ch8-replay-wrap" class="story-replay-wrap hidden">
+          <ul id="story-ch8-replay-list" class="story-replay-list"></ul>
         </div>
       </div>
     </div>
