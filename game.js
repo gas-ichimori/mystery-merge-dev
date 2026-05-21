@@ -6907,6 +6907,19 @@ const VOL1_COIN_BASE    = 5000;       // 1回目クリア コイン報酬
 const VOL1_HP_STEP      = 25;         // クリアごとに体力報酬 +25
 const VOL1_COIN_STEP    = 2500;       // クリアごとにコイン報酬 +2500
 
+// 7行・8行・9行の3-5列（0-indexed）= インデックス 44,45,46,51,52,53,58,59,60 は常に空白
+const VOL1_BLOCKED_CELLS = new Set([44, 45, 46, 51, 52, 53, 58, 59, 60]);
+
+// Vol1 アイテム画像パス（虫眼鏡 + Lv1〜4）
+const VOL1_STAGE_IMAGES = [
+  'img/EventVol1/image_vol1_item_lv1.png',
+  'img/EventVol1/image_vol1_item_lv2.png',
+  'img/EventVol1/image_vol1_item_lv3.png',
+  'img/EventVol1/image_vol1_item_lv4.png',
+];
+const VOL1_STAGE_NAMES = ['手がかりメモ', '現場スケッチ', '証拠写真', '捜査ファイル★'];
+const VOL1_MAGNIFY_IMAGE = 'img/EventVol1/image_vol1_magnify.png';
+
 // 霧セル → 埋め込みステージ (1/2/3) のマップ
 // 行列は1-indexed で指定:
 //   Lv1: 5行目3-5列, 6-8行目2・6列, 9行目3-5列
@@ -7023,7 +7036,8 @@ let eventState = {
   vol1LevelPoints: 0,           // 現レベルの累積ポイント
   vol1LevelTarget: VOL1_FIRST_TARGET, // 現レベルのクリア目標
   vol1LevelsCleared: 0,         // クリア済みレベル数
-  vol1Board: Array(VOL1_BOARD_SIZE).fill(null), // 3×3 盤面
+  vol1Board: Array(VOL1_BOARD_SIZE).fill(null), // 63セル盤面
+  vol1Discovered: {},             // 発見済みVol1アイテムステージ { stage: true }
   genPowerLevel: 0,             // 第一章ジェネレーター 現在選択中の出力パワーレベル
   firePowerLevel: 0,            // 第二章ジェネレーター 現在選択中の出力パワーレベル
   kantePowerLevel: 0,           // 第三章ジェネレーター 現在選択中の出力パワーレベル
@@ -7107,6 +7121,7 @@ function initEventMap() {
   eventState.vol1LevelTarget    = VOL1_FIRST_TARGET;
   eventState.vol1LevelsCleared  = 0;
   eventState.vol1Board          = Array(VOL1_BOARD_SIZE).fill(null);
+  eventState.vol1Discovered     = {};
   eventState.revealed           = {};
   eventState.seizoRevealed      = {};
   eventState.genDiscovered      = {};
@@ -8971,19 +8986,37 @@ function checkVol1Unlock() {
   ], '#vol1-slot-btn', null);
 }
 
-// Vol1 盤面を初期化（全セルに蜘蛛の巣Lv1を配置）
+// Vol1 盤面を初期化（ブロックセル以外に蜘蛛の巣Lv1を配置）
 function initVol1Board() {
-  eventState.vol1Board = Array(VOL1_BOARD_SIZE).fill(null).map(() => ({ stage: 1, isWebbed: true }));
+  eventState.vol1Board = Array(VOL1_BOARD_SIZE).fill(null).map((_, i) =>
+    VOL1_BLOCKED_CELLS.has(i) ? null : { stage: 1, isWebbed: true }
+  );
 }
 
-// 蜘蛛の巣アイテムが無くなったら空きセルに補充
+// 蜘蛛の巣アイテムが無くなったら空きセル（ブロック除く）に補充
 function checkVol1Refill() {
   const hasWebbed = eventState.vol1Board.some(c => c && c.isWebbed);
   if (!hasWebbed) {
-    eventState.vol1Board = eventState.vol1Board.map(c =>
-      c === null ? { stage: 1, isWebbed: true } : c
+    eventState.vol1Board = eventState.vol1Board.map((c, i) =>
+      VOL1_BLOCKED_CELLS.has(i) ? null :
+      (c === null ? { stage: 1, isWebbed: true } : c)
     );
   }
+}
+
+// 最も近い空きセル（ブロック・null除く）を返す
+function findNearestEmptyVol1Cell(fromIdx) {
+  const fromRow = Math.floor(fromIdx / VOL1_BOARD_COLS);
+  const fromCol = fromIdx % VOL1_BOARD_COLS;
+  let bestIdx = -1, bestDist = Infinity;
+  eventState.vol1Board.forEach((cell, i) => {
+    if (cell !== null || VOL1_BLOCKED_CELLS.has(i)) return;
+    const row = Math.floor(i / VOL1_BOARD_COLS);
+    const col = i % VOL1_BOARD_COLS;
+    const dist = Math.abs(row - fromRow) + Math.abs(col - fromCol);
+    if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+  });
+  return bestIdx;
 }
 
 // Vol1 スロットUI更新
@@ -8999,12 +9032,14 @@ function renderVol1Slot() {
 
 // Vol1 レベルメーターUI更新
 function renderVol1MeterUI() {
-  const fill  = document.getElementById('vol1-meter-fill');
-  const label = document.getElementById('vol1-meter-label');
-  const num   = document.getElementById('vol1-magnify-num');
-  if (fill)  fill.style.width = `${Math.min(100, (eventState.vol1LevelPoints / eventState.vol1LevelTarget) * 100)}%`;
-  if (label) label.textContent = `${eventState.vol1LevelPoints} / ${eventState.vol1LevelTarget}`;
-  if (num)   num.textContent   = eventState.vol1MagnifyGlasses;
+  const fill     = document.getElementById('vol1-meter-fill');
+  const label    = document.getElementById('vol1-meter-label');
+  const num      = document.getElementById('vol1-magnify-num');
+  const genCount = document.getElementById('vol1-gen-count');
+  if (fill)     fill.style.width = `${Math.min(100, (eventState.vol1LevelPoints / eventState.vol1LevelTarget) * 100)}%`;
+  if (label)    label.textContent = `${eventState.vol1LevelPoints} / ${eventState.vol1LevelTarget}`;
+  if (num)      num.textContent   = eventState.vol1MagnifyGlasses;
+  if (genCount) genCount.textContent = eventState.vol1MagnifyGlasses;
 }
 
 // Vol1 ポイント加算（レベルクリア判定込み）
@@ -9039,22 +9074,35 @@ function renderVol1Board() {
   for (let i = 0; i < VOL1_BOARD_SIZE; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
+
+    // ブロックセル（永続空白）
+    if (VOL1_BLOCKED_CELLS.has(i)) {
+      cell.classList.add('vol1-blocked');
+      cell.dataset.index = i;
+      board.appendChild(cell);
+      continue;
+    }
+
     const item = eventState.vol1Board[i];
     if (item) {
       cell.classList.add('has-item');
       const img = document.createElement('img');
       img.className = 'item-img';
-      if (item.isWebbed) {
+
+      if (item.isMagnify) {
+        img.src = VOL1_MAGNIFY_IMAGE;
+        img.alt = '虫眼鏡';
+      } else if (item.isWebbed) {
         img.src = 'img/EventVol1/image_vol1_item_lv1_web.png';
         img.alt = '蜘蛛の巣Lv1';
       } else {
-        img.src = `img/EventVol1/image_vol1_item_lv${item.stage}.png`;
+        img.src = VOL1_STAGE_IMAGES[item.stage - 1] ?? `img/EventVol1/image_vol1_item_lv${item.stage}.png`;
         img.alt = `Lv${item.stage}`;
       }
       cell.appendChild(img);
 
       // Lv4★ 水蒸気アニメーション
-      if (!item.isWebbed && item.stage === VOL1_MAX_STAGE) {
+      if (!item.isWebbed && !item.isMagnify && item.stage === VOL1_MAX_STAGE) {
         cell.classList.add('has-coin-smoke');
         const star = document.createElement('span');
         star.className = 'vol1-star-badge';
@@ -9070,19 +9118,32 @@ function renderVol1Board() {
         cell.appendChild(smoke);
       }
 
-      if (!item.isWebbed) {
+      if (!item.isWebbed && !item.isMagnify) {
         const lbl = document.createElement('span');
         lbl.className = 'item-stage';
         lbl.textContent = `Lv${item.stage}`;
         cell.appendChild(lbl);
       }
     }
+
     if (vol1SelectedCell === i) cell.classList.add('selected');
+
     // マージターゲットハイライト
-    if (selItem && !selItem.isWebbed && i !== vol1SelectedCell && item && !item.isWebbed &&
-        selItem.stage === item.stage && selItem.stage < VOL1_MAX_STAGE) {
-      cell.classList.add('merge-target');
+    if (selItem) {
+      if (!selItem.isMagnify && !selItem.isWebbed && i !== vol1SelectedCell &&
+          item && !item.isWebbed && !item.isMagnify &&
+          selItem.stage === item.stage && selItem.stage < VOL1_MAX_STAGE) {
+        cell.classList.add('merge-target');
+      }
+      // 虫眼鏡が選択中 → 蜘蛛の巣をハイライト
+      if (selItem.isMagnify && item && item.isWebbed) {
+        cell.classList.add('merge-target');
+      }
     }
+
+    // ドラッグ＆ドロップ（タッチ）
+    cell.addEventListener('touchstart', (e) => startVol1DragTouch(e, i), { passive: false });
+    cell.addEventListener('mousedown', (e) => startVol1DragMouse(e, i));
     cell.dataset.index = i;
     cell.addEventListener('click', () => handleVol1CellTap(i));
     board.appendChild(cell);
@@ -9091,17 +9152,62 @@ function renderVol1Board() {
 
 // Vol1 セルタップ処理
 function handleVol1CellTap(idx) {
+  if (vol1Drag.tapHandled) { vol1Drag.tapHandled = false; return; }
+  if (VOL1_BLOCKED_CELLS.has(idx)) return;
+
   const item = eventState.vol1Board[idx];
 
-  // 空セル → 選択解除
+  // 空セル → 選択中アイテムを移動 or 選択解除
   if (!item) {
-    vol1SelectedCell = null;
+    if (vol1SelectedCell !== null) {
+      // 選択中アイテムを空セルへ移動
+      eventState.vol1Board[idx] = eventState.vol1Board[vol1SelectedCell];
+      eventState.vol1Board[vol1SelectedCell] = null;
+      vol1SelectedCell = null;
+      renderVol1Board();
+    } else {
+      vol1SelectedCell = null;
+      renderVol1Board();
+    }
+    return;
+  }
+
+  // 虫眼鏡アイテム（ボード上）のタップ
+  if (item.isMagnify) {
+    // 蜘蛛の巣が選択されていたら解除に使う（逆方向）
+    if (vol1SelectedCell !== null) {
+      const selItem = eventState.vol1Board[vol1SelectedCell];
+      if (selItem && selItem.isWebbed) {
+        // 虫眼鏡で蜘蛛の巣を除去（ボード上の虫眼鏡を消費）
+        eventState.vol1Board[idx] = null;
+        eventState.vol1Board[vol1SelectedCell] = { stage: 1, isWebbed: false };
+        vol1SelectedCell = null;
+        checkVol1Refill();
+        renderVol1Board();
+        return;
+      }
+    }
+    vol1SelectedCell = idx;
+    showNaviHintForVol1Item(item);
     renderVol1Board();
     return;
   }
 
-  // 蜘蛛の巣セル → 虫眼鏡を消費して除去
+  // 蜘蛛の巣セル
   if (item.isWebbed) {
+    // 虫眼鏡アイテムが選択中なら、そちらを消費して除去
+    if (vol1SelectedCell !== null) {
+      const selItem = eventState.vol1Board[vol1SelectedCell];
+      if (selItem && selItem.isMagnify) {
+        eventState.vol1Board[vol1SelectedCell] = null;
+        eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
+        vol1SelectedCell = null;
+        checkVol1Refill();
+        renderVol1Board();
+        return;
+      }
+    }
+    // 虫眼鏡カウントで除去
     vol1SelectedCell = null;
     if (eventState.vol1MagnifyGlasses <= 0) {
       showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
@@ -9121,7 +9227,6 @@ function handleVol1CellTap(idx) {
   if (item.stage === VOL1_MAX_STAGE) {
     const now = Date.now();
     if (vol1LastTapIdx === idx && now - vol1LastTapTime < 400) {
-      // ダブルタップ確定：アイテム消費 + ポイント付与
       eventState.vol1Board[idx] = null;
       vol1SelectedCell = null;
       vol1LastTapIdx  = -1;
@@ -9132,9 +9237,9 @@ function handleVol1CellTap(idx) {
       renderVol1MeterUI();
       showToast(`+${VOL1_POINTS_PER_TAP}pt！`);
     } else {
-      // 1回目タップ → 記録のみ
       vol1LastTapIdx  = idx;
       vol1LastTapTime = now;
+      showNaviHintForVol1Item(item);
     }
     return;
   }
@@ -9142,6 +9247,8 @@ function handleVol1CellTap(idx) {
   // 通常マージ
   if (vol1SelectedCell === null) {
     vol1SelectedCell = idx;
+    eventState.vol1Discovered[item.stage] = true;
+    showNaviHintForVol1Item(item);
     renderVol1Board();
   } else if (vol1SelectedCell === idx) {
     vol1SelectedCell = null;
@@ -9149,18 +9256,344 @@ function handleVol1CellTap(idx) {
   } else {
     const from = eventState.vol1Board[vol1SelectedCell];
     const to   = eventState.vol1Board[idx];
-    if (from && !from.isWebbed && to && !to.isWebbed && from.stage === to.stage && from.stage < VOL1_MAX_STAGE) {
+    if (from && !from.isWebbed && !from.isMagnify && to && !to.isWebbed && !to.isMagnify &&
+        from.stage === to.stage && from.stage < VOL1_MAX_STAGE) {
       const fromIdx = vol1SelectedCell;
       eventState.vol1Board[fromIdx] = null;
       eventState.vol1Board[idx] = { stage: from.stage + 1, isWebbed: false };
+      eventState.vol1Discovered[from.stage + 1] = true;
       vol1SelectedCell = null;
       checkVol1Refill();
       renderVol1Board();
       triggerMergeAnim('#vol1-board', idx);
     } else {
       vol1SelectedCell = idx;
+      showNaviHintForVol1Item(item);
       renderVol1Board();
     }
+  }
+}
+
+// ========================================
+// Vol1 ドラッグ＆ドロップ
+// ========================================
+let vol1Drag = {
+  active: false,
+  fromIdx: null,       // null = ジェネレーターからのドラッグ
+  isFromGen: false,    // ジェネレーター（虫眼鏡）からのドラッグ
+  ghost: null,
+  tapHandled: false,
+  startX: 0,
+  startY: 0,
+  hasMoved: false,
+};
+
+function startVol1DragMouse(e, fromIdx) {
+  const item = eventState.vol1Board[fromIdx];
+  if (!item || VOL1_BLOCKED_CELLS.has(fromIdx)) return;
+  showNaviHintForVol1Item(item);
+  e.preventDefault();
+  vol1Drag.active   = true;
+  vol1Drag.fromIdx  = fromIdx;
+  vol1Drag.isFromGen = false;
+  vol1Drag.tapHandled = false;
+  vol1Drag.startX   = e.clientX;
+  vol1Drag.startY   = e.clientY;
+  vol1Drag.hasMoved = false;
+  createVol1Ghost(e.clientX, e.clientY, fromIdx);
+  document.addEventListener('mousemove', onVol1DragMove);
+  document.addEventListener('mouseup', onVol1DragEnd);
+}
+
+function startVol1DragTouch(e, fromIdx) {
+  const item = eventState.vol1Board[fromIdx];
+  if (!item || VOL1_BLOCKED_CELLS.has(fromIdx)) return;
+  showNaviHintForVol1Item(item);
+  e.preventDefault();
+  vol1Drag.active   = true;
+  vol1Drag.fromIdx  = fromIdx;
+  vol1Drag.isFromGen = false;
+  vol1Drag.tapHandled = false;
+  const t = e.touches[0];
+  vol1Drag.startX   = t.clientX;
+  vol1Drag.startY   = t.clientY;
+  vol1Drag.hasMoved = false;
+  createVol1Ghost(t.clientX, t.clientY, fromIdx);
+  document.addEventListener('touchmove', onVol1DragMoveTouch, { passive: false });
+  document.addEventListener('touchend', onVol1DragEndTouch);
+  document.addEventListener('touchcancel', onVol1DragEndTouch);
+}
+
+function startVol1GenDragMouse(e) {
+  if (eventState.vol1MagnifyGlasses <= 0) return;
+  e.preventDefault();
+  vol1Drag.active   = true;
+  vol1Drag.fromIdx  = null;
+  vol1Drag.isFromGen = true;
+  vol1Drag.tapHandled = false;
+  vol1Drag.startX   = e.clientX;
+  vol1Drag.startY   = e.clientY;
+  vol1Drag.hasMoved = false;
+  createVol1GenGhost(e.clientX, e.clientY);
+  document.addEventListener('mousemove', onVol1DragMove);
+  document.addEventListener('mouseup', onVol1DragEnd);
+}
+
+function startVol1GenDragTouch(e) {
+  if (eventState.vol1MagnifyGlasses <= 0) return;
+  e.preventDefault();
+  vol1Drag.active   = true;
+  vol1Drag.fromIdx  = null;
+  vol1Drag.isFromGen = true;
+  vol1Drag.tapHandled = false;
+  const t = e.touches[0];
+  vol1Drag.startX   = t.clientX;
+  vol1Drag.startY   = t.clientY;
+  vol1Drag.hasMoved = false;
+  createVol1GenGhost(t.clientX, t.clientY);
+  document.addEventListener('touchmove', onVol1DragMoveTouch, { passive: false });
+  document.addEventListener('touchend', onVol1DragEndTouch);
+  document.addEventListener('touchcancel', onVol1DragEndTouch);
+}
+
+function createVol1Ghost(x, y, fromIdx) {
+  document.getElementById('vol1-drag-ghost')?.remove();
+  if (vol1Drag.ghost) { vol1Drag.ghost.remove(); vol1Drag.ghost = null; }
+  const item = eventState.vol1Board[fromIdx];
+  const ghost = document.createElement('div');
+  ghost.id = 'vol1-drag-ghost';
+  ghost.style.cssText = `position:fixed;pointer-events:none;z-index:999;opacity:0.85;transform:translate(-50%,-50%);left:${x}px;top:${y}px;`;
+  const img = document.createElement('img');
+  img.src = item.isMagnify ? VOL1_MAGNIFY_IMAGE
+           : item.isWebbed ? 'img/EventVol1/image_vol1_item_lv1_web.png'
+           : (VOL1_STAGE_IMAGES[item.stage - 1] ?? 'img/EventVol1/image_vol1_item_lv1.png');
+  img.style.cssText = 'width:52px;height:52px;object-fit:contain;display:block;';
+  ghost.appendChild(img);
+  document.body.appendChild(ghost);
+  vol1Drag.ghost = ghost;
+}
+
+function createVol1GenGhost(x, y) {
+  document.getElementById('vol1-drag-ghost')?.remove();
+  if (vol1Drag.ghost) { vol1Drag.ghost.remove(); vol1Drag.ghost = null; }
+  const ghost = document.createElement('div');
+  ghost.id = 'vol1-drag-ghost';
+  ghost.style.cssText = `position:fixed;pointer-events:none;z-index:999;opacity:0.85;transform:translate(-50%,-50%);left:${x}px;top:${y}px;`;
+  const img = document.createElement('img');
+  img.src = VOL1_MAGNIFY_IMAGE;
+  img.style.cssText = 'width:52px;height:52px;object-fit:contain;display:block;';
+  ghost.appendChild(img);
+  document.body.appendChild(ghost);
+  vol1Drag.ghost = ghost;
+}
+
+function onVol1DragMove(e) {
+  if (!vol1Drag.ghost) return;
+  if (!vol1Drag.hasMoved) {
+    const dx = e.clientX - vol1Drag.startX, dy = e.clientY - vol1Drag.startY;
+    if (dx * dx + dy * dy > 25) vol1Drag.hasMoved = true;
+  }
+  vol1Drag.ghost.style.left = e.clientX + 'px';
+  vol1Drag.ghost.style.top  = e.clientY + 'px';
+  highlightVol1DropTarget(e.clientX, e.clientY);
+}
+
+function onVol1DragMoveTouch(e) {
+  e.preventDefault();
+  if (!vol1Drag.ghost) return;
+  const t = e.touches[0];
+  if (!vol1Drag.hasMoved) {
+    const dx = t.clientX - vol1Drag.startX, dy = t.clientY - vol1Drag.startY;
+    if (dx * dx + dy * dy > 25) vol1Drag.hasMoved = true;
+  }
+  vol1Drag.ghost.style.left = t.clientX + 'px';
+  vol1Drag.ghost.style.top  = t.clientY + 'px';
+  highlightVol1DropTarget(t.clientX, t.clientY);
+}
+
+function onVol1DragEnd(e) {
+  endVol1Drag(e.clientX, e.clientY);
+  document.removeEventListener('mousemove', onVol1DragMove);
+  document.removeEventListener('mouseup', onVol1DragEnd);
+}
+
+function onVol1DragEndTouch(e) {
+  const t = e.changedTouches?.[0];
+  if (t) endVol1Drag(t.clientX, t.clientY);
+  else {
+    if (vol1Drag.ghost) { vol1Drag.ghost.remove(); vol1Drag.ghost = null; }
+    document.getElementById('vol1-drag-ghost')?.remove();
+    vol1Drag.active = false;
+    vol1Drag.fromIdx = null;
+    document.querySelectorAll('#vol1-board .cell').forEach(c => c.classList.remove('drop-over'));
+    renderVol1Board();
+  }
+  document.removeEventListener('touchmove', onVol1DragMoveTouch);
+  document.removeEventListener('touchend', onVol1DragEndTouch);
+  document.removeEventListener('touchcancel', onVol1DragEndTouch);
+}
+
+function highlightVol1DropTarget(x, y) {
+  document.querySelectorAll('#vol1-board .cell').forEach(c => c.classList.remove('drop-over'));
+  const idx = getVol1CellIndexAt(x, y);
+  if (idx !== null && idx !== vol1Drag.fromIdx && !VOL1_BLOCKED_CELLS.has(idx)) {
+    document.querySelectorAll('#vol1-board .cell')[idx]?.classList.add('drop-over');
+  }
+}
+
+function getVol1CellIndexAt(x, y) {
+  const cells = document.querySelectorAll('#vol1-board .cell');
+  for (const cell of cells) {
+    const rect = cell.getBoundingClientRect();
+    if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+      return parseInt(cell.dataset.index);
+    }
+  }
+  return null;
+}
+
+function endVol1Drag(x, y) {
+  if (vol1Drag.ghost) { vol1Drag.ghost.remove(); vol1Drag.ghost = null; }
+  document.getElementById('vol1-drag-ghost')?.remove();
+  document.querySelectorAll('#vol1-board .cell').forEach(c => c.classList.remove('drop-over'));
+  if (!vol1Drag.active) return;
+
+  const toIdx    = getVol1CellIndexAt(x, y);
+  const fromIdx  = vol1Drag.fromIdx;
+  const isFromGen = vol1Drag.isFromGen;
+  vol1Drag.active   = false;
+  vol1Drag.fromIdx  = null;
+  vol1Drag.isFromGen = false;
+
+  // 指が動いていない = タップ相当 → clickに任せる
+  if (!vol1Drag.hasMoved) {
+    if (isFromGen) {
+      vol1Drag.tapHandled = false;
+      onVol1MagnifyGenTap();
+    } else {
+      vol1Drag.tapHandled = false;
+    }
+    return;
+  }
+  vol1Drag.tapHandled = true;
+
+  if (toIdx === null || (!isFromGen && toIdx === fromIdx) || VOL1_BLOCKED_CELLS.has(toIdx)) {
+    renderVol1Board();
+    return;
+  }
+
+  // ジェネレーターからのドロップ
+  if (isFromGen) {
+    if (eventState.vol1MagnifyGlasses <= 0) {
+      showToast('虫眼鏡がありません');
+      renderVol1Board();
+      return;
+    }
+    const targetItem = eventState.vol1Board[toIdx];
+    if (targetItem !== null) {
+      showToast('そのセルには置けません');
+      renderVol1Board();
+      return;
+    }
+    eventState.vol1MagnifyGlasses--;
+    eventState.vol1Board[toIdx] = { isMagnify: true };
+    renderVol1Slot();
+    renderVol1MeterUI();
+    renderVol1Board();
+    return;
+  }
+
+  // ボード→ボードのドロップ
+  const fromItem = eventState.vol1Board[fromIdx];
+  const toItem   = eventState.vol1Board[toIdx];
+  if (!fromItem) { renderVol1Board(); return; }
+
+  // 虫眼鏡 → 蜘蛛の巣セルにドロップ → 除去
+  if (fromItem.isMagnify && toItem && toItem.isWebbed) {
+    eventState.vol1Board[fromIdx] = null;
+    eventState.vol1Board[toIdx]   = { stage: 1, isWebbed: false };
+    vol1SelectedCell = null;
+    checkVol1Refill();
+    renderVol1Board();
+    return;
+  }
+
+  // 通常マージ
+  if (!fromItem.isWebbed && !fromItem.isMagnify && toItem && !toItem.isWebbed && !toItem.isMagnify &&
+      fromItem.stage === toItem.stage && fromItem.stage < VOL1_MAX_STAGE) {
+    eventState.vol1Board[fromIdx] = null;
+    eventState.vol1Board[toIdx]   = { stage: fromItem.stage + 1, isWebbed: false };
+    eventState.vol1Discovered[fromItem.stage + 1] = true;
+    vol1SelectedCell = null;
+    checkVol1Refill();
+    renderVol1Board();
+    triggerMergeAnim('#vol1-board', toIdx);
+    return;
+  }
+
+  // 空セルへの移動
+  if (toItem === null) {
+    eventState.vol1Board[toIdx]   = fromItem;
+    eventState.vol1Board[fromIdx] = null;
+    vol1SelectedCell = null;
+    renderVol1Board();
+    return;
+  }
+
+  renderVol1Board();
+}
+
+// 虫眼鏡ジェネレーター タップ → 最近傍空きセルにドロップ
+function onVol1MagnifyGenTap() {
+  if (eventState.vol1MagnifyGlasses <= 0) {
+    showToast('虫眼鏡がありません（依頼を解決して獲得しよう！）');
+    return;
+  }
+  const genEl = document.getElementById('vol1-gen-magnify');
+  const emptyIdx = findNearestEmptyVol1Cell(Math.floor(VOL1_BOARD_SIZE / 2));
+  if (emptyIdx === -1) {
+    showBoardFullToast(null, false);
+    return;
+  }
+  eventState.vol1MagnifyGlasses--;
+  eventState.vol1Board[emptyIdx] = { isMagnify: true };
+  renderVol1Slot();
+  renderVol1MeterUI();
+
+  // フライアニメーション：ジェネレーター → セル
+  const cells   = document.querySelectorAll('#vol1-board .cell');
+  const toCell  = cells[emptyIdx];
+  if (genEl && toCell) {
+    const fr = genEl.getBoundingClientRect();
+    const tr = toCell.getBoundingClientRect();
+    const startX = fr.left + fr.width  / 2;
+    const startY = fr.top  + fr.height / 2;
+    const endX   = tr.left + tr.width  / 2;
+    const endY   = tr.top  + tr.height / 2;
+    const dist   = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+    const cpX    = (startX + endX) / 2;
+    const cpY    = (startY + endY) / 2 - Math.max(40, dist * 0.45);
+    const el     = document.createElement('div');
+    const img    = document.createElement('img');
+    img.src = VOL1_MAGNIFY_IMAGE;
+    img.style.cssText = 'width:48px;height:48px;object-fit:contain;display:block;';
+    el.appendChild(img);
+    el.style.cssText = 'position:fixed;left:0;top:0;pointer-events:none;z-index:500;opacity:0;will-change:transform,opacity;';
+    document.body.appendChild(el);
+    const DURATION = 350, startTime = performance.now();
+    (function animate(now) {
+      const raw = Math.min((now - startTime) / DURATION, 1);
+      const bx  = (1-raw)*(1-raw)*startX + 2*(1-raw)*raw*cpX + raw*raw*endX;
+      const by  = (1-raw)*(1-raw)*startY + 2*(1-raw)*raw*cpY + raw*raw*endY;
+      const sc  = raw < 0.4 ? 0.5 + raw*2.5 : 1.5 - (raw-0.4)*1.2;
+      const op  = raw < 0.15 ? raw/0.15 : raw > 0.75 ? (1-raw)/0.25 : 1;
+      el.style.transform = `translate(${bx}px,${by}px) translate(-50%,-50%) scale(${sc})`;
+      el.style.opacity   = op;
+      if (raw < 1) requestAnimationFrame(animate);
+      else { el.remove(); renderVol1Board(); }
+    })(startTime);
+  } else {
+    renderVol1Board();
   }
 }
 
@@ -9173,6 +9606,9 @@ function openVol1Screen() {
 
 // Vol1 画面を閉じる
 function closeVol1Screen() {
+  if (vol1Drag.ghost) { vol1Drag.ghost.remove(); vol1Drag.ghost = null; }
+  document.getElementById('vol1-drag-ghost')?.remove();
+  vol1Drag.active = false;
   vol1SelectedCell = null;
   document.getElementById('vol1-screen').classList.add('hidden');
 }
@@ -9259,6 +9695,14 @@ function openNaviInfoPopup() {
       imgSrc: ch4.stageImages[idx],
       label: `Lv${idx + 1}`,
       disc: !!eventState.keikakuDiscovered[idx + 1],
+      current: idx + 1 === ctx.stage,
+    }));
+  } else if (ctx.type === 'vol1item') {
+    titleText = 'Vol1捜査アイテム';
+    items = VOL1_STAGE_IMAGES.map((imgSrc, idx) => ({
+      imgSrc,
+      label: VOL1_STAGE_NAMES[idx] ?? `Lv${idx + 1}`,
+      disc: !!eventState.vol1Discovered[idx + 1],
       current: idx + 1 === ctx.stage,
     }));
   }
@@ -9421,6 +9865,22 @@ function showNaviHintForItem(item, persistent = false) {
   }
   // ストックボタン: 霧以外のアイテムは保管可能
   document.getElementById('navi-stock-btn')?.classList.remove('hidden');
+}
+
+function showNaviHintForVol1Item(item) {
+  let text = '';
+  if (item.isMagnify) {
+    text = '虫眼鏡を蜘蛛の巣のアイテムにドロップして除去しましょう。';
+    _showNaviHintPanel(text, false, false, null);
+    return;
+  }
+  const stage = item.stage;
+  const name  = VOL1_STAGE_NAMES[stage - 1] ?? `Lv${stage}アイテム`;
+  const isMax = stage >= VOL1_MAX_STAGE;
+  text = isMax
+    ? `${name} — ダブルタップで+${VOL1_POINTS_PER_TAP}pt獲得！`
+    : `${name} — 同じLvとマージしてレベルアップ！`;
+  _showNaviHintPanel(text, false, false, { type: 'vol1item', stage });
 }
 
 function showNaviHintForCoin(item) {
@@ -12917,9 +13377,21 @@ document.getElementById('vol1-slot-btn').addEventListener('click', () => {
   if (!eventState.vol1Unlocked) return;
   openVol1Screen();
 });
-// Vol1 戻るボタン
+// Vol1 閉じるボタン
 document.getElementById('vol1-close').addEventListener('click', () => {
   closeVol1Screen();
+});
+// Vol1 虫眼鏡ジェネレーター — タップ
+document.getElementById('vol1-gen-magnify')?.addEventListener('click', () => {
+  onVol1MagnifyGenTap();
+});
+// Vol1 虫眼鏡ジェネレーター — ドラッグ（タッチ）
+document.getElementById('vol1-gen-magnify')?.addEventListener('touchstart', (e) => {
+  startVol1GenDragTouch(e);
+}, { passive: false });
+// Vol1 虫眼鏡ジェネレーター — ドラッグ（マウス）
+document.getElementById('vol1-gen-magnify')?.addEventListener('mousedown', (e) => {
+  startVol1GenDragMouse(e);
 });
 
 // ========================================

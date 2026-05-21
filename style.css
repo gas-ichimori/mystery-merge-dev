@@ -4048,7 +4048,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 300;
-  background: #0d1226;
+  background: #0d1226 url('img/EventVol1/image_vol1_bg.png') center / cover no-repeat;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -4075,17 +4075,6 @@ body {
   align-items: center;
   gap: 10px;
 }
-
-#vol1-close {
-  background: none;
-  border: none;
-  color: #a0b4e0;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-}
-#vol1-close:active { opacity: 0.6; }
 
 #vol1-title {
   color: #f9c846;
@@ -4204,4 +4193,78 @@ body {
   width: 12px;
   height: 12px;
   object-fit: contain;
+}
+
+/* Vol1 ブロックセル（永続空白）*/
+.vol1-blocked {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none;
+}
+
+/* Vol1 閉じるボタン（✕、枠なし） */
+#vol1-close {
+  background: none;
+  border: none;
+  color: #a0b4e0;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 0;
+}
+#vol1-close:active { opacity: 0.6; }
+
+/* Vol1 虫眼鏡ジェネレーターエリア */
+#vol1-gen-area {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px 12px;
+  background: rgba(0,0,0,0.25);
+  border-top: 1px solid rgba(80,100,180,0.3);
+}
+
+#vol1-gen-magnify {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(106,61,232,0.2);
+  border: 2px solid rgba(106,61,232,0.6);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  touch-action: none;
+}
+#vol1-gen-magnify:active { transform: scale(0.92); }
+
+.vol1-gen-magnify-img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+#vol1-gen-count-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vol1-gen-count-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+
+#vol1-gen-count {
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  min-width: 20px;
+  text-align: left;
 }
