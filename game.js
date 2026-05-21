@@ -9252,10 +9252,11 @@ function handleVol1CellTap(idx) {
         triggerMergeAnim('#vol1-board', idx);
         return;
       }
-      // Lv2/Lv3: 対応ステージのマージアイテムで除去
+      // Lv2/Lv3: 対応ステージのマージアイテムで除去 → 1段上のアイテムを生成
       if (wl > 1 && selItem && !selItem.isWebbed && !selItem.isMagnify && selItem.stage === wl) {
         eventState.vol1Board[vol1SelectedCell] = null;
-        eventState.vol1Board[idx] = { stage: wl, isWebbed: false };
+        eventState.vol1Board[idx] = { stage: wl + 1, isWebbed: false };
+        eventState.vol1Discovered[wl + 1] = true;
         vol1SelectedCell = null;
         checkVol1Refill();
         hideNaviHint();
@@ -9328,7 +9329,8 @@ function handleVol1CellTap(idx) {
     if (from && from.isWebbed && (from.webLevel ?? 1) > 1 && to.stage === (from.webLevel ?? 1)) {
       const webIdx = vol1SelectedCell;
       const wl = from.webLevel;
-      eventState.vol1Board[webIdx] = { stage: wl, isWebbed: false };
+      eventState.vol1Board[webIdx] = { stage: wl + 1, isWebbed: false };
+      eventState.vol1Discovered[wl + 1] = true;
       eventState.vol1Board[idx] = null;
       vol1SelectedCell = null;
       checkVol1Refill();
@@ -9606,7 +9608,8 @@ function endVol1Drag(x, y) {
       (toItem.webLevel ?? 1) > 1 && fromItem.stage === (toItem.webLevel ?? 1)) {
     const wl = toItem.webLevel;
     eventState.vol1Board[fromIdx] = null;
-    eventState.vol1Board[toIdx]   = { stage: wl, isWebbed: false };
+    eventState.vol1Board[toIdx]   = { stage: wl + 1, isWebbed: false };
+    eventState.vol1Discovered[wl + 1] = true;
     vol1SelectedCell = null;
     checkVol1Refill();
     hideNaviHint();
