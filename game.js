@@ -2706,6 +2706,57 @@ document.getElementById('debug-burst-reset').addEventListener('click', () => {
   showToast('依頼バースト リセット');
 });
 
+// ========================================
+// イベントゲーム Vol1 デバッグボタン
+// ========================================
+document.getElementById('debug-vol1-unlock').addEventListener('click', () => {
+  eventState.fireGenUnlocked = true;
+  eventState.ch2RequestSolvedCount = Math.max(eventState.ch2RequestSolvedCount, 2);
+  checkVol1Unlock();
+  if (eventState.vol1Unlocked) {
+    eventState.vol1MagnifyGlasses += 20;
+    renderVol1Slot();
+    renderVol1MeterUI();
+  }
+  // デバッグ画面を閉じてイベント画面へ
+  document.getElementById('debug-screen').classList.add('hidden');
+  document.getElementById('event-screen').classList.remove('hidden');
+  renderEventBoard();
+  renderEventHeader();
+  renderEventRequest();
+  showToast('🔍 Vol1 解放 + 虫眼鏡×20');
+});
+
+document.getElementById('debug-vol1-add-magnify').addEventListener('click', () => {
+  if (!eventState.vol1Unlocked) { showToast('先にVol1を解放してください'); return; }
+  eventState.vol1MagnifyGlasses += 10;
+  renderVol1Slot();
+  renderVol1MeterUI();
+  showToast('🔍 虫眼鏡 +10');
+});
+
+document.getElementById('debug-vol1-spawn-max').addEventListener('click', () => {
+  if (!eventState.vol1Unlocked) { showToast('先にVol1を解放してください'); return; }
+  const emptyIdx = eventState.vol1Board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showToast('空きがありません'); return; }
+  eventState.vol1Board[emptyIdx] = { stage: VOL1_MAX_STAGE, isWebbed: false };
+  const vol1El = document.getElementById('vol1-screen');
+  if (vol1El && !vol1El.classList.contains('hidden')) renderVol1Board();
+  showToast('⭐ Lv4★ を盤面に配置');
+});
+
+document.getElementById('debug-vol1-reset').addEventListener('click', () => {
+  eventState.vol1Unlocked       = false;
+  eventState.vol1MagnifyGlasses = 0;
+  eventState.vol1LevelPoints    = 0;
+  eventState.vol1LevelTarget    = VOL1_FIRST_TARGET;
+  eventState.vol1LevelsCleared  = 0;
+  eventState.vol1Board          = Array(VOL1_BOARD_SIZE).fill(null);
+  vol1SelectedCell = null;
+  renderVol1Slot();
+  showToast('🔄 Vol1 リセット');
+});
+
 // ポップアップ・通知確認プルダウン
 document.getElementById('debug-notify-play').addEventListener('click', () => {
   const val = document.getElementById('debug-notify-select').value;
@@ -6844,7 +6895,9 @@ const EVENT_TOTAL = EVENT_COLS * EVENT_ROWS;
 // ========================================
 // イベントゲーム Vol1 定数
 // ========================================
-const VOL1_BOARD_SIZE   = 9;           // 3×3 盤面
+const VOL1_BOARD_COLS   = 7;
+const VOL1_BOARD_ROWS   = 9;
+const VOL1_BOARD_SIZE   = VOL1_BOARD_COLS * VOL1_BOARD_ROWS; // 63（メインゲームと同じ9行7列）
 const VOL1_MAX_STAGE    = 4;           // Lv4★ が最大
 const VOL1_POINTS_PER_TAP = 5;        // Lv4★ ダブルタップで +5pt
 const VOL1_FIRST_TARGET = 50;         // 最初のレベルメーター目標
@@ -8974,12 +9027,15 @@ function addVol1Points(pts) {
 
 // Vol1 選択セル管理
 let vol1SelectedCell = null;
+let vol1LastTapIdx   = -1;
+let vol1LastTapTime  = 0;
 
 // Vol1 盤面描画
 function renderVol1Board() {
   const board = document.getElementById('vol1-board');
   if (!board) return;
   board.innerHTML = '';
+  const selItem = vol1SelectedCell !== null ? eventState.vol1Board[vol1SelectedCell] : null;
   for (let i = 0; i < VOL1_BOARD_SIZE; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
@@ -8996,12 +9052,24 @@ function renderVol1Board() {
         img.alt = `Lv${item.stage}`;
       }
       cell.appendChild(img);
+
+      // Lv4★ 水蒸気アニメーション
       if (!item.isWebbed && item.stage === VOL1_MAX_STAGE) {
+        cell.classList.add('has-coin-smoke');
         const star = document.createElement('span');
         star.className = 'vol1-star-badge';
         star.textContent = '★';
         cell.appendChild(star);
+        const smoke = document.createElement('div');
+        smoke.className = 'coin-smoke-overlay';
+        for (let s = 0; s < 3; s++) {
+          const p = document.createElement('span');
+          p.className = 'steam-particle';
+          smoke.appendChild(p);
+        }
+        cell.appendChild(smoke);
       }
+
       if (!item.isWebbed) {
         const lbl = document.createElement('span');
         lbl.className = 'item-stage';
@@ -9010,6 +9078,11 @@ function renderVol1Board() {
       }
     }
     if (vol1SelectedCell === i) cell.classList.add('selected');
+    // マージターゲットハイライト
+    if (selItem && !selItem.isWebbed && i !== vol1SelectedCell && item && !item.isWebbed &&
+        selItem.stage === item.stage && selItem.stage < VOL1_MAX_STAGE) {
+      cell.classList.add('merge-target');
+    }
     cell.dataset.index = i;
     cell.addEventListener('click', () => handleVol1CellTap(i));
     board.appendChild(cell);
@@ -9044,10 +9117,25 @@ function handleVol1CellTap(idx) {
     return;
   }
 
-  // Lv4★ → ダブルタップでポイント付与（シングルタップで+5）
+  // Lv4★ → ダブルタップで消費してポイント付与
   if (item.stage === VOL1_MAX_STAGE) {
-    addVol1Points(VOL1_POINTS_PER_TAP);
-    showToast(`+${VOL1_POINTS_PER_TAP}pt！`);
+    const now = Date.now();
+    if (vol1LastTapIdx === idx && now - vol1LastTapTime < 400) {
+      // ダブルタップ確定：アイテム消費 + ポイント付与
+      eventState.vol1Board[idx] = null;
+      vol1SelectedCell = null;
+      vol1LastTapIdx  = -1;
+      vol1LastTapTime = 0;
+      addVol1Points(VOL1_POINTS_PER_TAP);
+      checkVol1Refill();
+      renderVol1Board();
+      renderVol1MeterUI();
+      showToast(`+${VOL1_POINTS_PER_TAP}pt！`);
+    } else {
+      // 1回目タップ → 記録のみ
+      vol1LastTapIdx  = idx;
+      vol1LastTapTime = now;
+    }
     return;
   }
 
@@ -9062,14 +9150,17 @@ function handleVol1CellTap(idx) {
     const from = eventState.vol1Board[vol1SelectedCell];
     const to   = eventState.vol1Board[idx];
     if (from && !from.isWebbed && to && !to.isWebbed && from.stage === to.stage && from.stage < VOL1_MAX_STAGE) {
-      eventState.vol1Board[vol1SelectedCell] = null;
+      const fromIdx = vol1SelectedCell;
+      eventState.vol1Board[fromIdx] = null;
       eventState.vol1Board[idx] = { stage: from.stage + 1, isWebbed: false };
       vol1SelectedCell = null;
       checkVol1Refill();
+      renderVol1Board();
+      triggerMergeAnim('#vol1-board', idx);
     } else {
       vol1SelectedCell = idx;
+      renderVol1Board();
     }
-    renderVol1Board();
   }
 }
 
