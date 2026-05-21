@@ -3014,11 +3014,6 @@ body {
   object-fit: contain;
   pointer-events: none;
 }
-#burst-slot-btn .event-slot-img,
-#vol1-slot-btn .event-slot-img {
-  width: 130%;
-  height: 130%;
-}
 .event-slot-label {
   display: none;
 }
