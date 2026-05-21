@@ -3009,10 +3009,15 @@ body {
   line-height: 1;
 }
 .event-slot-img {
-  width: 150%;
-  height: 150%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   pointer-events: none;
+}
+#burst-slot-btn .event-slot-img,
+#vol1-slot-btn .event-slot-img {
+  width: 130%;
+  height: 130%;
 }
 .event-slot-label {
   display: none;
