@@ -6928,6 +6928,13 @@ const VOL1_STAGE_IMAGES = [
 ];
 const VOL1_STAGE_NAMES = ['手がかりメモ', '現場スケッチ', '証拠写真', '捜査ファイル★'];
 const VOL1_MAGNIFY_IMAGE = 'img/EventVol1/image_vol1_magnify.png';
+const VOL1_WEB_IMAGES = [
+  'img/EventVol1/image_vol1_item_lv1_web.png',
+  'img/EventVol1/image_vol1_item_lv2_web.png',
+  'img/EventVol1/image_vol1_item_lv3_web.png',
+];
+// 6行2〜6列・7〜9行2列・7〜9行6列（固定Lv1蜘蛛の巣）
+const VOL1_FIXED_WEB1_CELLS = new Set([36,37,38,39,40,43,47,50,54,57,61]);
 
 // 霧セル → 埋め込みステージ (1/2/3) のマップ
 // 行列は1-indexed で指定:
@@ -8996,11 +9003,23 @@ function checkVol1Unlock() {
   ], '#vol1-slot-btn', null);
 }
 
-// Vol1 盤面を初期化（蜘蛛の巣なしセル以外に蜘蛛の巣Lv1を配置）
+// Vol1 盤面を初期化
 function initVol1Board() {
-  eventState.vol1Board = Array(VOL1_BOARD_SIZE).fill(null).map((_, i) =>
-    VOL1_NOWEB_CELLS.has(i) ? null : { stage: 1, isWebbed: true }
-  );
+  const board = Array(VOL1_BOARD_SIZE).fill(null);
+  // 固定 Lv1 蜘蛛の巣（6行2〜6列・7〜9行2列・7〜9行6列）
+  VOL1_FIXED_WEB1_CELLS.forEach(i => { board[i] = { webLevel: 1, isWebbed: true }; });
+  // 残りセルにランダム配置（Lv1×11 / Lv2×18 / Lv3×14）
+  const rand = [];
+  for (let i = 0; i < VOL1_BOARD_SIZE; i++) {
+    if (!VOL1_NOWEB_CELLS.has(i) && !VOL1_FIXED_WEB1_CELLS.has(i)) rand.push(i);
+  }
+  const pool = [...Array(11).fill(1), ...Array(18).fill(2), ...Array(14).fill(3)];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  rand.forEach((ci, pi) => { board[ci] = { webLevel: pool[pi], isWebbed: true }; });
+  eventState.vol1Board = board;
 }
 
 // 蜘蛛の巣アイテムが無くなったら空きセル（蜘蛛の巣なしセル除く）に補充
@@ -9009,7 +9028,7 @@ function checkVol1Refill() {
   if (!hasWebbed) {
     eventState.vol1Board = eventState.vol1Board.map((c, i) =>
       VOL1_NOWEB_CELLS.has(i) ? c :
-      (c === null ? { stage: 1, isWebbed: true } : c)
+      (c === null ? { webLevel: 1, isWebbed: true } : c)
     );
   }
 }
@@ -9111,8 +9130,9 @@ function renderVol1Board() {
         img.alt = '虫眼鏡';
         img.classList.add('vol1-img-sm');
       } else if (item.isWebbed) {
-        img.src = 'img/EventVol1/image_vol1_item_lv1_web.png';
-        img.alt = '蜘蛛の巣Lv1';
+        const wl = item.webLevel ?? 1;
+        img.src = VOL1_WEB_IMAGES[wl - 1];
+        img.alt = `蜘蛛の巣Lv${wl}`;
       } else {
         img.src = VOL1_STAGE_IMAGES[item.stage - 1] ?? `img/EventVol1/image_vol1_item_lv${item.stage}.png`;
         img.alt = `Lv${item.stage}`;
@@ -9133,10 +9153,11 @@ function renderVol1Board() {
         cell.appendChild(smoke);
       }
 
-      // 蜘蛛の巣セルの右下に虫眼鏡アイコン
+      // 蜘蛛の巣セルの右下にヒントアイコン（Lv1→虫眼鏡 / Lv2,3→対応マージアイテム）
       if (item.isWebbed) {
+        const wl = item.webLevel ?? 1;
         const mIcon = document.createElement('img');
-        mIcon.src = VOL1_MAGNIFY_IMAGE;
+        mIcon.src = wl === 1 ? VOL1_MAGNIFY_IMAGE : VOL1_STAGE_IMAGES[wl - 1];
         mIcon.className = 'vol1-web-magnify-icon';
         cell.appendChild(mIcon);
       }
@@ -9151,8 +9172,13 @@ function renderVol1Board() {
           selItem.stage === item.stage && selItem.stage < VOL1_MAX_STAGE) {
         cell.classList.add('merge-target');
       }
-      // 虫眼鏡が選択中 → 蜘蛛の巣をハイライト
-      if (selItem.isMagnify && item && item.isWebbed) {
+      // 虫眼鏡が選択中 → Lv1蜘蛛の巣をハイライト
+      if (selItem.isMagnify && item && item.isWebbed && (item.webLevel ?? 1) === 1) {
+        cell.classList.add('merge-target');
+      }
+      // Lv2/Lv3通常アイテム選択中 → 同レベル蜘蛛の巣をハイライト
+      if (!selItem.isMagnify && !selItem.isWebbed && item && item.isWebbed &&
+          (item.webLevel ?? 1) > 1 && selItem.stage === (item.webLevel ?? 1)) {
         cell.classList.add('merge-target');
       }
     }
@@ -9192,7 +9218,7 @@ function handleVol1CellTap(idx) {
   if (item.isMagnify) {
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
-      if (selItem && selItem.isWebbed) {
+      if (selItem && selItem.isWebbed && (selItem.webLevel ?? 1) === 1) {
         const webIdx = vol1SelectedCell;
         eventState.vol1Board[idx] = null;
         eventState.vol1Board[webIdx] = { stage: 1, isWebbed: false };
@@ -9212,9 +9238,11 @@ function handleVol1CellTap(idx) {
 
   // 蜘蛛の巣セル
   if (item.isWebbed) {
+    const wl = item.webLevel ?? 1;
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
-      if (selItem && selItem.isMagnify) {
+      // Lv1: 虫眼鏡で除去
+      if (wl === 1 && selItem && selItem.isMagnify) {
         eventState.vol1Board[vol1SelectedCell] = null;
         eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
         vol1SelectedCell = null;
@@ -9224,21 +9252,40 @@ function handleVol1CellTap(idx) {
         triggerMergeAnim('#vol1-board', idx);
         return;
       }
+      // Lv2/Lv3: 対応ステージのマージアイテムで除去
+      if (wl > 1 && selItem && !selItem.isWebbed && !selItem.isMagnify && selItem.stage === wl) {
+        eventState.vol1Board[vol1SelectedCell] = null;
+        eventState.vol1Board[idx] = { stage: wl, isWebbed: false };
+        vol1SelectedCell = null;
+        checkVol1Refill();
+        hideNaviHint();
+        renderVol1Board();
+        triggerMergeAnim('#vol1-board', idx);
+        return;
+      }
     }
     vol1SelectedCell = null;
-    if (eventState.vol1MagnifyGlasses <= 0) {
-      showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
+    if (wl === 1) {
+      // Lv1: タップで虫眼鏡を自動消費
+      if (eventState.vol1MagnifyGlasses <= 0) {
+        showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
+        renderVol1Board();
+        return;
+      }
+      eventState.vol1MagnifyGlasses--;
+      eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
+      checkVol1Refill();
+      renderVol1Slot();
+      hideNaviHint();
       renderVol1Board();
-      return;
+      triggerMergeAnim('#vol1-board', idx);
+      renderVol1MeterUI();
+    } else {
+      // Lv2/Lv3: セルを選択してヒント表示
+      vol1SelectedCell = idx;
+      showNaviHintForVol1Item(item, true);
+      renderVol1Board();
     }
-    eventState.vol1MagnifyGlasses--;
-    eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
-    checkVol1Refill();
-    renderVol1Slot();
-    hideNaviHint();
-    renderVol1Board();
-    triggerMergeAnim('#vol1-board', idx);
-    renderVol1MeterUI();
     return;
   }
 
@@ -9277,6 +9324,19 @@ function handleVol1CellTap(idx) {
   } else {
     const from = eventState.vol1Board[vol1SelectedCell];
     const to   = eventState.vol1Board[idx];
+    // Lv2/Lv3蜘蛛の巣が選択済み → 対応ステージアイテムをタップで除去
+    if (from && from.isWebbed && (from.webLevel ?? 1) > 1 && to.stage === (from.webLevel ?? 1)) {
+      const webIdx = vol1SelectedCell;
+      const wl = from.webLevel;
+      eventState.vol1Board[webIdx] = { stage: wl, isWebbed: false };
+      eventState.vol1Board[idx] = null;
+      vol1SelectedCell = null;
+      checkVol1Refill();
+      hideNaviHint();
+      renderVol1Board();
+      triggerMergeAnim('#vol1-board', webIdx);
+      return;
+    }
     if (from && !from.isWebbed && !from.isMagnify && to && !to.isWebbed && !to.isMagnify &&
         from.stage === to.stage && from.stage < VOL1_MAX_STAGE) {
       const fromIdx = vol1SelectedCell;
@@ -9387,7 +9447,7 @@ function createVol1Ghost(x, y, fromIdx) {
   ghost.style.cssText = `position:fixed;pointer-events:none;z-index:999;opacity:0.85;transform:translate(-50%,-50%);left:${x}px;top:${y}px;`;
   const img = document.createElement('img');
   img.src = item.isMagnify ? VOL1_MAGNIFY_IMAGE
-           : item.isWebbed ? 'img/EventVol1/image_vol1_item_lv1_web.png'
+           : item.isWebbed ? VOL1_WEB_IMAGES[(item.webLevel ?? 1) - 1]
            : (VOL1_STAGE_IMAGES[item.stage - 1] ?? 'img/EventVol1/image_vol1_item_lv1.png');
   img.style.cssText = 'width:52px;height:52px;object-fit:contain;display:block;';
   ghost.appendChild(img);
@@ -9530,10 +9590,23 @@ function endVol1Drag(x, y) {
   const toItem   = eventState.vol1Board[toIdx];
   if (!fromItem) { renderVol1Board(); return; }
 
-  // 虫眼鏡 → 蜘蛛の巣セルにドロップ → 除去
-  if (fromItem.isMagnify && toItem && toItem.isWebbed) {
+  // 虫眼鏡 → Lv1蜘蛛の巣にドロップ → 除去
+  if (fromItem.isMagnify && toItem && toItem.isWebbed && (toItem.webLevel ?? 1) === 1) {
     eventState.vol1Board[fromIdx] = null;
     eventState.vol1Board[toIdx]   = { stage: 1, isWebbed: false };
+    vol1SelectedCell = null;
+    checkVol1Refill();
+    hideNaviHint();
+    renderVol1Board();
+    triggerMergeAnim('#vol1-board', toIdx);
+    return;
+  }
+  // Lv2/Lv3通常アイテム → 同レベル蜘蛛の巣にドロップ → 除去
+  if (!fromItem.isWebbed && !fromItem.isMagnify && toItem && toItem.isWebbed &&
+      (toItem.webLevel ?? 1) > 1 && fromItem.stage === (toItem.webLevel ?? 1)) {
+    const wl = toItem.webLevel;
+    eventState.vol1Board[fromIdx] = null;
+    eventState.vol1Board[toIdx]   = { stage: wl, isWebbed: false };
     vol1SelectedCell = null;
     checkVol1Refill();
     hideNaviHint();
@@ -9896,6 +9969,12 @@ function showNaviHintForVol1Item(item, persistent = false) {
   let text = '';
   if (item.isMagnify) {
     text = '虫眼鏡を蜘蛛の巣のアイテムにドロップして除去しましょう。';
+  } else if (item.isWebbed) {
+    const wl = item.webLevel ?? 1;
+    const name = VOL1_STAGE_NAMES[wl - 1] ?? `Lv${wl}アイテム`;
+    text = wl === 1
+      ? '虫眼鏡を使って蜘蛛の巣を除去しましょう。'
+      : `${name}をドロップして蜘蛛の巣を除去しましょう。`;
   } else {
     const stage = item.stage;
     const name  = VOL1_STAGE_NAMES[stage - 1] ?? `Lv${stage}アイテム`;
@@ -9904,7 +9983,7 @@ function showNaviHintForVol1Item(item, persistent = false) {
       ? `${name} — ダブルタップで+${VOL1_POINTS_PER_TAP}pt獲得！`
       : `${name} — 同じLvとマージしてレベルアップ！`;
   }
-  const infoCtx = item.isMagnify ? null : { type: 'vol1item', stage: item.stage };
+  const infoCtx = (item.isMagnify || item.isWebbed) ? null : { type: 'vol1item', stage: item.stage };
 
   // チュートリアル判定を経由せず直接表示（Vol1は専用画面のため）
   const panel  = document.getElementById('navi-hint-panel');
