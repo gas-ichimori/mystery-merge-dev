@@ -3009,8 +3009,8 @@ body {
   line-height: 1;
 }
 .event-slot-img {
-  width: 92%;
-  height: 92%;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
   pointer-events: none;
 }
@@ -4151,6 +4151,10 @@ body {
 /* Vol1 盤面セルのLvラベルを非表示 */
 #vol1-board .item-stage {
   display: none;
+}
+#vol1-board .cell .item-img {
+  width: 96%;
+  aspect-ratio: 1;
 }
 
 /* 蜘蛛の巣セル右下の虫眼鏡アイコン */
