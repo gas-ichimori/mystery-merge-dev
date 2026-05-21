@@ -2727,6 +2727,13 @@ document.getElementById('debug-vol1-unlock').addEventListener('click', () => {
   showToast('🔍 Vol1 解放 + 虫眼鏡×20');
 });
 
+document.getElementById('debug-vol1-magnify-badge').addEventListener('click', () => {
+  if (!eventState.vol1Unlocked) { showToast('先にVol1を解放してください'); return; }
+  eventState.vol1DebugMagnify = !eventState.vol1DebugMagnify;
+  renderEventRequest();
+  showToast(`🔬 虫眼鏡バッジ強制表示: ${eventState.vol1DebugMagnify ? 'ON' : 'OFF'}`);
+});
+
 document.getElementById('debug-vol1-add-magnify').addEventListener('click', () => {
   if (!eventState.vol1Unlocked) { showToast('先にVol1を解放してください'); return; }
   eventState.vol1MagnifyGlasses += 10;
@@ -7035,6 +7042,7 @@ let eventState = {
   ch2RequestSolvedCount: 0,     // 第二章依頼の解決数（バースト=1以上, Vol1=2以上）
   vol1Unlocked: false,          // イベントゲームVol1 解放済み
   vol1MagnifyGlasses: 0,        // 虫眼鏡 獲得数
+  vol1DebugMagnify: false,      // デバッグ用：虫眼鏡バッジ強制表示
   vol1LevelPoints: 0,           // 現レベルの累積ポイント
   vol1LevelTarget: VOL1_FIRST_TARGET, // 現レベルのクリア目標
   vol1LevelsCleared: 0,         // クリア済みレベル数
@@ -11115,7 +11123,9 @@ function renderEventRequest() {
       : '';
     // 虫眼鏡報酬バッジ（Vol1解放後）
     const maxStageForVol1 = Math.max(...req.items.map(it => it.stage));
-    const glassesReward   = eventState.vol1Unlocked ? Math.floor(maxStageForVol1 / 6) : 0;
+    const glassesReward   = eventState.vol1Unlocked
+      ? (eventState.vol1DebugMagnify ? 1 : Math.floor(maxStageForVol1 / 6))
+      : 0;
     const magnifyBadge    = glassesReward > 0
       ? `<span class="req-magnify-badge"><img src="img/EventVol1/image_vol1_magnify.png" class="req-magnify-img" alt="虫眼鏡">×${glassesReward}</span>`
       : '';
