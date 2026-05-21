@@ -2669,7 +2669,7 @@ document.getElementById('debug-daily-reset').addEventListener('click', () => {
 });
 document.getElementById('debug-burst-unlock').addEventListener('click', () => {
   eventState.burstUnlocked = true;
-  eventState.ch2RequestSolved = true;
+  eventState.ch2RequestSolvedCount = Math.max(eventState.ch2RequestSolvedCount, 1);
   eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
   renderBurstSlot();
   renderEventRequest();
@@ -2678,7 +2678,7 @@ document.getElementById('debug-burst-unlock').addEventListener('click', () => {
 document.getElementById('debug-burst-max').addEventListener('click', () => {
   if (!eventState.burstUnlocked) {
     eventState.burstUnlocked = true;
-    eventState.ch2RequestSolved = true;
+    eventState.ch2RequestSolvedCount = Math.max(eventState.ch2RequestSolvedCount, 1);
     eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
   }
   eventState.burstCount = BURST_MAX;
@@ -2687,7 +2687,7 @@ document.getElementById('debug-burst-max').addEventListener('click', () => {
 });
 document.getElementById('debug-burst-badge-force').addEventListener('click', () => {
   eventState.burstUnlocked = true;
-  eventState.ch2RequestSolved = true;
+  eventState.ch2RequestSolvedCount = Math.max(eventState.ch2RequestSolvedCount, 1);
   eventState.requests.forEach((r, i) => { r.burstPoints = (i % 2 === 0) ? 2 : 1; });
   renderBurstSlot();
   renderEventRequest();
@@ -2698,7 +2698,7 @@ document.getElementById('debug-burst-reset').addEventListener('click', () => {
   eventState.burstCount     = 0;
   eventState.burstFirstCleared = false;
   eventState.burstStock     = [];
-  eventState.ch2RequestSolved = false;
+  eventState.ch2RequestSolvedCount = 0;
   eventState.requests.forEach(r => { r.burstPoints = 0; });
   renderBurstSlot();
   renderBurstStock();
@@ -6841,6 +6841,19 @@ const EVENT_COLS = 7;
 const EVENT_ROWS = 9;
 const EVENT_TOTAL = EVENT_COLS * EVENT_ROWS;
 
+// ========================================
+// イベントゲーム Vol1 定数
+// ========================================
+const VOL1_BOARD_SIZE   = 9;           // 3×3 盤面
+const VOL1_MAX_STAGE    = 4;           // Lv4★ が最大
+const VOL1_POINTS_PER_TAP = 5;        // Lv4★ ダブルタップで +5pt
+const VOL1_FIRST_TARGET = 50;         // 最初のレベルメーター目標
+const VOL1_TARGET_STEP  = 50;         // クリアごとに +50
+const VOL1_HP_BASE      = 25;         // 1回目クリア 体力報酬
+const VOL1_COIN_BASE    = 5000;       // 1回目クリア コイン報酬
+const VOL1_HP_STEP      = 25;         // クリアごとに体力報酬 +25
+const VOL1_COIN_STEP    = 2500;       // クリアごとにコイン報酬 +2500
+
 // 霧セル → 埋め込みステージ (1/2/3) のマップ
 // 行列は1-indexed で指定:
 //   Lv1: 5行目3-5列, 6-8行目2・6列, 9行目3-5列
@@ -6951,7 +6964,13 @@ let eventState = {
   burstCount: 0,                // バースト蓄積数 (0-12)
   burstFirstCleared: false,     // 最初のCLEARが完了したか（初回サイクル管理）
   burstStock: [],               // ストック枠アイテム [{chainId?, stage}] max 99
-  ch2RequestSolved: false,      // 第二章依頼を1つでも解決したか（バースト解放条件）
+  ch2RequestSolvedCount: 0,     // 第二章依頼の解決数（バースト=1以上, Vol1=2以上）
+  vol1Unlocked: false,          // イベントゲームVol1 解放済み
+  vol1MagnifyGlasses: 0,        // 虫眼鏡 獲得数
+  vol1LevelPoints: 0,           // 現レベルの累積ポイント
+  vol1LevelTarget: VOL1_FIRST_TARGET, // 現レベルのクリア目標
+  vol1LevelsCleared: 0,         // クリア済みレベル数
+  vol1Board: Array(VOL1_BOARD_SIZE).fill(null), // 3×3 盤面
   genPowerLevel: 0,             // 第一章ジェネレーター 現在選択中の出力パワーレベル
   firePowerLevel: 0,            // 第二章ジェネレーター 現在選択中の出力パワーレベル
   kantePowerLevel: 0,           // 第三章ジェネレーター 現在選択中の出力パワーレベル
@@ -7028,7 +7047,13 @@ function initEventMap() {
   eventState.burstCount         = 0;
   eventState.burstFirstCleared  = false;
   eventState.burstStock         = [];
-  eventState.ch2RequestSolved   = false;
+  eventState.ch2RequestSolvedCount = 0;
+  eventState.vol1Unlocked       = false;
+  eventState.vol1MagnifyGlasses = 0;
+  eventState.vol1LevelPoints    = 0;
+  eventState.vol1LevelTarget    = VOL1_FIRST_TARGET;
+  eventState.vol1LevelsCleared  = 0;
+  eventState.vol1Board          = Array(VOL1_BOARD_SIZE).fill(null);
   eventState.revealed           = {};
   eventState.seizoRevealed      = {};
   eventState.genDiscovered      = {};
@@ -8847,7 +8872,7 @@ function calcBurstPoints(req) {
 // バースト解放チェック（第二章ジェネレーター出現 + ch2依頼1件解決）
 function checkBurstUnlock() {
   if (eventState.burstUnlocked) return;
-  if (!eventState.fireGenUnlocked || !eventState.ch2RequestSolved) return;
+  if (!eventState.fireGenUnlocked || eventState.ch2RequestSolvedCount < 1) return;
   eventState.burstUnlocked = true;
   // 既存依頼にburstPointsを付与
   eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
@@ -8873,6 +8898,192 @@ function renderBurstSlot() {
   document.getElementById('burst-count-label').textContent = `${count}/${BURST_MAX}`;
   document.getElementById('burst-meter-fill').style.width = `${(count / BURST_MAX) * 100}%`;
   document.getElementById('burst-clear-overlay').classList.toggle('hidden', count < BURST_MAX);
+}
+
+// ========================================
+// イベントゲーム Vol1
+// ========================================
+
+// Vol1 解放チェック（第二章ジェネレーター出現 + ch2依頼2件解決）
+function checkVol1Unlock() {
+  if (eventState.vol1Unlocked) return;
+  if (!eventState.fireGenUnlocked || eventState.ch2RequestSolvedCount < 2) return;
+  eventState.vol1Unlocked = true;
+  initVol1Board();
+  renderVol1Slot();
+  if (isDebugModeActive()) { showToast('イベントゲームVol1 解放！'); return; }
+  startGuide([
+    'イベントゲームVol1が解放されました！',
+    '虫眼鏡を集めてミステリーを解き明かしましょう...',
+  ], '#vol1-slot-btn', null);
+}
+
+// Vol1 盤面を初期化（全セルに蜘蛛の巣Lv1を配置）
+function initVol1Board() {
+  eventState.vol1Board = Array(VOL1_BOARD_SIZE).fill(null).map(() => ({ stage: 1, isWebbed: true }));
+}
+
+// 蜘蛛の巣アイテムが無くなったら空きセルに補充
+function checkVol1Refill() {
+  const hasWebbed = eventState.vol1Board.some(c => c && c.isWebbed);
+  if (!hasWebbed) {
+    eventState.vol1Board = eventState.vol1Board.map(c =>
+      c === null ? { stage: 1, isWebbed: true } : c
+    );
+  }
+}
+
+// Vol1 スロットUI更新
+function renderVol1Slot() {
+  const btn = document.getElementById('vol1-slot-btn');
+  if (!btn) return;
+  if (!eventState.vol1Unlocked) { btn.classList.add('hidden'); return; }
+  btn.classList.remove('hidden');
+  btn.classList.remove('ev-slot-placeholder');
+  const badge = document.getElementById('vol1-magnify-badge');
+  if (badge) badge.textContent = eventState.vol1MagnifyGlasses;
+}
+
+// Vol1 レベルメーターUI更新
+function renderVol1MeterUI() {
+  const fill  = document.getElementById('vol1-meter-fill');
+  const label = document.getElementById('vol1-meter-label');
+  const num   = document.getElementById('vol1-magnify-num');
+  if (fill)  fill.style.width = `${Math.min(100, (eventState.vol1LevelPoints / eventState.vol1LevelTarget) * 100)}%`;
+  if (label) label.textContent = `${eventState.vol1LevelPoints} / ${eventState.vol1LevelTarget}`;
+  if (num)   num.textContent   = eventState.vol1MagnifyGlasses;
+}
+
+// Vol1 ポイント加算（レベルクリア判定込み）
+function addVol1Points(pts) {
+  eventState.vol1LevelPoints += pts;
+  while (eventState.vol1LevelPoints >= eventState.vol1LevelTarget) {
+    eventState.vol1LevelPoints -= eventState.vol1LevelTarget;
+    eventState.vol1LevelsCleared++;
+    eventState.vol1LevelTarget += VOL1_TARGET_STEP;
+    const lv    = eventState.vol1LevelsCleared;
+    const hp    = VOL1_HP_BASE   + VOL1_HP_STEP   * (lv - 1);
+    const coins = VOL1_COIN_BASE + VOL1_COIN_STEP  * (lv - 1);
+    addEnergy(hp, `Vol1 Lv${lv} クリア！体力+${hp}`);
+    addCoin(coins);
+    state.totalCoinEarned += coins;
+    showToast(`🎉 Vol1 Lv${lv} CLEAR！ 体力+${hp}  コイン+${coins.toLocaleString()}`);
+  }
+  renderVol1MeterUI();
+}
+
+// Vol1 選択セル管理
+let vol1SelectedCell = null;
+
+// Vol1 盤面描画
+function renderVol1Board() {
+  const board = document.getElementById('vol1-board');
+  if (!board) return;
+  board.innerHTML = '';
+  for (let i = 0; i < VOL1_BOARD_SIZE; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    const item = eventState.vol1Board[i];
+    if (item) {
+      cell.classList.add('has-item');
+      const img = document.createElement('img');
+      img.className = 'item-img';
+      if (item.isWebbed) {
+        img.src = 'img/EventVol1/image_vol1_item_lv1_web.png';
+        img.alt = '蜘蛛の巣Lv1';
+      } else {
+        img.src = `img/EventVol1/image_vol1_item_lv${item.stage}.png`;
+        img.alt = `Lv${item.stage}`;
+      }
+      cell.appendChild(img);
+      if (!item.isWebbed && item.stage === VOL1_MAX_STAGE) {
+        const star = document.createElement('span');
+        star.className = 'vol1-star-badge';
+        star.textContent = '★';
+        cell.appendChild(star);
+      }
+      if (!item.isWebbed) {
+        const lbl = document.createElement('span');
+        lbl.className = 'item-stage';
+        lbl.textContent = `Lv${item.stage}`;
+        cell.appendChild(lbl);
+      }
+    }
+    if (vol1SelectedCell === i) cell.classList.add('selected');
+    cell.dataset.index = i;
+    cell.addEventListener('click', () => handleVol1CellTap(i));
+    board.appendChild(cell);
+  }
+}
+
+// Vol1 セルタップ処理
+function handleVol1CellTap(idx) {
+  const item = eventState.vol1Board[idx];
+
+  // 空セル → 選択解除
+  if (!item) {
+    vol1SelectedCell = null;
+    renderVol1Board();
+    return;
+  }
+
+  // 蜘蛛の巣セル → 虫眼鏡を消費して除去
+  if (item.isWebbed) {
+    vol1SelectedCell = null;
+    if (eventState.vol1MagnifyGlasses <= 0) {
+      showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
+      renderVol1Board();
+      return;
+    }
+    eventState.vol1MagnifyGlasses--;
+    eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
+    checkVol1Refill();
+    renderVol1Slot();
+    renderVol1Board();
+    renderVol1MeterUI();
+    return;
+  }
+
+  // Lv4★ → ダブルタップでポイント付与（シングルタップで+5）
+  if (item.stage === VOL1_MAX_STAGE) {
+    addVol1Points(VOL1_POINTS_PER_TAP);
+    showToast(`+${VOL1_POINTS_PER_TAP}pt！`);
+    return;
+  }
+
+  // 通常マージ
+  if (vol1SelectedCell === null) {
+    vol1SelectedCell = idx;
+    renderVol1Board();
+  } else if (vol1SelectedCell === idx) {
+    vol1SelectedCell = null;
+    renderVol1Board();
+  } else {
+    const from = eventState.vol1Board[vol1SelectedCell];
+    const to   = eventState.vol1Board[idx];
+    if (from && !from.isWebbed && to && !to.isWebbed && from.stage === to.stage && from.stage < VOL1_MAX_STAGE) {
+      eventState.vol1Board[vol1SelectedCell] = null;
+      eventState.vol1Board[idx] = { stage: from.stage + 1, isWebbed: false };
+      vol1SelectedCell = null;
+      checkVol1Refill();
+    } else {
+      vol1SelectedCell = idx;
+    }
+    renderVol1Board();
+  }
+}
+
+// Vol1 画面を開く
+function openVol1Screen() {
+  document.getElementById('vol1-screen').classList.remove('hidden');
+  renderVol1Board();
+  renderVol1MeterUI();
+}
+
+// Vol1 画面を閉じる
+function closeVol1Screen() {
+  vol1SelectedCell = null;
+  document.getElementById('vol1-screen').classList.add('hidden');
 }
 
 // ========================================
@@ -9996,11 +10207,22 @@ function completeEventRequest(index) {
   }
   eventState.recentlySolvedKeys = newKeys; // 置き換え（前回分は自動クリア）
 
-  // バースト蓄積
+  // バースト蓄積 / Vol1 解放チェック / 虫眼鏡報酬
   const isCh2up = req.items.some(it => it.chainId !== undefined);
-  if (isCh2up && !eventState.ch2RequestSolved) {
-    eventState.ch2RequestSolved = true;
+  if (isCh2up) {
+    eventState.ch2RequestSolvedCount++;
     checkBurstUnlock();
+    checkVol1Unlock();
+  }
+  // 虫眼鏡報酬（Vol1解放後、全依頼対象・maxStage/6 個）
+  if (eventState.vol1Unlocked) {
+    const maxStage = Math.max(...req.items.map(it => it.stage));
+    const glasses  = Math.floor(maxStage / 6);
+    if (glasses > 0) {
+      eventState.vol1MagnifyGlasses += glasses;
+      renderVol1Slot();
+      showToast(`🔍 ×${glasses} 獲得！`);
+    }
   }
   if (eventState.burstUnlocked && req.burstPoints > 0) {
     eventState.burstCount = Math.min(eventState.burstCount + req.burstPoints, BURST_MAX);
@@ -10295,6 +10517,12 @@ function renderEventRequest() {
     const burstBadge = (eventState.burstUnlocked && req.burstPoints > 0)
       ? `<img class="req-burst-badge" src="img/UI/image_merge_burst_badge_p${req.burstPoints}.png" alt="+${req.burstPoints}">`
       : '';
+    // 虫眼鏡報酬バッジ（Vol1解放後）
+    const maxStageForVol1 = Math.max(...req.items.map(it => it.stage));
+    const glassesReward   = eventState.vol1Unlocked ? Math.floor(maxStageForVol1 / 6) : 0;
+    const magnifyBadge    = glassesReward > 0
+      ? `<span class="req-magnify-badge"><img src="img/EventVol1/image_vol1_magnify.png" class="req-magnify-img" alt="虫眼鏡">×${glassesReward}</span>`
+      : '';
     const div = document.createElement('div');
     div.className = 'request-slot' + (completable ? ' completable' : '');
     div.innerHTML = `
@@ -10306,6 +10534,7 @@ function renderEventRequest() {
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
           <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>
+          ${magnifyBadge}
           ${completable ? `<button class="req-complete-btn">依頼解決</button>` : ''}
         </div>
       </div>
@@ -12590,6 +12819,16 @@ document.getElementById('burst-slot-btn').addEventListener('click', () => {
   } else {
     openBurstPopup();
   }
+});
+
+// Vol1 スロットボタン → Vol1 画面を開く
+document.getElementById('vol1-slot-btn').addEventListener('click', () => {
+  if (!eventState.vol1Unlocked) return;
+  openVol1Screen();
+});
+// Vol1 戻るボタン
+document.getElementById('vol1-close').addEventListener('click', () => {
+  closeVol1Screen();
 });
 
 // ========================================

@@ -867,6 +867,10 @@
           <div id="burst-meter-bar-wrap"><div id="burst-meter-fill"></div></div>
           <div id="burst-clear-overlay" class="hidden"><img src="img/UI/image_merge_burst_clear.png" alt="CLEAR"></div>
         </button>
+        <button class="event-slot-btn ev-slot-placeholder hidden" id="vol1-slot-btn">
+          <img src="img/EventVol1/image_vol1_icon.png" class="event-slot-img" alt="Vol1">
+          <span class="vol1-magnify-badge" id="vol1-magnify-badge">0</span>
+        </button>
         <button class="event-slot-btn ev-slot-placeholder">
           <img src="img/UI/image_merge_daily_icon.png" class="event-slot-img" alt="スロット3">
         </button>
@@ -901,6 +905,31 @@
       <div id="event-board"></div>
     </div>
     <!-- event-gen-panel は非表示（ジェネレーターはボード上タイルで操作） -->
+  </div>
+
+  <!-- イベントゲーム Vol1 画面 -->
+  <div id="vol1-screen" class="hidden">
+    <div id="vol1-sticky-top">
+      <div id="vol1-header-bar">
+        <div id="vol1-nav">
+          <button id="vol1-close">← 戻る</button>
+          <span id="vol1-title">🔍 イベントゲーム Vol.1</span>
+        </div>
+        <div id="vol1-magnify-row">
+          <img src="img/EventVol1/image_vol1_magnify.png" class="vol1-magnify-icon" alt="虫眼鏡">
+          <span id="vol1-magnify-num">0</span>
+        </div>
+      </div>
+      <div id="vol1-meter-wrap">
+        <div id="vol1-meter-bar-bg">
+          <div id="vol1-meter-fill"></div>
+        </div>
+        <span id="vol1-meter-label">0 / 50</span>
+      </div>
+    </div>
+    <div id="vol1-board-wrap">
+      <div id="vol1-board"></div>
+    </div>
   </div>
 
   <!-- アドベンチャーシーン -->
