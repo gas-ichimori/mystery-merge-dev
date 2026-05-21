@@ -3239,8 +3239,7 @@ body {
 .req-burst-badge {
   position: absolute;
   top: -32px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 4px;
   width: 48px;
   height: 48px;
   object-fit: contain;
@@ -4200,20 +4199,24 @@ body {
 
 /* リクエストカード内 虫眼鏡報酬バッジ */
 .req-magnify-badge {
-  display: inline-flex;
+  position: absolute;
+  top: -30px;
+  right: 4px;
+  display: flex;
   align-items: center;
   gap: 2px;
   background: rgba(106,61,232,0.75);
   border-radius: 6px;
-  padding: 1px 5px;
+  padding: 2px 5px;
   font-size: 10px;
   font-weight: bold;
   color: #fff;
-  margin-left: 4px;
+  pointer-events: none;
+  z-index: 20;
 }
 .req-magnify-img {
-  width: 12px;
-  height: 12px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
 }
 

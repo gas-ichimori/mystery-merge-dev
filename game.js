@@ -11127,10 +11127,10 @@ function renderEventRequest() {
       </div>
       <div class="req-slot-frame">
         ${burstBadge}
+        ${magnifyBadge}
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
           <span class="req-coin">${COIN_ICON}${req.coin.toLocaleString()}</span>
-          ${magnifyBadge}
           ${completable ? `<button class="req-complete-btn">依頼解決</button>` : ''}
         </div>
       </div>
