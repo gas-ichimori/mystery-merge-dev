@@ -9110,11 +9110,12 @@ function renderVol1Board() {
         cell.appendChild(smoke);
       }
 
-      if (!item.isWebbed && !item.isMagnify) {
-        const lbl = document.createElement('span');
-        lbl.className = 'item-stage';
-        lbl.textContent = `Lv${item.stage}`;
-        cell.appendChild(lbl);
+      // 蜘蛛の巣セルの右下に虫眼鏡アイコン
+      if (item.isWebbed) {
+        const mIcon = document.createElement('img');
+        mIcon.src = VOL1_MAGNIFY_IMAGE;
+        mIcon.className = 'vol1-web-magnify-icon';
+        cell.appendChild(mIcon);
       }
     }
 
@@ -9867,16 +9868,38 @@ function showNaviHintForVol1Item(item) {
   let text = '';
   if (item.isMagnify) {
     text = '虫眼鏡を蜘蛛の巣のアイテムにドロップして除去しましょう。';
-    _showNaviHintPanel(text, false, false, null);
-    return;
+  } else {
+    const stage = item.stage;
+    const name  = VOL1_STAGE_NAMES[stage - 1] ?? `Lv${stage}アイテム`;
+    const isMax = stage >= VOL1_MAX_STAGE;
+    text = isMax
+      ? `${name} — ダブルタップで+${VOL1_POINTS_PER_TAP}pt獲得！`
+      : `${name} — 同じLvとマージしてレベルアップ！`;
   }
-  const stage = item.stage;
-  const name  = VOL1_STAGE_NAMES[stage - 1] ?? `Lv${stage}アイテム`;
-  const isMax = stage >= VOL1_MAX_STAGE;
-  text = isMax
-    ? `${name} — ダブルタップで+${VOL1_POINTS_PER_TAP}pt獲得！`
-    : `${name} — 同じLvとマージしてレベルアップ！`;
-  _showNaviHintPanel(text, false, false, { type: 'vol1item', stage });
+  const infoCtx = item.isMagnify ? null : { type: 'vol1item', stage: item.stage };
+
+  // チュートリアル判定を経由せず直接表示（Vol1は専用画面のため）
+  const panel  = document.getElementById('navi-hint-panel');
+  const textEl = document.getElementById('navi-hint-text');
+  const infoBtn = document.getElementById('navi-info-btn');
+  const lvBtn  = document.getElementById('navi-lv-btn');
+  if (!panel || !textEl) return;
+  naviInfoContext = infoCtx;
+  if (infoBtn) infoBtn.classList.toggle('hidden', !infoCtx);
+  textEl.innerHTML = text;
+  if (lvBtn) lvBtn.classList.add('hidden');
+  document.getElementById('navi-diamond-btn')?.classList.add('hidden');
+  document.getElementById('navi-trash-btn')?.classList.add('hidden');
+  document.getElementById('navi-coin-btn')?.classList.add('hidden');
+  document.getElementById('navi-stock-btn')?.classList.add('hidden');
+  panel.classList.remove('hidden');
+  naviHintPersistent = false;
+  if (naviHintTimer) clearTimeout(naviHintTimer);
+  naviHintTimer = setTimeout(() => {
+    panel.classList.add('hidden');
+    naviHintPersistent = false;
+    naviHintTimer = null;
+  }, 3000);
 }
 
 function showNaviHintForCoin(item) {
