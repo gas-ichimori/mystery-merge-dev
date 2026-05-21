@@ -9152,13 +9152,14 @@ function handleVol1CellTap(idx) {
   // 空セル → 選択中アイテムを移動 or 選択解除
   if (!item) {
     if (vol1SelectedCell !== null) {
-      // 選択中アイテムを空セルへ移動
       eventState.vol1Board[idx] = eventState.vol1Board[vol1SelectedCell];
       eventState.vol1Board[vol1SelectedCell] = null;
       vol1SelectedCell = null;
+      hideNaviHint();
       renderVol1Board();
     } else {
       vol1SelectedCell = null;
+      hideNaviHint();
       renderVol1Board();
     }
     return;
@@ -9166,30 +9167,28 @@ function handleVol1CellTap(idx) {
 
   // 虫眼鏡アイテム（ボード上）のタップ
   if (item.isMagnify) {
-    // 蜘蛛の巣が選択されていたら解除に使う（逆方向）
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
       if (selItem && selItem.isWebbed) {
-        // 虫眼鏡で蜘蛛の巣を除去（ボード上の虫眼鏡を消費）
         const webIdx = vol1SelectedCell;
         eventState.vol1Board[idx] = null;
         eventState.vol1Board[webIdx] = { stage: 1, isWebbed: false };
         vol1SelectedCell = null;
         checkVol1Refill();
+        hideNaviHint();
         renderVol1Board();
         triggerMergeAnim('#vol1-board', webIdx);
         return;
       }
     }
     vol1SelectedCell = idx;
-    showNaviHintForVol1Item(item);
+    showNaviHintForVol1Item(item, true);
     renderVol1Board();
     return;
   }
 
   // 蜘蛛の巣セル
   if (item.isWebbed) {
-    // 虫眼鏡アイテムが選択中なら、そちらを消費して除去
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
       if (selItem && selItem.isMagnify) {
@@ -9197,12 +9196,12 @@ function handleVol1CellTap(idx) {
         eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
         vol1SelectedCell = null;
         checkVol1Refill();
+        hideNaviHint();
         renderVol1Board();
         triggerMergeAnim('#vol1-board', idx);
         return;
       }
     }
-    // 虫眼鏡カウントで除去
     vol1SelectedCell = null;
     if (eventState.vol1MagnifyGlasses <= 0) {
       showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
@@ -9213,6 +9212,7 @@ function handleVol1CellTap(idx) {
     eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
     checkVol1Refill();
     renderVol1Slot();
+    hideNaviHint();
     renderVol1Board();
     triggerMergeAnim('#vol1-board', idx);
     renderVol1MeterUI();
@@ -9229,13 +9229,14 @@ function handleVol1CellTap(idx) {
       vol1LastTapTime = 0;
       addVol1Points(VOL1_POINTS_PER_TAP);
       checkVol1Refill();
+      hideNaviHint();
       renderVol1Board();
       renderVol1MeterUI();
       showToast(`+${VOL1_POINTS_PER_TAP}pt！`);
     } else {
       vol1LastTapIdx  = idx;
       vol1LastTapTime = now;
-      showNaviHintForVol1Item(item);
+      showNaviHintForVol1Item(item, true);
     }
     return;
   }
@@ -9244,10 +9245,11 @@ function handleVol1CellTap(idx) {
   if (vol1SelectedCell === null) {
     vol1SelectedCell = idx;
     eventState.vol1Discovered[item.stage] = true;
-    showNaviHintForVol1Item(item);
+    showNaviHintForVol1Item(item, true);
     renderVol1Board();
   } else if (vol1SelectedCell === idx) {
     vol1SelectedCell = null;
+    hideNaviHint();
     renderVol1Board();
   } else {
     const from = eventState.vol1Board[vol1SelectedCell];
@@ -9260,11 +9262,12 @@ function handleVol1CellTap(idx) {
       eventState.vol1Discovered[from.stage + 1] = true;
       vol1SelectedCell = null;
       checkVol1Refill();
+      hideNaviHint();
       renderVol1Board();
       triggerMergeAnim('#vol1-board', idx);
     } else {
       vol1SelectedCell = idx;
-      showNaviHintForVol1Item(item);
+      showNaviHintForVol1Item(item, true);
       renderVol1Board();
     }
   }
@@ -9287,7 +9290,7 @@ let vol1Drag = {
 function startVol1DragMouse(e, fromIdx) {
   const item = eventState.vol1Board[fromIdx];
   if (!item) return;
-  showNaviHintForVol1Item(item);
+  showNaviHintForVol1Item(item, true);
   e.preventDefault();
   vol1Drag.active   = true;
   vol1Drag.fromIdx  = fromIdx;
@@ -9304,7 +9307,7 @@ function startVol1DragMouse(e, fromIdx) {
 function startVol1DragTouch(e, fromIdx) {
   const item = eventState.vol1Board[fromIdx];
   if (!item) return;
-  showNaviHintForVol1Item(item);
+  showNaviHintForVol1Item(item, true);
   e.preventDefault();
   vol1Drag.active   = true;
   vol1Drag.fromIdx  = fromIdx;
@@ -9510,6 +9513,7 @@ function endVol1Drag(x, y) {
     eventState.vol1Board[toIdx]   = { stage: 1, isWebbed: false };
     vol1SelectedCell = null;
     checkVol1Refill();
+    hideNaviHint();
     renderVol1Board();
     triggerMergeAnim('#vol1-board', toIdx);
     return;
@@ -9523,6 +9527,7 @@ function endVol1Drag(x, y) {
     eventState.vol1Discovered[fromItem.stage + 1] = true;
     vol1SelectedCell = null;
     checkVol1Refill();
+    hideNaviHint();
     renderVol1Board();
     triggerMergeAnim('#vol1-board', toIdx);
     return;
@@ -9533,6 +9538,7 @@ function endVol1Drag(x, y) {
     eventState.vol1Board[toIdx]   = fromItem;
     eventState.vol1Board[fromIdx] = null;
     vol1SelectedCell = null;
+    hideNaviHint();
     renderVol1Board();
     return;
   }
@@ -9864,7 +9870,7 @@ function showNaviHintForItem(item, persistent = false) {
   document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
-function showNaviHintForVol1Item(item) {
+function showNaviHintForVol1Item(item, persistent = false) {
   let text = '';
   if (item.isMagnify) {
     text = '虫眼鏡を蜘蛛の巣のアイテムにドロップして除去しましょう。';
@@ -9893,13 +9899,17 @@ function showNaviHintForVol1Item(item) {
   document.getElementById('navi-coin-btn')?.classList.add('hidden');
   document.getElementById('navi-stock-btn')?.classList.add('hidden');
   panel.classList.remove('hidden');
-  naviHintPersistent = false;
+  naviHintPersistent = persistent;
   if (naviHintTimer) clearTimeout(naviHintTimer);
-  naviHintTimer = setTimeout(() => {
-    panel.classList.add('hidden');
-    naviHintPersistent = false;
+  if (persistent) {
     naviHintTimer = null;
-  }, 3000);
+  } else {
+    naviHintTimer = setTimeout(() => {
+      panel.classList.add('hidden');
+      naviHintPersistent = false;
+      naviHintTimer = null;
+    }, 3000);
+  }
 }
 
 function showNaviHintForCoin(item) {
