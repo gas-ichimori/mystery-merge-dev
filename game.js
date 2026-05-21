@@ -9170,11 +9170,13 @@ function handleVol1CellTap(idx) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
       if (selItem && selItem.isWebbed) {
         // 虫眼鏡で蜘蛛の巣を除去（ボード上の虫眼鏡を消費）
+        const webIdx = vol1SelectedCell;
         eventState.vol1Board[idx] = null;
-        eventState.vol1Board[vol1SelectedCell] = { stage: 1, isWebbed: false };
+        eventState.vol1Board[webIdx] = { stage: 1, isWebbed: false };
         vol1SelectedCell = null;
         checkVol1Refill();
         renderVol1Board();
+        triggerMergeAnim('#vol1-board', webIdx);
         return;
       }
     }
@@ -9195,6 +9197,7 @@ function handleVol1CellTap(idx) {
         vol1SelectedCell = null;
         checkVol1Refill();
         renderVol1Board();
+        triggerMergeAnim('#vol1-board', idx);
         return;
       }
     }
@@ -9210,6 +9213,7 @@ function handleVol1CellTap(idx) {
     checkVol1Refill();
     renderVol1Slot();
     renderVol1Board();
+    triggerMergeAnim('#vol1-board', idx);
     renderVol1MeterUI();
     return;
   }
@@ -9456,10 +9460,10 @@ function endVol1Drag(x, y) {
   vol1Drag.fromIdx  = null;
   vol1Drag.isFromGen = false;
 
-  // 指が動いていない = タップ相当 → clickに任せる
+  // 指が動いていない = タップ相当
   if (!vol1Drag.hasMoved) {
     if (isFromGen) {
-      vol1Drag.tapHandled = false;
+      vol1Drag.tapHandled = true; // 後続 click イベントをブロック
       onVol1MagnifyGenTap();
     } else {
       vol1Drag.tapHandled = false;
@@ -9506,6 +9510,7 @@ function endVol1Drag(x, y) {
     vol1SelectedCell = null;
     checkVol1Refill();
     renderVol1Board();
+    triggerMergeAnim('#vol1-board', toIdx);
     return;
   }
 
@@ -13372,8 +13377,9 @@ document.getElementById('vol1-slot-btn').addEventListener('click', () => {
 document.getElementById('vol1-close').addEventListener('click', () => {
   closeVol1Screen();
 });
-// Vol1 虫眼鏡ジェネレーター — タップ
+// Vol1 虫眼鏡ジェネレーター — タップ（touch後の二重発火防止）
 document.getElementById('vol1-gen-magnify')?.addEventListener('click', () => {
+  if (vol1Drag.tapHandled) { vol1Drag.tapHandled = false; return; }
   onVol1MagnifyGenTap();
 });
 // Vol1 虫眼鏡ジェネレーター — ドラッグ（タッチ）

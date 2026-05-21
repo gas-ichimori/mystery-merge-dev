@@ -1885,7 +1885,7 @@ body {
   align-items: flex-end;
   gap: 8px;
   padding: 8px 12px 12px;
-  z-index: 300;
+  z-index: 350;
   pointer-events: none;
 }
 /* パネルhidden時はボディのみ非表示。キャラは常時表示 */
