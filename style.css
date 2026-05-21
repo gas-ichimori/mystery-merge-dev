@@ -4158,8 +4158,8 @@ body {
   position: absolute;
   bottom: 2px;
   right: 2px;
-  width: 14px;
-  height: 14px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
   pointer-events: none;
   opacity: 0.85;
