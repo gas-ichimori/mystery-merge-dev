@@ -9109,22 +9109,20 @@ function renderVol1Board() {
       if (item.isMagnify) {
         img.src = VOL1_MAGNIFY_IMAGE;
         img.alt = '虫眼鏡';
+        img.classList.add('vol1-img-sm');
       } else if (item.isWebbed) {
         img.src = 'img/EventVol1/image_vol1_item_lv1_web.png';
         img.alt = '蜘蛛の巣Lv1';
       } else {
         img.src = VOL1_STAGE_IMAGES[item.stage - 1] ?? `img/EventVol1/image_vol1_item_lv${item.stage}.png`;
         img.alt = `Lv${item.stage}`;
+        if (item.stage === 2 || item.stage === 3) img.classList.add('vol1-img-sm');
       }
       cell.appendChild(img);
 
-      // Lv4★ 水蒸気アニメーション
+      // Lv4 水蒸気アニメーション
       if (!item.isWebbed && !item.isMagnify && item.stage === VOL1_MAX_STAGE) {
         cell.classList.add('has-coin-smoke');
-        const star = document.createElement('span');
-        star.className = 'vol1-star-badge';
-        star.textContent = '★';
-        cell.appendChild(star);
         const smoke = document.createElement('div');
         smoke.className = 'coin-smoke-overlay';
         for (let s = 0; s < 3; s++) {
