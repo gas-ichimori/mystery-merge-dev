@@ -4152,11 +4152,11 @@ body {
   display: none;
 }
 #vol1-board .cell .item-img {
-  width: 150%;
+  width: 120%;
   aspect-ratio: 1;
 }
 #vol1-board .cell .item-img.vol1-img-sm {
-  width: 110%;
+  width: 90%;
 }
 
 /* 蜘蛛の巣セル右下の虫眼鏡アイコン */
