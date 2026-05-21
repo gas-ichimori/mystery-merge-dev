@@ -6909,6 +6909,8 @@ const VOL1_COIN_STEP    = 2500;       // クリアごとにコイン報酬 +2500
 
 // 7行・8行・9行の3-5列（0-indexed）= インデックス 44,45,46,51,52,53,58,59,60 は蜘蛛の巣補充しない空きセル
 const VOL1_NOWEB_CELLS = new Set([44, 45, 46, 51, 52, 53, 58, 59, 60]);
+// 9行4列目（0-indexed: row8 col3 = 59）= 固定の虫眼鏡ジェネレーターセル
+const VOL1_GEN_CELL = 59;
 
 // Vol1 アイテム画像パス（虫眼鏡 + Lv1〜4）
 const VOL1_STAGE_IMAGES = [
@@ -9004,13 +9006,13 @@ function checkVol1Refill() {
   }
 }
 
-// 最も近い空きセルを返す（全セルが対象）
+// 最も近い空きセルを返す（ジェネレーターセル除く）
 function findNearestEmptyVol1Cell(fromIdx) {
   const fromRow = Math.floor(fromIdx / VOL1_BOARD_COLS);
   const fromCol = fromIdx % VOL1_BOARD_COLS;
   let bestIdx = -1, bestDist = Infinity;
   eventState.vol1Board.forEach((cell, i) => {
-    if (cell !== null) return;
+    if (cell !== null || i === VOL1_GEN_CELL) return;
     const row = Math.floor(i / VOL1_BOARD_COLS);
     const col = i % VOL1_BOARD_COLS;
     const dist = Math.abs(row - fromRow) + Math.abs(col - fromCol);
@@ -9032,14 +9034,11 @@ function renderVol1Slot() {
 
 // Vol1 レベルメーターUI更新
 function renderVol1MeterUI() {
-  const fill     = document.getElementById('vol1-meter-fill');
-  const label    = document.getElementById('vol1-meter-label');
-  const num      = document.getElementById('vol1-magnify-num');
-  const genCount = document.getElementById('vol1-gen-count');
-  if (fill)     fill.style.width = `${Math.min(100, (eventState.vol1LevelPoints / eventState.vol1LevelTarget) * 100)}%`;
-  if (label)    label.textContent = `${eventState.vol1LevelPoints} / ${eventState.vol1LevelTarget}`;
-  if (num)      num.textContent   = eventState.vol1MagnifyGlasses;
-  if (genCount) genCount.textContent = eventState.vol1MagnifyGlasses;
+  const fill  = document.getElementById('vol1-meter-fill');
+  const label = document.getElementById('vol1-meter-label');
+  if (fill)  fill.style.width = `${Math.min(100, (eventState.vol1LevelPoints / eventState.vol1LevelTarget) * 100)}%`;
+  if (label) label.textContent = `${eventState.vol1LevelPoints} / ${eventState.vol1LevelTarget}`;
+  // ジェネレーターセルのカウントは renderVol1Board 内で描画
 }
 
 // Vol1 ポイント加算（レベルクリア判定込み）
@@ -9074,6 +9073,24 @@ function renderVol1Board() {
   for (let i = 0; i < VOL1_BOARD_SIZE; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
+
+    // 固定ジェネレーターセル（9行4列目）
+    if (i === VOL1_GEN_CELL) {
+      cell.classList.add('vol1-gen-cell');
+      const img = document.createElement('img');
+      img.src = VOL1_MAGNIFY_IMAGE;
+      img.className = 'item-img';
+      img.alt = '虫眼鏡ジェネレーター';
+      cell.appendChild(img);
+      const cnt = document.createElement('span');
+      cnt.className = 'vol1-gen-cell-count';
+      cnt.textContent = eventState.vol1MagnifyGlasses;
+      cell.appendChild(cnt);
+      cell.dataset.index = i;
+      cell.addEventListener('click', () => onVol1MagnifyGenTap());
+      board.appendChild(cell);
+      continue;
+    }
 
     const item = eventState.vol1Board[i];
     if (item) {
@@ -9476,7 +9493,7 @@ function endVol1Drag(x, y) {
   }
   vol1Drag.tapHandled = true;
 
-  if (toIdx === null || (!isFromGen && toIdx === fromIdx)) {
+  if (toIdx === null || (!isFromGen && toIdx === fromIdx) || toIdx === VOL1_GEN_CELL) {
     renderVol1Board();
     return;
   }
@@ -9546,14 +9563,13 @@ function endVol1Drag(x, y) {
   renderVol1Board();
 }
 
-// 虫眼鏡ジェネレーター タップ → 最近傍空きセルにドロップ
+// 虫眼鏡ジェネレーターセル タップ → 最近傍空きセルにドロップ
 function onVol1MagnifyGenTap() {
   if (eventState.vol1MagnifyGlasses <= 0) {
     showToast('虫眼鏡がありません（依頼を解決して獲得しよう！）');
     return;
   }
-  const genEl = document.getElementById('vol1-gen-magnify');
-  const emptyIdx = findNearestEmptyVol1Cell(Math.floor(VOL1_BOARD_SIZE / 2));
+  const emptyIdx = findNearestEmptyVol1Cell(VOL1_GEN_CELL);
   if (emptyIdx === -1) {
     showBoardFullToast(null, false);
     return;
@@ -9561,13 +9577,13 @@ function onVol1MagnifyGenTap() {
   eventState.vol1MagnifyGlasses--;
   eventState.vol1Board[emptyIdx] = { isMagnify: true };
   renderVol1Slot();
-  renderVol1MeterUI();
 
-  // フライアニメーション：ジェネレーター → セル
-  const cells   = document.querySelectorAll('#vol1-board .cell');
-  const toCell  = cells[emptyIdx];
-  if (genEl && toCell) {
-    const fr = genEl.getBoundingClientRect();
+  // フライアニメーション：ジェネレーターセル → 対象セル
+  const cells    = document.querySelectorAll('#vol1-board .cell');
+  const fromCell = cells[VOL1_GEN_CELL];
+  const toCell   = cells[emptyIdx];
+  if (fromCell && toCell) {
+    const fr = fromCell.getBoundingClientRect();
     const tr = toCell.getBoundingClientRect();
     const startX = fr.left + fr.width  / 2;
     const startY = fr.top  + fr.height / 2;
