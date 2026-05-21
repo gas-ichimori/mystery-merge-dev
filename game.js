@@ -6907,8 +6907,8 @@ const VOL1_COIN_BASE    = 5000;       // 1回目クリア コイン報酬
 const VOL1_HP_STEP      = 25;         // クリアごとに体力報酬 +25
 const VOL1_COIN_STEP    = 2500;       // クリアごとにコイン報酬 +2500
 
-// 7行・8行・9行の3-5列（0-indexed）= インデックス 44,45,46,51,52,53,58,59,60 は常に空白
-const VOL1_BLOCKED_CELLS = new Set([44, 45, 46, 51, 52, 53, 58, 59, 60]);
+// 7行・8行・9行の3-5列（0-indexed）= インデックス 44,45,46,51,52,53,58,59,60 は蜘蛛の巣補充しない空きセル
+const VOL1_NOWEB_CELLS = new Set([44, 45, 46, 51, 52, 53, 58, 59, 60]);
 
 // Vol1 アイテム画像パス（虫眼鏡 + Lv1〜4）
 const VOL1_STAGE_IMAGES = [
@@ -8986,31 +8986,31 @@ function checkVol1Unlock() {
   ], '#vol1-slot-btn', null);
 }
 
-// Vol1 盤面を初期化（ブロックセル以外に蜘蛛の巣Lv1を配置）
+// Vol1 盤面を初期化（蜘蛛の巣なしセル以外に蜘蛛の巣Lv1を配置）
 function initVol1Board() {
   eventState.vol1Board = Array(VOL1_BOARD_SIZE).fill(null).map((_, i) =>
-    VOL1_BLOCKED_CELLS.has(i) ? null : { stage: 1, isWebbed: true }
+    VOL1_NOWEB_CELLS.has(i) ? null : { stage: 1, isWebbed: true }
   );
 }
 
-// 蜘蛛の巣アイテムが無くなったら空きセル（ブロック除く）に補充
+// 蜘蛛の巣アイテムが無くなったら空きセル（蜘蛛の巣なしセル除く）に補充
 function checkVol1Refill() {
   const hasWebbed = eventState.vol1Board.some(c => c && c.isWebbed);
   if (!hasWebbed) {
     eventState.vol1Board = eventState.vol1Board.map((c, i) =>
-      VOL1_BLOCKED_CELLS.has(i) ? null :
+      VOL1_NOWEB_CELLS.has(i) ? c :
       (c === null ? { stage: 1, isWebbed: true } : c)
     );
   }
 }
 
-// 最も近い空きセル（ブロック・null除く）を返す
+// 最も近い空きセルを返す（全セルが対象）
 function findNearestEmptyVol1Cell(fromIdx) {
   const fromRow = Math.floor(fromIdx / VOL1_BOARD_COLS);
   const fromCol = fromIdx % VOL1_BOARD_COLS;
   let bestIdx = -1, bestDist = Infinity;
   eventState.vol1Board.forEach((cell, i) => {
-    if (cell !== null || VOL1_BLOCKED_CELLS.has(i)) return;
+    if (cell !== null) return;
     const row = Math.floor(i / VOL1_BOARD_COLS);
     const col = i % VOL1_BOARD_COLS;
     const dist = Math.abs(row - fromRow) + Math.abs(col - fromCol);
@@ -9074,14 +9074,6 @@ function renderVol1Board() {
   for (let i = 0; i < VOL1_BOARD_SIZE; i++) {
     const cell = document.createElement('div');
     cell.className = 'cell';
-
-    // ブロックセル（永続空白）
-    if (VOL1_BLOCKED_CELLS.has(i)) {
-      cell.classList.add('vol1-blocked');
-      cell.dataset.index = i;
-      board.appendChild(cell);
-      continue;
-    }
 
     const item = eventState.vol1Board[i];
     if (item) {
@@ -9153,7 +9145,6 @@ function renderVol1Board() {
 // Vol1 セルタップ処理
 function handleVol1CellTap(idx) {
   if (vol1Drag.tapHandled) { vol1Drag.tapHandled = false; return; }
-  if (VOL1_BLOCKED_CELLS.has(idx)) return;
 
   const item = eventState.vol1Board[idx];
 
@@ -9290,7 +9281,7 @@ let vol1Drag = {
 
 function startVol1DragMouse(e, fromIdx) {
   const item = eventState.vol1Board[fromIdx];
-  if (!item || VOL1_BLOCKED_CELLS.has(fromIdx)) return;
+  if (!item) return;
   showNaviHintForVol1Item(item);
   e.preventDefault();
   vol1Drag.active   = true;
@@ -9307,7 +9298,7 @@ function startVol1DragMouse(e, fromIdx) {
 
 function startVol1DragTouch(e, fromIdx) {
   const item = eventState.vol1Board[fromIdx];
-  if (!item || VOL1_BLOCKED_CELLS.has(fromIdx)) return;
+  if (!item) return;
   showNaviHintForVol1Item(item);
   e.preventDefault();
   vol1Drag.active   = true;
@@ -9436,7 +9427,7 @@ function onVol1DragEndTouch(e) {
 function highlightVol1DropTarget(x, y) {
   document.querySelectorAll('#vol1-board .cell').forEach(c => c.classList.remove('drop-over'));
   const idx = getVol1CellIndexAt(x, y);
-  if (idx !== null && idx !== vol1Drag.fromIdx && !VOL1_BLOCKED_CELLS.has(idx)) {
+  if (idx !== null && idx !== vol1Drag.fromIdx) {
     document.querySelectorAll('#vol1-board .cell')[idx]?.classList.add('drop-over');
   }
 }
@@ -9477,7 +9468,7 @@ function endVol1Drag(x, y) {
   }
   vol1Drag.tapHandled = true;
 
-  if (toIdx === null || (!isFromGen && toIdx === fromIdx) || VOL1_BLOCKED_CELLS.has(toIdx)) {
+  if (toIdx === null || (!isFromGen && toIdx === fromIdx)) {
     renderVol1Board();
     return;
   }
