@@ -1527,6 +1527,10 @@ body {
   z-index: 1; /* 依頼枠フレーム(z-index:2)の後ろに */
   margin-right: -26px; /* 依頼物の下に隠れるよう左方向に */
 }
+#event-req-panel .req-char-img {
+  width: 86px;
+  height: 116px;
+}
 
 /* ボード（イベント） */
 #event-board-wrap {

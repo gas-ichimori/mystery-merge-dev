@@ -1143,24 +1143,25 @@ function _playMergeSEImpl(ctx, type, t) {
       _osc(ctx, 'sine',  500, 0.05, t + 0.08, t + 0.22);
 
     } else if (type === 'pageFlip') {
-      // 本のページを捲る音（ザッ）
-      const buf  = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.12), ctx.sampleRate);
+      // 本のページを捲る音（ザッ） 0.35s版
+      const dur  = 0.35;
+      const buf  = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
       const data = buf.getChannelData(0);
       for (let i = 0; i < data.length; i++) {
-        const env = i < data.length * 0.15
-          ? i / (data.length * 0.15)
-          : 1 - (i - data.length * 0.15) / (data.length * 0.85);
-        data[i] = (Math.random() * 2 - 1) * env * 0.22;
+        const env = i < data.length * 0.12
+          ? i / (data.length * 0.12)
+          : 1 - (i - data.length * 0.12) / (data.length * 0.88);
+        data[i] = (Math.random() * 2 - 1) * env * 0.20;
       }
       const src  = ctx.createBufferSource();
       const filt = ctx.createBiquadFilter();
       filt.type = 'bandpass';
       filt.frequency.setValueAtTime(3000, t);
-      filt.frequency.exponentialRampToValueAtTime(800, t + 0.12);
-      filt.Q.value = 0.8;
+      filt.frequency.exponentialRampToValueAtTime(600, t + dur);
+      filt.Q.value = 0.7;
       const gain = ctx.createGain();
-      gain.gain.setValueAtTime(1, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      gain.gain.setValueAtTime(1.0, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
       src.buffer = buf;
       src.connect(filt);
       filt.connect(gain);
@@ -7201,7 +7202,8 @@ function flyHpIcons(onComplete) {
 }
 
 // アイコンから各依頼カードへバッジをアニメーション送付
-function flyBadgesToRequests(iconSelector, imgSrc, onDone) {
+// onEachLand(cardIndex) : 各バッジが着地した時に呼ばれる
+function flyBadgesToRequests(iconSelector, imgSrc, onDone, onEachLand) {
   const icon  = document.querySelector(iconSelector);
   const panel = document.getElementById('event-req-panel');
   if (!icon || !panel) { onDone?.(); return; }
@@ -7222,22 +7224,25 @@ function flyBadgesToRequests(iconSelector, imgSrc, onDone) {
     const dx   = endX - startX;
     const dy   = endY - startY;
     const arcX = (Math.random() - 0.5) * 80;
-    const arcY = -60 - Math.random() * 40;
+    const arcY = -80 - Math.random() * 50;
 
     setTimeout(() => {
       const img = document.createElement('img');
       img.src = imgSrc;
-      img.style.cssText = `position:fixed;width:36px;height:36px;left:${startX}px;top:${startY}px;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;object-fit:contain;`;
+      img.style.cssText = `position:fixed;width:40px;height:40px;left:${startX}px;top:${startY}px;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;object-fit:contain;`;
       document.body.appendChild(img);
 
+      const duration = 900 + Math.random() * 200;
       const anim = img.animate([
-        { transform: 'translate(-50%,-50%) translate(0,0) scale(1)', opacity: 1 },
-        { transform: `translate(-50%,-50%) translate(${dx * 0.45 + arcX}px,${dy * 0.3 + arcY}px) scale(1.2)`, opacity: 1, offset: 0.45 },
-        { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(0.3)`, opacity: 0 },
-      ], { duration: 600 + Math.random() * 150, delay: i * 80, easing: 'ease-in', fill: 'forwards' });
+        { transform: 'translate(-50%,-50%) translate(0,0) scale(1.2)', opacity: 1 },
+        { transform: `translate(-50%,-50%) translate(${dx * 0.45 + arcX}px,${dy * 0.3 + arcY}px) scale(1.4)`, opacity: 1, offset: 0.4 },
+        { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(0.4)`, opacity: 0 },
+      ], { duration, delay: i * 130, easing: 'ease-in', fill: 'forwards' });
 
       anim.onfinish = () => {
         img.remove();
+        playMergeSE('spawn');
+        onEachLand?.(i);
         done++;
         if (done === count) onDone?.();
       };
@@ -9702,12 +9707,18 @@ function checkBurstUnlock() {
   renderBurstSlot();
   renderEventRequest();
   if (isDebugModeActive()) { showToast('依頼バースト解放！'); return; }
+  // バッジを一旦非表示にして演出後に1枚ずつ表示
+  const burstBadges = [...document.querySelectorAll('#event-req-panel .req-burst-badge')];
+  burstBadges.forEach(b => { b.style.visibility = 'hidden'; });
   startGuide([
     '依頼バーストが出現しました...',
     '高レベルの依頼を解決して...バーストゲージを溜めると...',
     '大量のアイテムが放出されます...',
   ], '#burst-slot-btn', () => {
-    flyBadgesToRequests('#burst-slot-btn', 'img/UI/image_merge_burst_badge_p1.png', null);
+    flyBadgesToRequests('#burst-slot-btn', 'img/UI/image_merge_burst_badge_p1.png',
+      () => { burstBadges.forEach(b => { b.style.visibility = ''; }); },
+      (i) => { if (burstBadges[i]) burstBadges[i].style.visibility = ''; }
+    );
   });
 }
 
@@ -9735,13 +9746,20 @@ function checkVol1Unlock() {
   eventState.vol1Unlocked = true;
   initVol1Board();
   renderVol1Slot();
+  renderEventRequest(); // magnifyバッジを描画してから非表示に
   if (isDebugModeActive()) { showToast('イベントゲームVol1 解放！'); return; }
+  // magnifyバッジを一旦非表示にして演出後に1枚ずつ表示
+  const magnifyBadges = [...document.querySelectorAll('#event-req-panel .req-magnify-badge')];
+  magnifyBadges.forEach(b => { b.style.visibility = 'hidden'; });
   startGuide([
     'イベントゲームVol1が解放されました！',
     '依頼を解決して虫眼鏡を集めましょう...',
     '虫眼鏡でミステリーを解き明かしましょう...',
   ], '#vol1-slot-btn', () => {
-    flyBadgesToRequests('#vol1-slot-btn', 'img/EventVol1/image_vol1_magnify.png', null);
+    flyBadgesToRequests('#vol1-slot-btn', 'img/EventVol1/image_vol1_magnify.png',
+      () => { magnifyBadges.forEach(b => { b.style.visibility = ''; }); },
+      (i) => { if (magnifyBadges[i]) magnifyBadges[i].style.visibility = ''; }
+    );
   });
 }
 
@@ -14272,7 +14290,8 @@ function endEvDrag(x, y) {
         const now = Date.now();
         if (now - lastCoinTapTime < 400 && lastCoinTapIdx === fromIdx) {
           const reward = COIN_REWARD[item.coinLv ?? 1] ?? 0;
-          state.coin += reward;
+          playMergeSE('coin');
+          addCoin(reward);
           eventState.board[fromIdx] = null;
           eventState.selectedCell   = null;
           hideNaviHint();
@@ -15555,5 +15574,8 @@ document.addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if (!btn) return;
   if (btn.closest('#debug-screen')) return; // デバッグ画面は除外
+  // 独自SEを持つボタンはtap音を出さない
+  if (btn.id === 'navi-stock-btn') return;
+  if (/^story-ch\d+-next-btn$/.test(btn.id)) return;
   playMergeSE('tap');
 }, { capture: false, passive: true });
