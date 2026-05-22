@@ -3125,6 +3125,9 @@ document.getElementById('debug-se-bubble').addEventListener('click', () => {
 document.getElementById('debug-se-page-flip').addEventListener('click', () => {
   playMergeSE('pageFlip');
 });
+document.getElementById('debug-se-coin').addEventListener('click', () => {
+  playMergeSE('coin');
+});
 
 // ========================================
 // イベントゲーム Vol1 デバッグボタン
@@ -9706,7 +9709,6 @@ function checkBurstUnlock() {
   eventState.requests.forEach(r => { r.burstPoints = calcBurstPoints(r); });
   renderBurstSlot();
   renderEventRequest();
-  if (isDebugModeActive()) { showToast('依頼バースト解放！'); return; }
   // バッジを一旦非表示にして演出後に1枚ずつ表示
   const burstBadges = [...document.querySelectorAll('#event-req-panel .req-burst-badge')];
   burstBadges.forEach(b => { b.style.visibility = 'hidden'; });
@@ -9747,7 +9749,6 @@ function checkVol1Unlock() {
   initVol1Board();
   renderVol1Slot();
   renderEventRequest(); // magnifyバッジを描画してから非表示に
-  if (isDebugModeActive()) { showToast('イベントゲームVol1 解放！'); return; }
   // magnifyバッジを一旦非表示にして演出後に1枚ずつ表示
   const magnifyBadges = [...document.querySelectorAll('#event-req-panel .req-magnify-badge')];
   magnifyBadges.forEach(b => { b.style.visibility = 'hidden'; });
@@ -11500,7 +11501,7 @@ function progressStory(chapter = 1) {
     leveledUp = true;
   }
   if (leveledUp) {
-    if (_advSceneOpen) { _pendingSE.push('levelup'); } else { playMergeSE('levelup'); }
+    _pendingSE.push('levelup');
     const ringEl = document.getElementById('player-level-ring');
     showFloatNearEl(`プレイヤーLv${state.playerLevel}！`, '#f9c846', ringEl);
     if (ringEl) {
@@ -11554,6 +11555,7 @@ function progressStory(chapter = 1) {
       const slot = findNearestEmptyEventCell(eIdx);
       if (slot !== -1) {
         eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel ?? 0 };
+        playMergeSE('spawn');
         renderEventBoard();
         showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
       }
@@ -11587,6 +11589,7 @@ function progressStory(chapter = 1) {
         const slot = findNearestEmptyEventCell(eIdx);
         if (slot !== -1) {
           eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel };
+          playMergeSE('spawn');
           showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
           renderEventBoard();
         }
@@ -11844,8 +11847,8 @@ function completeEventRequest(index) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
     const isCh1Low  = !it.chainId && it.stage >= 3 && it.stage <= 4;
     const isCh2up   = it.chainId !== undefined;
-    if (isCh1Low || (isCh2up && it.stage <= 4)) {
-      // Ch1 Lv3-4 / Ch2以降 Lv1-4: 永久封印（一度解決したら再出現しない）
+    if (isCh1Low || (isCh2up && it.stage <= 5)) {
+      // Ch1 Lv3-4 / Ch2以降 Lv1-5: 永久封印（一度解決したら再出現しない）
       eventState.completedLowStages.add(key);
     } else {
       // Ch1 Lv6+ / Ch2以降 Lv5+: 1件おやすみ後に復活
@@ -12028,6 +12031,29 @@ function fillEventRequests() {
   }
 
   function pickRandomItem(excludeKeys, superRelaxed = false) {
+    // Ch2以降のLv1-5未解決アイテムを優先的に選ぶ
+    const lowCandidates = [];
+    const tryAddLow = (chainId, available) => {
+      if (!available) return;
+      for (let s = 1; s <= 5; s++) {
+        const key = `${chainId}-${s}`;
+        if (excludeKeys.has(key)) continue;
+        if (eventState.completedLowStages.has(key)) continue;
+        if (!superRelaxed && eventState.recentlySolvedKeys.has(key)) continue;
+        lowCandidates.push({ item: { chainId, stage: s }, key });
+      }
+    };
+    tryAddLow(SEIZO_CHAIN_ID,    seizoAvailable);
+    tryAddLow(KANTEITA_CHAIN_ID, kanteAvailable);
+    tryAddLow(KEIKAKU_CHAIN_ID,  keikakuAvailable);
+    tryAddLow(SNS_CHAIN_ID,      snsAvailable);
+    tryAddLow(CLOCK_CHAIN_ID,    clockAvailable);
+    tryAddLow(CH7_CHAIN_ID,      ch7Available);
+    tryAddLow(CH8_CHAIN_ID,      ch8Available);
+    if (lowCandidates.length > 0) {
+      return lowCandidates[Math.floor(Math.random() * lowCandidates.length)];
+    }
+
     for (let t = 0; t < 50; t++) {
       let item;
 
@@ -12250,10 +12276,10 @@ function renderEventRequest() {
     div.className = 'request-slot' + (completable ? ' completable' : '');
     div.innerHTML = `
       <div class="req-char-wrap">
+        ${burstBadge}
         ${charHtml}
       </div>
       <div class="req-slot-frame">
-        ${burstBadge}
         ${magnifyBadge}
         <div class="req-items">${itemsHtml}</div>
         <div class="req-coin-row">
@@ -13114,6 +13140,7 @@ function unlockFireGenerator() {
   if (emptyIdx === -1) { showToast('ボードが満杯で第二章ジェネレーターを配置できません'); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: 0 };
   discoverGen('ch2', 0); // Lv1 を発見
+  playMergeSE('spawn');
   showToast('第二章ジェネレーター解放！');
   renderEventBoard();
   renderEventRequest();
@@ -13127,6 +13154,7 @@ function unlockKanteGenerator() {
   if (emptyIdx === -1) { showToast('ボードが満杯で第三章ジェネレーターを配置できません'); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: 0 };
   discoverGen('ch3', 0); // Lv1 を発見
+  playMergeSE('spawn');
   showToast('第三章ジェネレーター解放！');
   renderEventBoard();
   renderEventRequest();
@@ -13168,6 +13196,7 @@ function _spawnChGenLvUpTile(chapter, triggerKey, triggeredSet) {
     idx: emptyIdx,
     msg: `${chName}ジェネレータータイルが増えた！\nマージしてLvアップ！`,
   });
+  playMergeSE('spawn');
   showToast(`${chName}ジェネレータータイルが増えた！マージしてLvアップ！`);
   renderEventBoard();
 }
@@ -13427,6 +13456,7 @@ function unlockKeikakuGenerator() {
   if (emptyIdx === -1) { showToast('ボードが満杯で第四章ジェネレーターを配置できません'); return; }
   eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: 0 };
   discoverGen('ch4', 0);
+  playMergeSE('spawn');
   showToast('第四章ジェネレーター解放！');
   renderEventBoard();
   renderEventRequest();
@@ -13441,6 +13471,7 @@ function unlockSnsGenerator() {
     eventState.board[emptyIdx] = { isEventGen: true, isSnsGen: true, snsLevel: 0 };
     discoverGen('ch5', 0);
   }
+  playMergeSE('spawn');
   showToast('第五章が解放されました！');
   renderStoryScreen();
   renderEventBoard();
@@ -13457,6 +13488,7 @@ function unlockClockGenerator() {
     eventState.board[emptyIdx] = { isEventGen: true, isClockGen: true, clockLevel: 0 };
     discoverGen('ch6', 0);
   }
+  playMergeSE('spawn');
   showToast('第六章が解放されました！');
   renderStoryScreen();
   renderEventBoard();
@@ -13473,6 +13505,7 @@ function unlockCh7Generator() {
     eventState.board[emptyIdx] = { isEventGen: true, isCh7Gen: true, ch7Level: 0 };
     discoverGen('ch7', 0);
   }
+  playMergeSE('spawn');
   showToast('第七章が解放されました！');
   renderStoryScreen();
   renderEventBoard();
@@ -13488,6 +13521,7 @@ function unlockCh8Generator() {
     eventState.board[emptyIdx] = { isEventGen: true, isCh8Gen: true, ch8Level: 0 };
     discoverGen('ch8', 0);
   }
+  playMergeSE('spawn');
   showToast('第八章が解放されました！');
   renderStoryScreen();
   renderEventBoard();
