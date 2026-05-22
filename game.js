@@ -1135,6 +1135,37 @@ function _playMergeSEImpl(ctx, type, t) {
       [392, 523, 659, 784, 1047].forEach((f, i) => _osc(ctx, 'sine', f, 0.16, t + i * 0.12, t + i * 0.12 + 0.38));
       // 最終和音
       [523, 659, 784].forEach(f => _osc(ctx, 'sine', f, 0.12, t + 0.72, t + 1.3));
+
+    } else if (type === 'bubble') {
+      // しゃぼん玉を割る音（柔らかいポン）
+      _osc(ctx, 'sine', 1200, 0.10, t,        t + 0.06);
+      _osc(ctx, 'sine',  800, 0.08, t + 0.04, t + 0.14);
+      _osc(ctx, 'sine',  500, 0.05, t + 0.08, t + 0.22);
+
+    } else if (type === 'pageFlip') {
+      // 本のページを捲る音（ザッ）
+      const buf  = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.12), ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        const env = i < data.length * 0.15
+          ? i / (data.length * 0.15)
+          : 1 - (i - data.length * 0.15) / (data.length * 0.85);
+        data[i] = (Math.random() * 2 - 1) * env * 0.22;
+      }
+      const src  = ctx.createBufferSource();
+      const filt = ctx.createBiquadFilter();
+      filt.type = 'bandpass';
+      filt.frequency.setValueAtTime(3000, t);
+      filt.frequency.exponentialRampToValueAtTime(800, t + 0.12);
+      filt.Q.value = 0.8;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(1, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+      src.buffer = buf;
+      src.connect(filt);
+      filt.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(t);
     }
   } catch (e) { /* Web Audio API 非対応環境は無視 */ }
 }
@@ -3086,6 +3117,12 @@ document.getElementById('debug-se-chapter-unlock').addEventListener('click', () 
 document.getElementById('debug-se-chapter-complete').addEventListener('click', () => {
   playMergeSE('chapterComplete');
   showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2000);
+});
+document.getElementById('debug-se-bubble').addEventListener('click', () => {
+  playMergeSE('bubble');
+});
+document.getElementById('debug-se-page-flip').addEventListener('click', () => {
+  playMergeSE('pageFlip');
 });
 
 // ========================================
@@ -6809,41 +6846,49 @@ document.getElementById('story-screen-close-btn').addEventListener('click', () =
 });
 document.getElementById('story-ch1-next-btn').addEventListener('click', () => {
   document.getElementById('story-ch1-next-btn').classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(1);
 });
 document.getElementById('story-ch2-next-btn').addEventListener('click', () => {
   document.getElementById('story-ch2-next-btn').classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(2);
 });
 document.getElementById('story-ch3-next-btn').addEventListener('click', () => {
   document.getElementById('story-ch3-next-btn').classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(3);
 });
 document.getElementById('story-ch4-next-btn')?.addEventListener('click', () => {
   document.getElementById('story-ch4-next-btn')?.classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(4);
 });
 document.getElementById('story-ch5-next-btn')?.addEventListener('click', () => {
   document.getElementById('story-ch5-next-btn')?.classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(5);
 });
 document.getElementById('story-ch6-next-btn')?.addEventListener('click', () => {
   document.getElementById('story-ch6-next-btn')?.classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(6);
 });
 document.getElementById('story-ch7-next-btn')?.addEventListener('click', () => {
   document.getElementById('story-ch7-next-btn')?.classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(7);
 });
 document.getElementById('story-ch8-next-btn')?.addEventListener('click', () => {
   document.getElementById('story-ch8-next-btn')?.classList.remove('guide-attention');
+  playMergeSE('pageFlip');
   closeStoryScreen();
   progressStory(8);
 });
@@ -7153,6 +7198,51 @@ function flyHpIcons(onComplete) {
       };
     }, 0);
   }
+}
+
+// アイコンから各依頼カードへバッジをアニメーション送付
+function flyBadgesToRequests(iconSelector, imgSrc, onDone) {
+  const icon  = document.querySelector(iconSelector);
+  const panel = document.getElementById('event-req-panel');
+  if (!icon || !panel) { onDone?.(); return; }
+  const cards = panel.querySelectorAll('.request-slot');
+  if (!cards.length) { onDone?.(); return; }
+
+  const srcRect = icon.getBoundingClientRect();
+  const startX = srcRect.left + srcRect.width  / 2;
+  const startY = srcRect.top  + srcRect.height / 2;
+
+  let done = 0;
+  const count = cards.length;
+
+  cards.forEach((card, i) => {
+    const tgt  = card.getBoundingClientRect();
+    const endX = tgt.left + tgt.width  / 2;
+    const endY = tgt.top  + tgt.height / 2;
+    const dx   = endX - startX;
+    const dy   = endY - startY;
+    const arcX = (Math.random() - 0.5) * 80;
+    const arcY = -60 - Math.random() * 40;
+
+    setTimeout(() => {
+      const img = document.createElement('img');
+      img.src = imgSrc;
+      img.style.cssText = `position:fixed;width:36px;height:36px;left:${startX}px;top:${startY}px;transform:translate(-50%,-50%);z-index:9999;pointer-events:none;object-fit:contain;`;
+      document.body.appendChild(img);
+
+      const anim = img.animate([
+        { transform: 'translate(-50%,-50%) translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(-50%,-50%) translate(${dx * 0.45 + arcX}px,${dy * 0.3 + arcY}px) scale(1.2)`, opacity: 1, offset: 0.45 },
+        { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(0.3)`, opacity: 0 },
+      ], { duration: 600 + Math.random() * 150, delay: i * 80, easing: 'ease-in', fill: 'forwards' });
+
+      anim.onfinish = () => {
+        img.remove();
+        done++;
+        if (done === count) onDone?.();
+      };
+    }, 0);
+  });
 }
 
 document.getElementById('shop-btn').addEventListener('click', () => {
@@ -9614,10 +9704,11 @@ function checkBurstUnlock() {
   if (isDebugModeActive()) { showToast('依頼バースト解放！'); return; }
   startGuide([
     '依頼バーストが出現しました...',
-    '依頼バーストは、バーストアイコンが付いた依頼人の依頼を解決するとバーストゲージが溜まります...',
-    'バーストゲージが満タンになるとCLEARです...',
-    '盤面にマージアイテムが大量に放出されます...',
-  ], '#burst-slot-btn', null);
+    '高レベルの依頼を解決して...バーストゲージを溜めると...',
+    '大量のアイテムが放出されます...',
+  ], '#burst-slot-btn', () => {
+    flyBadgesToRequests('#burst-slot-btn', 'img/UI/image_merge_burst_badge_p1.png', null);
+  });
 }
 
 // バーストスロットUI更新
@@ -9647,8 +9738,11 @@ function checkVol1Unlock() {
   if (isDebugModeActive()) { showToast('イベントゲームVol1 解放！'); return; }
   startGuide([
     'イベントゲームVol1が解放されました！',
-    '虫眼鏡を集めてミステリーを解き明かしましょう...',
-  ], '#vol1-slot-btn', null);
+    '依頼を解決して虫眼鏡を集めましょう...',
+    '虫眼鏡でミステリーを解き明かしましょう...',
+  ], '#vol1-slot-btn', () => {
+    flyBadgesToRequests('#vol1-slot-btn', 'img/EventVol1/image_vol1_magnify.png', null);
+  });
 }
 
 // 蜘蛛の巣セルが除去可能か（上下左右の少なくとも1方向が非蜘蛛の巣または盤面外）
@@ -10845,6 +10939,7 @@ function popBubble(cellIdx) {
     renderEventHeader();
   };
   if (overlay) {
+    playMergeSE('bubble');
     overlay.style.animation = 'bubble-pop 0.35s ease-out forwards';
     setTimeout(finish, 350);
   } else {
@@ -14761,6 +14856,7 @@ function canStoreGenInStock(item) {
 }
 
 function openStockPopup() {
+  playMergeSE('pageFlip');
   eventState.stockActiveTab = 0;
   document.querySelectorAll('.stock-tab-btn').forEach((btn, i) => btn.classList.toggle('active', i === 0));
   renderStockGrid();
