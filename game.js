@@ -12297,9 +12297,9 @@ function renderEventRequest() {
     div.className = 'request-slot' + (completable ? ' completable' : '');
     div.innerHTML = `
       <div class="req-char-wrap">
-        ${burstBadge}
         ${charHtml}
       </div>
+      ${burstBadge}
       <div class="req-slot-frame">
         ${magnifyBadge}
         <div class="req-items">${itemsHtml}</div>
