@@ -1097,9 +1097,10 @@ function _playMergeSEImpl(ctx, type, t) {
       [440, 554, 659].forEach((f, i) => _osc(ctx, 'sine', f, 0.13, t + i * 0.07, t + i * 0.07 + 0.25));
 
     } else if (type === 'coin') {
-      // コインジャラ（コイン獲得）
-      _osc(ctx, 'sine', 880, 0.14, t, t + 0.12);
-      _osc(ctx, 'sine', 1100, 0.12, t + 0.08, t + 0.22);
+      // コインのチャリン音（金属的な鈴音）
+      _osc(ctx, 'sine', 2093, 0.18, t,        t + 0.40);
+      _osc(ctx, 'sine', 2637, 0.11, t,        t + 0.30);
+      _osc(ctx, 'sine', 1319, 0.09, t + 0.01, t + 0.28);
 
     } else if (type === 'diamond') {
       // クリスタルチャイム（ダイヤ獲得）
@@ -6925,6 +6926,18 @@ document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
   } else if (type === 'keikaku') {
     eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: lv };
     showToast(`第四章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'sns') {
+    eventState.board[emptyIdx] = { isEventGen: true, isSnsGen: true, snsLevel: lv };
+    showToast(`第五章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'clock') {
+    eventState.board[emptyIdx] = { isEventGen: true, isClockGen: true, clockLevel: lv };
+    showToast(`第六章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'ch7') {
+    eventState.board[emptyIdx] = { isEventGen: true, isCh7Gen: true, ch7Level: lv };
+    showToast(`第七章ジェネレーター Lv${lv + 1} を出現`);
+  } else if (type === 'ch8') {
+    eventState.board[emptyIdx] = { isEventGen: true, isCh8Gen: true, ch8Level: lv };
+    showToast(`第八章ジェネレーター Lv${lv + 1} を出現`);
   }
   renderEventBoard();
 });

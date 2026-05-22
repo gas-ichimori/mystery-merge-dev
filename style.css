@@ -3239,12 +3239,12 @@ body {
   50%       { box-shadow: 0 0 12px rgba(255,160,30,0.9); }
 }
 
-/* 依頼スロットのバーストバッジ画像（req-char-wrap内・キャラ上部） */
+/* 依頼スロットのバーストバッジ画像（req-char-wrap内・キャラ右上） */
 .req-burst-badge {
   position: absolute;
   top: 4px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 0;
+  left: auto;
   width: 44px;
   height: 44px;
   object-fit: contain;
