@@ -109,6 +109,79 @@ const CHAINS = [
       '証拠一式','告発状','逮捕状','判決文','真実のファイル',
     ]
   },
+  // チェーン14：第五章（SNS解析機アイテム）
+  { name: '第五章',
+    stages: Array(20).fill('📱'),
+    stageImages: [
+      'img/Chapter5/icon/image_merge_icon5_01.png','img/Chapter5/icon/image_merge_icon5_02.png',
+      'img/Chapter5/icon/image_merge_icon5_03.png','img/Chapter5/icon/image_merge_icon5_04.png',
+      'img/Chapter5/icon/image_merge_icon5_05.png','img/Chapter5/icon/image_merge_icon5_06.png',
+      'img/Chapter5/icon/image_merge_icon5_07.png','img/Chapter5/icon/image_merge_icon5_08.png',
+      'img/Chapter5/icon/image_merge_icon5_09.png','img/Chapter5/icon/image_merge_icon5_10.png',
+      'img/Chapter5/icon/image_merge_icon5_11.png','img/Chapter5/icon/image_merge_icon5_12.png',
+      'img/Chapter5/icon/image_merge_icon5_13.png','img/Chapter5/icon/image_merge_icon5_14.png',
+      'img/Chapter5/icon/image_merge_icon5_15.png','img/Chapter5/icon/image_merge_icon5_16.png',
+      'img/Chapter5/icon/image_merge_icon5_17.png','img/Chapter5/icon/image_merge_icon5_18.png',
+      'img/Chapter5/icon/image_merge_icon5_19.png','img/Chapter5/icon/image_merge_icon5_20.png',
+    ],
+    stageNames: [
+      'スマホ画面','プロフィール','フォロワーリスト','投稿履歴','スクリーンショット',
+      'DM','IPログ','なりすましアカウント','炎上コメント','位置情報データ',
+      'デバイスID','削除データ','アクセスログ','脅迫メッセージ','音声録音データ',
+      '偽証拠ファイル','告発メモ','デジタル証拠','捜査報告書','真相ファイル',
+    ]
+  },
+  // チェーン15：第六章（時計修復台アイテム）
+  { name: '第六章',
+    stages: Array(12).fill('⌚'),
+    stageImages: [
+      'img/Chapter6/icon/image_merge_icon6_01.png','img/Chapter6/icon/image_merge_icon6_02.png',
+      'img/Chapter6/icon/image_merge_icon6_03.png','img/Chapter6/icon/image_merge_icon6_04.png',
+      'img/Chapter6/icon/image_merge_icon6_05.png','img/Chapter6/icon/image_merge_icon6_06.png',
+      'img/Chapter6/icon/image_merge_icon6_07.png','img/Chapter6/icon/image_merge_icon6_08.png',
+      'img/Chapter6/icon/image_merge_icon6_09.png','img/Chapter6/icon/image_merge_icon6_10.png',
+      'img/Chapter6/icon/image_merge_icon6_11.png','img/Chapter6/icon/image_merge_icon6_12.png',
+    ],
+    stageNames: [
+      '時計の部品','歯車','ゼンマイ','文字盤','時計針',
+      '懐中時計','アンティーク時計','鑑定書','保険書類','偽造証明書',
+      '内部告発','真相解明',
+    ]
+  },
+  // チェーン16：第七章（調査台アイテム）
+  { name: '第七章',
+    stages: Array(12).fill('📋'),
+    stageImages: [
+      'img/Chapter7/icon/image_merge_icon7_01.png','img/Chapter7/icon/image_merge_icon7_02.png',
+      'img/Chapter7/icon/image_merge_icon7_03.png','img/Chapter7/icon/image_merge_icon7_04.png',
+      'img/Chapter7/icon/image_merge_icon7_05.png','img/Chapter7/icon/image_merge_icon7_06.png',
+      'img/Chapter7/icon/image_merge_icon7_07.png','img/Chapter7/icon/image_merge_icon7_08.png',
+      'img/Chapter7/icon/image_merge_icon7_09.png','img/Chapter7/icon/image_merge_icon7_10.png',
+      'img/Chapter7/icon/image_merge_icon7_11.png','img/Chapter7/icon/image_merge_icon7_12.png',
+    ],
+    stageNames: [
+      '陳情書','会計書類','寄付明細','議事録','不正送金メモ',
+      '内部資料','証言録音','写真証拠','監査報告書','告発状',
+      '追加証拠','真実の記録',
+    ]
+  },
+  // チェーン17：第八章（VTuber調査機アイテム）
+  { name: '第八章',
+    stages: Array(12).fill('🎭'),
+    stageImages: [
+      'img/Chapter8/icon/image_merge_icon8_01.png','img/Chapter8/icon/image_merge_icon8_02.png',
+      'img/Chapter8/icon/image_merge_icon8_03.png','img/Chapter8/icon/image_merge_icon8_04.png',
+      'img/Chapter8/icon/image_merge_icon8_05.png','img/Chapter8/icon/image_merge_icon8_06.png',
+      'img/Chapter8/icon/image_merge_icon8_07.png','img/Chapter8/icon/image_merge_icon8_08.png',
+      'img/Chapter8/icon/image_merge_icon8_09.png','img/Chapter8/icon/image_merge_icon8_10.png',
+      'img/Chapter8/icon/image_merge_icon8_11.png','img/Chapter8/icon/image_merge_icon8_12.png',
+    ],
+    stageNames: [
+      '配信ログ','チャット履歴','サポーター名簿','運営書類','契約書',
+      'DM記録','匿名書き込み','音声データ','身元証明','脅迫証拠',
+      '失踪理由','真相ファイル',
+    ]
+  },
 ];
 
 // 出力上限（stage 5 まで、6以降は出力不可）
@@ -772,7 +845,7 @@ function mergeGenerators(fromIdx, toIdx) {
   else addEnergy(25, 'Lvアップボーナス！');
 
   renderAll();
-  triggerMergeAnim('#board', toIdx);
+  triggerMergeAnim('#board', toIdx, 'levelup');
 }
 
 
@@ -902,7 +975,216 @@ function onCellClick(index) {
 // boardSelector: '#board' or '#event-board'
 // cellIdx: セルインデックス
 // 描画後に確実にアニメーションを発火させるため double rAF を使用
-function triggerMergeAnim(boardSelector, cellIdx) {
+// ========================================
+// 効果音（Web Audio API）
+// ========================================
+let _audioCtx     = null;
+let _activeSirens = []; // サイレン音の強制停止用
+let _pendingSE    = []; // アドベンチャー中に積んだSE（閉幕後に再生）
+let _advSceneOpen = false;
+
+function _flushPendingSE() {
+  const q = _pendingSE.splice(0);
+  q.forEach(type => playMergeSE(type));
+}
+
+function _getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return _audioCtx;
+}
+
+// 初回タッチ/クリック時に AudioContext を確実に起動
+(function _warmAudio() {
+  function _resume() {
+    if (_audioCtx && _audioCtx.state === 'suspended') _audioCtx.resume();
+    // まだ生成されていなければ無音で生成してすぐ resume
+    if (!_audioCtx) { _getAudioCtx(); _audioCtx.resume(); }
+  }
+  document.addEventListener('click',    _resume, { capture: true, passive: true });
+  document.addEventListener('touchend', _resume, { capture: true, passive: true });
+})();
+
+function _osc(ctx, type, freq, gainVal, start, stop, freqEnd) {
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, start);
+  if (freqEnd != null) osc.frequency.exponentialRampToValueAtTime(freqEnd, stop);
+  gain.gain.setValueAtTime(gainVal, start);
+  gain.gain.exponentialRampToValueAtTime(0.001, stop);
+  osc.start(start);
+  osc.stop(stop);
+  return osc;
+}
+
+function stopSirens() {
+  _activeSirens.forEach(o => { try { o.stop(0); } catch (e) {} });
+  _activeSirens = [];
+}
+
+function playMergeSE(type = 'merge') {
+  try {
+    const ctx = _getAudioCtx();
+    const _schedule = () => {
+      const t = ctx.currentTime;
+      _playMergeSEImpl(ctx, type, t);
+    };
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(_schedule);
+    } else {
+      _schedule();
+    }
+  } catch (e) { /* Web Audio API 非対応環境は無視 */ }
+}
+
+function _playMergeSEImpl(ctx, type, t) {
+  try {
+
+    if (type === 'merge') {
+      // 2音ディング（マージ成功）
+      [660, 990].forEach((f, i) => _osc(ctx, 'sine', f, 0.18, t + i * 0.08, t + i * 0.08 + 0.22));
+
+    } else if (type === 'web') {
+      // スウィープ（蜘蛛の巣除去）
+      _osc(ctx, 'sine', 300, 0.14, t, t + 0.28, 900);
+
+    } else if (type === 'error') {
+      // 低音ブザー（エラー）
+      _osc(ctx, 'square', 160, 0.08, t, t + 0.18, 80);
+
+    } else if (type === 'siren') {
+      // サイレン（バースト発動）— LFOで周波数変調、3秒間
+      stopSirens();
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(0.2, t);
+      master.gain.exponentialRampToValueAtTime(0.001, t + 3.0);
+      master.connect(ctx.destination);
+      const osc = ctx.createOscillator();
+      const lfo = ctx.createOscillator();
+      const lfoGain = ctx.createGain();
+      lfo.connect(lfoGain);
+      lfoGain.connect(osc.frequency);
+      lfo.frequency.setValueAtTime(3, t);
+      lfoGain.gain.setValueAtTime(120, t);
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(640, t);
+      osc.connect(master);
+      osc.start(t); osc.stop(t + 3.0);
+      lfo.start(t); lfo.stop(t + 3.0);
+      _activeSirens.push(osc, lfo);
+
+    } else if (type === 'spawn') {
+      // ポン！（ジェネレーター出現）
+      _osc(ctx, 'sine', 400, 0.18, t, t + 0.15, 800);
+      _osc(ctx, 'sine', 800, 0.12, t + 0.12, t + 0.25);
+
+    } else if (type === 'attention') {
+      // 3連ビープ（アテンション）
+      [0, 0.12, 0.24].forEach(d => _osc(ctx, 'sine', 880, 0.12, t + d, t + d + 0.09));
+
+    } else if (type === 'complete') {
+      // 解決ファンファーレ（依頼完了）
+      [523, 659, 784, 1047].forEach((f, i) => _osc(ctx, 'sine', f, 0.15, t + i * 0.1, t + i * 0.1 + 0.22));
+
+    } else if (type === 'tap') {
+      // 柔らかいタップ（UIボタン）
+      _osc(ctx, 'sine', 1200, 0.06, t, t + 0.06);
+
+    } else if (type === 'heal') {
+      // 回復シマー（体力回復）
+      [440, 554, 659].forEach((f, i) => _osc(ctx, 'sine', f, 0.13, t + i * 0.07, t + i * 0.07 + 0.25));
+
+    } else if (type === 'coin') {
+      // コインジャラ（コイン獲得）
+      _osc(ctx, 'sine', 880, 0.14, t, t + 0.12);
+      _osc(ctx, 'sine', 1100, 0.12, t + 0.08, t + 0.22);
+
+    } else if (type === 'diamond') {
+      // クリスタルチャイム（ダイヤ獲得）
+      _osc(ctx, 'sine', 1600, 0.14, t, t + 0.35);
+      _osc(ctx, 'sine', 2000, 0.10, t + 0.04, t + 0.35);
+
+    } else if (type === 'typo') {
+      // タイプライター1文字ノイズ（アドベンチャー・チュートリアル文字送り）
+      const buf  = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.018), ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+      const src  = ctx.createBufferSource();
+      const gain = ctx.createGain();
+      src.buffer = buf;
+      gain.gain.setValueAtTime(0.08, t);
+      src.connect(gain);
+      gain.connect(ctx.destination);
+      src.start(t);
+
+    } else if (type === 'levelup') {
+      // アルペジオ（レベルアップ）
+      [523, 659, 784, 1047, 1319].forEach((f, i) => _osc(ctx, 'sine', f, 0.16, t + i * 0.09, t + i * 0.09 + 0.3));
+
+    } else if (type === 'chapterUnlock') {
+      // 新章解放ファンファーレ
+      _osc(ctx, 'sine', 392, 0.15, t,        t + 0.18);
+      _osc(ctx, 'sine', 523, 0.15, t + 0.15, t + 0.35);
+      _osc(ctx, 'sine', 659, 0.15, t + 0.30, t + 0.55);
+      _osc(ctx, 'sine', 784, 0.15, t + 0.45, t + 0.85);
+
+    } else if (type === 'chapterComplete') {
+      // 章完了ファンファーレ（フル）
+      [392, 523, 659, 784, 1047].forEach((f, i) => _osc(ctx, 'sine', f, 0.16, t + i * 0.12, t + i * 0.12 + 0.38));
+      // 最終和音
+      [523, 659, 784].forEach(f => _osc(ctx, 'sine', f, 0.12, t + 0.72, t + 1.3));
+    }
+  } catch (e) { /* Web Audio API 非対応環境は無視 */ }
+}
+
+// ========================================
+// タイプライター演出（アドベンチャー・チュートリアル共用）
+// ========================================
+let _typerCancel = null;
+
+function _startTypewriter(el, text, onDone, useInnerHTML = false) {
+  if (_typerCancel) { _typerCancel(); }
+
+  // HTMLタグを含む場合は即表示＋打鍵音バースト
+  if (/<[^>]+>/.test(text)) {
+    if (useInnerHTML) el.innerHTML = text;
+    else el.textContent = text;
+    const len = text.replace(/<[^>]+>/g, '').length;
+    const ticks = Math.min(Math.ceil(len / 3), 12);
+    for (let i = 0; i < ticks; i++) setTimeout(() => playMergeSE('typo'), i * 28);
+    _typerCancel = null;
+    if (onDone) onDone();
+    return;
+  }
+
+  let i = 0;
+  let cancelled = false;
+  const interval = setInterval(() => {
+    if (cancelled) return;
+    i = Math.min(i + 1, text.length);
+    el.textContent = text.slice(0, i);
+    if (i % 3 === 0) playMergeSE('typo');
+    if (i >= text.length) {
+      clearInterval(interval);
+      _typerCancel = null;
+      if (onDone) onDone();
+    }
+  }, 28);
+
+  _typerCancel = () => {
+    cancelled = true;
+    clearInterval(interval);
+    if (useInnerHTML) el.innerHTML = text;
+    else el.textContent = text;
+    _typerCancel = null;
+    if (onDone) onDone();
+  };
+}
+
+function triggerMergeAnim(boardSelector, cellIdx, seType = 'merge') {
+  playMergeSE(seType);
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
       const cells = document.querySelectorAll(boardSelector + ' .cell');
@@ -990,6 +1272,7 @@ function onGeneratorLevelUp(genId) {
         return;
       }
       state.board[emptyIdx] = { isGenerator: true, genId };
+      playMergeSE('spawn');
       showToast(`${gen.emoji} ${gen.name} がボードに出現！マージしてLvアップ！`);
       renderAll();
       return;
@@ -1012,6 +1295,7 @@ function onGeneratorLevelUp(genId) {
     gen.downgraded = false;
     gen.originalPowerLevel = gen.powerLevel;
   }
+  playMergeSE('levelup');
   showToast(`${gen.emoji} ${gen.name} Lv${gen.powerLevel + 1} にレベルアップ！`);
   // 体力ボーナス（DOWNからの復帰は除外）
   if (giveBonus) {
@@ -1083,6 +1367,7 @@ function onGeneratorClick(genId) {
   // 体力消耗・アイテム配置
   state.energy -= cost;
   state.board[emptyIdx] = { chainId: gen.chainId, stage: outputStage };
+  playMergeSE('spawn');
   discoverItem(gen.chainId, outputStage, emptyIdx, 'board');
 
   // ジェネレータータイルから対象セルへ飛び出す演出
@@ -1265,6 +1550,34 @@ const REQUESTERS = [
   { id: 20, name: 'カズヤ',   img: 'img/Chapter4/chara/image_merge_order_chara_24.png' },
   { id: 21, name: 'ハルカ',   img: 'img/Chapter4/chara/image_merge_order_chara_25.png' },
   { id: 22, name: 'シゲル',   img: 'img/Chapter4/chara/image_merge_order_chara_26.png' },
+  // 第五章（id: 23-28）
+  { id: 23, name: '依頼人⑦',  img: 'img/Chapter5/Chara/image_merge_order_chara_27.png' },
+  { id: 24, name: '依頼人⑧',  img: 'img/Chapter5/Chara/image_merge_order_chara_28.png' },
+  { id: 25, name: '依頼人⑨',  img: 'img/Chapter5/Chara/image_merge_order_chara_29.png' },
+  { id: 26, name: '依頼人⑩',  img: 'img/Chapter5/Chara/image_merge_order_chara_30.png' },
+  { id: 27, name: '依頼人⑪',  img: 'img/Chapter5/Chara/image_merge_order_chara_31.png' },
+  { id: 28, name: '依頼人⑫',  img: 'img/Chapter5/Chara/image_merge_order_chara_32.png' },
+  // 第六章（id: 29-34）
+  { id: 29, name: '依頼人⑬',  img: 'img/Chapter6/Chara/image_merge_order_chara_33.png' },
+  { id: 30, name: '依頼人⑭',  img: 'img/Chapter6/Chara/image_merge_order_chara_34.png' },
+  { id: 31, name: '依頼人⑮',  img: 'img/Chapter6/Chara/image_merge_order_chara_35.png' },
+  { id: 32, name: '依頼人⑯',  img: 'img/Chapter6/Chara/image_merge_order_chara_36.png' },
+  { id: 33, name: '依頼人⑰',  img: 'img/Chapter6/Chara/image_merge_order_chara_37.png' },
+  { id: 34, name: '依頼人⑱',  img: 'img/Chapter6/Chara/image_merge_order_chara_38.png' },
+  // 第七章（id: 35-40）
+  { id: 35, name: '依頼人⑲',  img: 'img/Chapter7/Chara/image_merge_order_chara_39.png' },
+  { id: 36, name: '依頼人⑳',  img: 'img/Chapter7/Chara/image_merge_order_chara_40.png' },
+  { id: 37, name: '依頼人㉑',  img: 'img/Chapter7/Chara/image_merge_order_chara_41.png' },
+  { id: 38, name: '依頼人㉒',  img: 'img/Chapter7/Chara/image_merge_order_chara_42.png' },
+  { id: 39, name: '依頼人㉓',  img: 'img/Chapter7/Chara/image_merge_order_chara_43.png' },
+  { id: 40, name: '依頼人㉔',  img: 'img/Chapter7/Chara/image_merge_order_chara_44.png' },
+  // 第八章（id: 41-46）
+  { id: 41, name: '依頼人㉕',  img: 'img/Chapter8/Chara/image_merge_order_chara_45.png' },
+  { id: 42, name: '依頼人㉖',  img: 'img/Chapter8/Chara/image_merge_order_chara_46.png' },
+  { id: 43, name: '依頼人㉗',  img: 'img/Chapter8/Chara/image_merge_order_chara_47.png' },
+  { id: 44, name: '依頼人㉘',  img: 'img/Chapter8/Chara/image_merge_order_chara_48.png' },
+  { id: 45, name: '依頼人㉙',  img: 'img/Chapter8/Chara/image_merge_order_chara_49.png' },
+  { id: 46, name: '依頼人㉚',  img: 'img/Chapter8/Chara/image_merge_order_chara_50.png' },
 ];
 
 const STAGE_RANGE = [
@@ -1493,6 +1806,7 @@ function completeRequest(index) {
     }
   }
 
+  playMergeSE('complete');
   addCoin(req.coin);
   state.totalCoinEarned += req.coin;
   state.requestCompletedTotal++;
@@ -1643,6 +1957,7 @@ function discoverItem(chainId, stage, cellIdx = null, boardId = 'board') {
         const emptyIdx = state.board.findIndex(c => c === null);
         if (emptyIdx !== -1) {
           state.board[emptyIdx] = { isGenerator: true, genId: gen.id };
+          playMergeSE('spawn');
           showToast(`${gen.emoji} ${gen.name} がボードに出現！マージしてLvアップ！`);
         }
       }
@@ -1691,6 +2006,26 @@ function discoverKeikakuItem(stage) {
   if (eventState.keikakuDiscovered[stage]) return;
   eventState.keikakuDiscovered[stage] = true;
   updateCatalogBadge();
+}
+
+function discoverSnsItem(stage) {
+  if (eventState.snsDiscovered[stage]) return;
+  eventState.snsDiscovered[stage] = true;
+}
+
+function discoverClockItem(stage) {
+  if (eventState.clockDiscovered[stage]) return;
+  eventState.clockDiscovered[stage] = true;
+}
+
+function discoverCh7Item(stage) {
+  if (eventState.ch7Discovered[stage]) return;
+  eventState.ch7Discovered[stage] = true;
+}
+
+function discoverCh8Item(stage) {
+  if (eventState.ch8Discovered[stage]) return;
+  eventState.ch8Discovered[stage] = true;
 }
 
 // ジェネレーターのレベルを発見（初回のみ）
@@ -2001,6 +2336,7 @@ function addEnergy(amount, _reason) {
   }
   state.energy = Math.min(state.energy + amount, MAX_ENERGY);
   if (state.energy >= MAX_ENERGY) showCenterPopup('体力は最大値です。');
+  playMergeSE('heal');
   showEnergyGain(amount);
   renderHeader();
   renderEventHeader();
@@ -2047,6 +2383,7 @@ function addCoin(amount) {
   }
   state.coin = Math.min(state.coin + amount, MAX_COIN);
   if (state.coin >= MAX_COIN) showCenterPopup('コインは最大値です。');
+  playMergeSE('coin');
 }
 
 // ダイヤ加算（上限 MAX_DIAMOND を超えない）
@@ -2057,6 +2394,7 @@ function addDiamond(amount) {
   }
   state.diamond = Math.min(state.diamond + amount, MAX_DIAMOND);
   if (state.diamond >= MAX_DIAMOND) showCenterPopup('ダイヤは最大値です。');
+  playMergeSE('diamond');
 }
 
 // メニューページ（main-page2-screen）が開いているか
@@ -2099,6 +2437,7 @@ function showToast(msg) {
 // imgSrc: 表示する画像パス
 // displayMs: 表示時間（ミリ秒、デフォルト 2800ms）
 function showChapterCompleteBanner(imgSrc, displayMs = 1800) {
+  playMergeSE('chapterComplete');
   // 既存オーバーレイがあれば即削除
   document.getElementById('chapter-complete-overlay')?.remove();
   document.getElementById('chapter-complete-flash')?.remove();
@@ -2704,6 +3043,49 @@ document.getElementById('debug-burst-reset').addEventListener('click', () => {
   renderBurstStock();
   renderEventRequest();
   showToast('依頼バースト リセット');
+});
+
+// ========================================
+// 第五〜八章 ストーリー解放 デバッグボタン
+// ========================================
+document.getElementById('debug-ch5-unlock').addEventListener('click', () => {
+  unlockSnsGenerator();
+  renderStoryScreen();
+  showToast('第五章 解放');
+});
+document.getElementById('debug-ch6-unlock').addEventListener('click', () => {
+  unlockClockGenerator();
+  renderStoryScreen();
+  showToast('第六章 解放');
+});
+document.getElementById('debug-ch7-unlock').addEventListener('click', () => {
+  unlockCh7Generator();
+  renderStoryScreen();
+  showToast('第七章 解放');
+});
+document.getElementById('debug-ch8-unlock').addEventListener('click', () => {
+  unlockCh8Generator();
+  renderStoryScreen();
+  showToast('第八章 解放');
+});
+document.getElementById('debug-ch5to8-unlock-all').addEventListener('click', () => {
+  unlockSnsGenerator();
+  unlockClockGenerator();
+  unlockCh7Generator();
+  unlockCh8Generator();
+  renderStoryScreen();
+  showToast('第五〜八章 一括解放');
+});
+
+// ========================================
+// 効果音テスト デバッグボタン
+// ========================================
+document.getElementById('debug-se-chapter-unlock').addEventListener('click', () => {
+  playMergeSE('chapterUnlock');
+});
+document.getElementById('debug-se-chapter-complete').addEventListener('click', () => {
+  playMergeSE('chapterComplete');
+  showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2000);
 });
 
 // ========================================
@@ -6015,6 +6397,7 @@ let advTextPending  = false;
 function openAdventureScene(sceneId, callback = null) {
   const scene = ADV_SCENES[sceneId];
   if (!scene) return;
+  _advSceneOpen   = true;
   advCurrentScene = scene;
   advCallback     = callback;
   advMsgIdx       = 0;
@@ -6157,11 +6540,13 @@ function showAdvMessage(idx) {
 
   function _applyText() {
     document.getElementById('adv-speaker').textContent  = msg.speaker ?? '';
-    document.getElementById('adv-text').textContent     = msg.text;
-    document.getElementById('adv-tap-hint').textContent = '▼ タップで続ける';
-    if (isLast && scene.autoClose) {
-      setTimeout(closeAdventureScene, 1500);
-    }
+    document.getElementById('adv-tap-hint').textContent = '';
+    advTextPending = true;
+    _startTypewriter(document.getElementById('adv-text'), msg.text ?? '', () => {
+      advTextPending = false;
+      document.getElementById('adv-tap-hint').textContent = '▼ タップで続ける';
+      if (isLast && scene.autoClose) setTimeout(closeAdventureScene, 1500);
+    });
   }
 
   // ─── 新機能: 両キャラ消去 + 背景チェンジ（hideAll）───
@@ -6394,11 +6779,14 @@ function closeAdventureScene() {
     advCurrentScene = null;
     advCallback     = null;
     advTextPending  = false;
+    _advSceneOpen   = false;
+    _flushPendingSE();
     if (cb) cb();
   }, 800);
 }
 
 document.getElementById('adventure-screen').addEventListener('click', () => {
+  if (_typerCancel) { _typerCancel(); return; }
   if (!advCurrentScene || advTextPending) return;
   const isLast = advMsgIdx >= advCurrentScene.script.length - 1;
   if (isLast) {
@@ -6865,6 +7253,90 @@ const KEIKAKU_GEN_IMAGES = [
 ];
 const KEIKAKU_GEN_NAMES = ['設計台', '設計台+', '精密設計機', '計画分析台', '都市解析機', '証拠設計室', '完全解析台'];
 
+// 第五章チェーンID
+const SNS_CHAIN_ID = 14;
+const SNS_GEN_IMAGES = [
+  'img/Chapter5/icon/image_merge_gene5_01.png',
+  'img/Chapter5/icon/image_merge_gene5_02.png',
+  'img/Chapter5/icon/image_merge_gene5_03.png',
+  'img/Chapter5/icon/image_merge_gene5_04.png',
+  'img/Chapter5/icon/image_merge_gene5_05.png',
+  'img/Chapter5/icon/image_merge_gene5_06.png',
+  'img/Chapter5/icon/image_merge_gene5_07.png',
+];
+const SNS_GEN_NAMES = ['スマートフォン解析機','SNSモニタリングツール','IPトレーサー','デジタルフォレンジック機','ネットワーク解析台','サイバー捜査センター','完全追跡システム'];
+const SNS_GEN_LEVELUP_TRIGGERS = [
+  { triggerStage: 3,  toLevel: 2 },
+  { triggerStage: 5,  toLevel: 3 },
+  { triggerStage: 8,  toLevel: 4 },
+  { triggerStage: 11, toLevel: 5 },
+  { triggerStage: 14, toLevel: 6 },
+  { triggerStage: 17, toLevel: 7 },
+];
+
+// 第六章チェーンID
+const CLOCK_CHAIN_ID = 15;
+const CLOCK_GEN_IMAGES = [
+  'img/Chapter6/icon/image_merge_gene6_01.png',
+  'img/Chapter6/icon/image_merge_gene6_02.png',
+  'img/Chapter6/icon/image_merge_gene6_03.png',
+  'img/Chapter6/icon/image_merge_gene6_04.png',
+  'img/Chapter6/icon/image_merge_gene6_05.png',
+  'img/Chapter6/icon/image_merge_gene6_06.png',
+  'img/Chapter6/icon/image_merge_gene6_07.png',
+];
+const CLOCK_GEN_NAMES = ['時計修復台','精密時計工具','鑑定精密機','アンティーク解析台','時計鑑定システム','保険調査端末','完全鑑定センター'];
+const CLOCK_GEN_LEVELUP_TRIGGERS = [
+  { triggerStage: 3,  toLevel: 2 },
+  { triggerStage: 5,  toLevel: 3 },
+  { triggerStage: 7,  toLevel: 4 },
+  { triggerStage: 9,  toLevel: 5 },
+  { triggerStage: 10, toLevel: 6 },
+  { triggerStage: 11, toLevel: 7 },
+];
+
+// 第七章チェーンID
+const CH7_CHAIN_ID = 16;
+const CH7_GEN_IMAGES = [
+  'img/Chapter7/icon/image_merge_gene7_01.png',
+  'img/Chapter7/icon/image_merge_gene7_02.png',
+  'img/Chapter7/icon/image_merge_gene7_03.png',
+  'img/Chapter7/icon/image_merge_gene7_04.png',
+  'img/Chapter7/icon/image_merge_gene7_05.png',
+  'img/Chapter7/icon/image_merge_gene7_06.png',
+  'img/Chapter7/icon/image_merge_gene7_07.png',
+];
+const CH7_GEN_NAMES = ['証拠収集台','資料解析機','内部調査端末','不正追跡システム','証言解析台','汚職捜査センター','完全解明台'];
+const CH7_GEN_LEVELUP_TRIGGERS = [
+  { triggerStage: 3,  toLevel: 2 },
+  { triggerStage: 5,  toLevel: 3 },
+  { triggerStage: 7,  toLevel: 4 },
+  { triggerStage: 9,  toLevel: 5 },
+  { triggerStage: 10, toLevel: 6 },
+  { triggerStage: 11, toLevel: 7 },
+];
+
+// 第八章チェーンID
+const CH8_CHAIN_ID = 17;
+const CH8_GEN_IMAGES = [
+  'img/Chapter8/icon/image_merge_gene8_01.png',
+  'img/Chapter8/icon/image_merge_gene8_02.png',
+  'img/Chapter8/icon/image_merge_gene8_03.png',
+  'img/Chapter8/icon/image_merge_gene8_04.png',
+  'img/Chapter8/icon/image_merge_gene8_05.png',
+  'img/Chapter8/icon/image_merge_gene8_06.png',
+  'img/Chapter8/icon/image_merge_gene8_07.png',
+];
+const CH8_GEN_NAMES = ['配信解析機','SNS追跡ツール','匿名掲示板解析機','デジタル身元調査台','配信記録解析台','ネット調査センター','完全追跡端末'];
+const CH8_GEN_LEVELUP_TRIGGERS = [
+  { triggerStage: 3,  toLevel: 2 },
+  { triggerStage: 5,  toLevel: 3 },
+  { triggerStage: 7,  toLevel: 4 },
+  { triggerStage: 9,  toLevel: 5 },
+  { triggerStage: 10, toLevel: 6 },
+  { triggerStage: 11, toLevel: 7 },
+];
+
 // 第二章ジェネレーター Lvボタン別出力設定（Lucky/PowerはLUCKY_CONFIG/GEN_POWER_BONUSを使用）
 const FIRE_POWER_CONFIG = [
   { outStage: 1 }, // Lv1ボタン ⚡1
@@ -7028,6 +7500,8 @@ let eventState = {
   keikakuGenLevel: 0,        // 設計台ジェネレーターの現在Lv（0=Lv1, 6=Lv7）
   keikakuDiscovered: {},     // 発見済み設計台アイテム { stage: true }
   keikakuRevealed: {},       // 第四章アイテム: stage→true（ダイヤ取得済み）
+  snsGenUnlocked: false,     // 第五章ジェネレーター解放済み
+  clockGenUnlocked: false,   // 第六章ジェネレーター解放済み
   seizoLvTriggered: new Set(), // 製造機LvアップのトリガーになったステージSet
   kanteLvTriggered: new Set(), // 鑑定台LvアップのトリガーになったプレイヤーLvSet
   keikakuLvTriggered: new Set(), // 設計台LvアップのトリガーになったプレイヤーLvSet
@@ -7060,6 +7534,17 @@ let eventState = {
   kantePowerLevel: 0,           // 第三章ジェネレーター 現在選択中の出力パワーレベル
   keikakuPowerLevel: 0,         // 第四章ジェネレーター 現在選択中の出力パワーレベル
   snsPowerLevel: 0,             // 第五章ジェネレーター 現在選択中の出力パワーレベル
+  clockPowerLevel: 0,           // 第六章ジェネレーター 現在選択中の出力パワーレベル
+  ch7PowerLevel: 0,             // 第七章ジェネレーター 現在選択中の出力パワーレベル
+  ch8PowerLevel: 0,             // 第八章ジェネレーター 現在選択中の出力パワーレベル
+  snsGenLevel: 0,               // 第五章ジェネレーターLv（0=Lv1〜6=Lv7）
+  snsDiscovered: {},            // 発見済み第五章アイテム { stage: true }
+  clockGenLevel: 0,             // 第六章ジェネレーターLv
+  clockDiscovered: {},          // 発見済み第六章アイテム { stage: true }
+  ch7GenLevel: 0,               // 第七章ジェネレーターLv
+  ch7Discovered: {},            // 発見済み第七章アイテム { stage: true }
+  ch8GenLevel: 0,               // 第八章ジェネレーターLv
+  ch8Discovered: {},            // 発見済み第八章アイテム { stage: true }
   ch7GenUnlocked: false,        // 第七章ジェネレーター解放済み
   ch8GenUnlocked: false,        // 第八章ジェネレーター解放済み
   revealed: {},            // 第一章アイテム: stage→true（ダイヤ取得済み）
@@ -7108,6 +7593,22 @@ function initEventMap() {
   eventState.keikakuGenLevel       = 0;
   eventState.keikakuDiscovered     = {};
   eventState.keikakuRevealed       = {};
+  eventState.snsGenUnlocked        = false;
+  eventState.snsGenLevel           = 0;
+  eventState.snsDiscovered         = {};
+  eventState.clockGenUnlocked      = false;
+  eventState.clockGenLevel         = 0;
+  eventState.clockDiscovered       = {};
+  eventState.ch7GenUnlocked        = false;
+  eventState.ch7GenLevel           = 0;
+  eventState.ch7Discovered         = {};
+  eventState.ch8GenUnlocked        = false;
+  eventState.ch8GenLevel           = 0;
+  eventState.ch8Discovered         = {};
+  eventState.snsLvTriggered        = new Set();
+  eventState.clockLvTriggered      = new Set();
+  eventState.ch7LvTriggered        = new Set();
+  eventState.ch8LvTriggered        = new Set();
   eventState.seizoLvTriggered  = new Set();
   eventState.kanteLvTriggered      = new Set();
   eventState.keikakuLvTriggered    = new Set();
@@ -7127,6 +7628,9 @@ function initEventMap() {
   eventState.kantePowerLevel    = 0;
   eventState.keikakuPowerLevel  = 0;
   eventState.snsPowerLevel      = 0;
+  eventState.clockPowerLevel    = 0;
+  eventState.ch7PowerLevel      = 0;
+  eventState.ch8PowerLevel      = 0;
   eventState.burstUnlocked      = false;
   eventState.burstCount         = 0;
   eventState.burstFirstCleared  = false;
@@ -7297,21 +7801,25 @@ function renderTutorialPanel() {
   const step = currentTutStep();
   panel.classList.remove('hidden');
   hideNaviHint(); // チュートリアルパネル表示中はナビヒントを隠す
-  msgEl.textContent = step.text;
+  hintEl.style.display = 'none';
 
   if (step.type === 'blocking_msg') {
     // noOverlay フラグがある場合はオーバーレイを出さない（依頼パネルを見せたい場合など）
     if (step.noOverlay) overlay.classList.add('hidden');
     else                overlay.classList.remove('hidden');
-    hintEl.style.display = '';
+    _startTypewriter(msgEl, step.text, () => {
+      hintEl.style.display = '';
+    });
   } else {
     // gen_focus / merge_focus / request_focus: ヒントバーのみ表示
     overlay.classList.add('hidden');
-    hintEl.style.display = 'none';
+    _startTypewriter(msgEl, step.text, null);
   }
 }
 
 function onTutorialTap() {
+  // タイプライター進行中はスキップ
+  if (_typerCancel) { _typerCancel(); return; }
   // ガイドシステムが進行中はガイドを進める
   if (isGuideInProgress()) { advanceGuide(); return; }
   // ジェネレーターマージ誘導チュートリアルのメッセージステップはタップで進める
@@ -7352,6 +7860,15 @@ function checkFogReminder() {
 }
 
 function startGuide(messages, attentionSelector, onDone) {
+  stopSirens();
+  const first = messages[0] ?? '';
+  if (first.includes('章が解放') || first.includes('新たな章') || first.includes('第二章') ||
+      first.includes('第三章') || first.includes('第四章') || first.includes('第五章') ||
+      first.includes('第六章') || first.includes('第七章') || first.includes('第八章')) {
+    playMergeSE('chapterUnlock');
+  } else {
+    playMergeSE('attention');
+  }
   guideState = { messages, idx: 0, attentionSelector, onDone };
   hideNaviHint(); // ガイド開始時はナビヒントを非表示
   _applyGuideAttention(true);
@@ -7361,6 +7878,8 @@ function startGuide(messages, attentionSelector, onDone) {
 // メニューページ内専用ガイド（オーバーレイ・パネルがmenu内に収まる）
 let menuGuideState = null;
 function startMenuGuide(messages, attentionSelector, onDone) {
+  stopSirens();
+  playMergeSE('attention');
   menuGuideState = { messages, idx: 0, attentionSelector, onDone };
   const el = attentionSelector ? document.querySelector(attentionSelector) : null;
   if (el) el.classList.add('guide-attention');
@@ -7374,9 +7893,11 @@ function _renderMenuGuidePanel() {
   if (!menuGuideState) return;
   document.getElementById('menu-guide-overlay').classList.remove('hidden');
   document.getElementById('menu-guide-panel').classList.remove('hidden');
-  document.getElementById('menu-guide-text').innerHTML = menuGuideState.messages[menuGuideState.idx];
+  const el = document.getElementById('menu-guide-text');
+  _startTypewriter(el, menuGuideState.messages[menuGuideState.idx], null, true);
 }
 function advanceMenuGuide() {
+  if (_typerCancel) { _typerCancel(); return; }
   if (!menuGuideState) return;
   menuGuideState.idx++;
   if (menuGuideState.idx >= menuGuideState.messages.length) {
@@ -7407,11 +7928,14 @@ function _renderGuidePanel() {
   const hintEl  = document.getElementById('tutorial-tap-hint');
   overlay.classList.remove('hidden');
   panel.classList.remove('hidden');
-  msgEl.innerHTML = guideState.messages[guideState.idx];
-  hintEl.style.display = '';
+  hintEl.style.display = 'none';
+  _startTypewriter(msgEl, guideState.messages[guideState.idx], () => {
+    hintEl.style.display = '';
+  }, true);
 }
 
 function advanceGuide() {
+  if (_typerCancel) { _typerCancel(); return; }
   if (!guideState) return;
   guideState.idx++;
   if (guideState.idx >= guideState.messages.length) {
@@ -8933,6 +9457,130 @@ function updateKeikakuNaviLvBtn(keikakuLevel) {
   lvCrown.textContent = curPL === maxPL ? '👑' : '';
 }
 
+// --- 第五章ジェネレーター Lvボタン関連 ---
+function isSnsPowerLvAvailable(powerIdx, snsLevel) {
+  if (powerIdx === 0) return true;
+  if (powerIdx === 1) return snsLevel >= 1;
+  if (powerIdx === 2) return snsLevel >= 3;
+  if (powerIdx === 3) return snsLevel >= 3 && state.energy >= 200;
+  if (powerIdx === 4) return snsLevel >= 3 && state.energy >= 400;
+  return false;
+}
+function getSnsMaxAvailablePowerLv(snsLevel) {
+  for (let i = 4; i >= 0; i--) { if (isSnsPowerLvAvailable(i, snsLevel)) return i; }
+  return 0;
+}
+function cycleSnsGenPowerLevel(snsLevel) {
+  let next = (eventState.snsPowerLevel + 1) % 5;
+  for (let tries = 0; tries < 5; tries++) {
+    if (isSnsPowerLvAvailable(next, snsLevel)) { eventState.snsPowerLevel = next; return next; }
+    next = (next + 1) % 5;
+  }
+  eventState.snsPowerLevel = 0; return 0;
+}
+function updateSnsNaviLvBtn(snsLevel) {
+  const lvLabel = document.getElementById('navi-lv-label');
+  const lvCrown = document.getElementById('navi-lv-crown');
+  if (!lvLabel || !lvCrown) return;
+  const curPL = eventState.snsPowerLevel;
+  const maxPL = getSnsMaxAvailablePowerLv(snsLevel);
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
+  lvCrown.textContent = curPL === maxPL ? '👑' : '';
+}
+
+// --- 第六章ジェネレーター Lvボタン関連 ---
+function isClockPowerLvAvailable(powerIdx, clockLevel) {
+  if (powerIdx === 0) return true;
+  if (powerIdx === 1) return clockLevel >= 1;
+  if (powerIdx === 2) return clockLevel >= 3;
+  if (powerIdx === 3) return clockLevel >= 3 && state.energy >= 200;
+  if (powerIdx === 4) return clockLevel >= 3 && state.energy >= 400;
+  return false;
+}
+function getClockMaxAvailablePowerLv(clockLevel) {
+  for (let i = 4; i >= 0; i--) { if (isClockPowerLvAvailable(i, clockLevel)) return i; }
+  return 0;
+}
+function cycleClockGenPowerLevel(clockLevel) {
+  let next = (eventState.clockPowerLevel + 1) % 5;
+  for (let tries = 0; tries < 5; tries++) {
+    if (isClockPowerLvAvailable(next, clockLevel)) { eventState.clockPowerLevel = next; return next; }
+    next = (next + 1) % 5;
+  }
+  eventState.clockPowerLevel = 0; return 0;
+}
+function updateClockNaviLvBtn(clockLevel) {
+  const lvLabel = document.getElementById('navi-lv-label');
+  const lvCrown = document.getElementById('navi-lv-crown');
+  if (!lvLabel || !lvCrown) return;
+  const curPL = eventState.clockPowerLevel;
+  const maxPL = getClockMaxAvailablePowerLv(clockLevel);
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
+  lvCrown.textContent = curPL === maxPL ? '👑' : '';
+}
+
+// --- 第七章ジェネレーター Lvボタン関連 ---
+function isCh7PowerLvAvailable(powerIdx, ch7Level) {
+  if (powerIdx === 0) return true;
+  if (powerIdx === 1) return ch7Level >= 1;
+  if (powerIdx === 2) return ch7Level >= 3;
+  if (powerIdx === 3) return ch7Level >= 3 && state.energy >= 200;
+  if (powerIdx === 4) return ch7Level >= 3 && state.energy >= 400;
+  return false;
+}
+function getCh7MaxAvailablePowerLv(ch7Level) {
+  for (let i = 4; i >= 0; i--) { if (isCh7PowerLvAvailable(i, ch7Level)) return i; }
+  return 0;
+}
+function cycleCh7GenPowerLevel(ch7Level) {
+  let next = (eventState.ch7PowerLevel + 1) % 5;
+  for (let tries = 0; tries < 5; tries++) {
+    if (isCh7PowerLvAvailable(next, ch7Level)) { eventState.ch7PowerLevel = next; return next; }
+    next = (next + 1) % 5;
+  }
+  eventState.ch7PowerLevel = 0; return 0;
+}
+function updateCh7NaviLvBtn(ch7Level) {
+  const lvLabel = document.getElementById('navi-lv-label');
+  const lvCrown = document.getElementById('navi-lv-crown');
+  if (!lvLabel || !lvCrown) return;
+  const curPL = eventState.ch7PowerLevel;
+  const maxPL = getCh7MaxAvailablePowerLv(ch7Level);
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
+  lvCrown.textContent = curPL === maxPL ? '👑' : '';
+}
+
+// --- 第八章ジェネレーター Lvボタン関連 ---
+function isCh8PowerLvAvailable(powerIdx, ch8Level) {
+  if (powerIdx === 0) return true;
+  if (powerIdx === 1) return ch8Level >= 1;
+  if (powerIdx === 2) return ch8Level >= 3;
+  if (powerIdx === 3) return ch8Level >= 3 && state.energy >= 200;
+  if (powerIdx === 4) return ch8Level >= 3 && state.energy >= 400;
+  return false;
+}
+function getCh8MaxAvailablePowerLv(ch8Level) {
+  for (let i = 4; i >= 0; i--) { if (isCh8PowerLvAvailable(i, ch8Level)) return i; }
+  return 0;
+}
+function cycleCh8GenPowerLevel(ch8Level) {
+  let next = (eventState.ch8PowerLevel + 1) % 5;
+  for (let tries = 0; tries < 5; tries++) {
+    if (isCh8PowerLvAvailable(next, ch8Level)) { eventState.ch8PowerLevel = next; return next; }
+    next = (next + 1) % 5;
+  }
+  eventState.ch8PowerLevel = 0; return 0;
+}
+function updateCh8NaviLvBtn(ch8Level) {
+  const lvLabel = document.getElementById('navi-lv-label');
+  const lvCrown = document.getElementById('navi-lv-crown');
+  if (!lvLabel || !lvCrown) return;
+  const curPL = eventState.ch8PowerLevel;
+  const maxPL = getCh8MaxAvailablePowerLv(ch8Level);
+  lvLabel.innerHTML = `${POWER_COSTS[curPL]}${HP_ICON}`;
+  lvCrown.textContent = curPL === maxPL ? '👑' : '';
+}
+
 // ========================================
 // 依頼バーストシステム
 // ========================================
@@ -9001,6 +9649,23 @@ function checkVol1Unlock() {
     'イベントゲームVol1が解放されました！',
     '虫眼鏡を集めてミステリーを解き明かしましょう...',
   ], '#vol1-slot-btn', null);
+}
+
+// 蜘蛛の巣セルが除去可能か（上下左右の少なくとも1方向が非蜘蛛の巣または盤面外）
+function isVol1WebMergeable(idx) {
+  const row = Math.floor(idx / VOL1_BOARD_COLS);
+  const col = idx % VOL1_BOARD_COLS;
+  const neighbors = [
+    row > 0                      ? idx - VOL1_BOARD_COLS : -1,
+    row < VOL1_BOARD_ROWS - 1   ? idx + VOL1_BOARD_COLS : -1,
+    col > 0                      ? idx - 1               : -1,
+    col < VOL1_BOARD_COLS - 1   ? idx + 1               : -1,
+  ];
+  return neighbors.some(n => {
+    if (n === -1) return true;
+    const c = eventState.vol1Board[n];
+    return !c || !c.isWebbed;
+  });
 }
 
 // Vol1 盤面を初期化
@@ -9203,13 +9868,15 @@ function renderVol1Board() {
           selItem.stage === item.stage && selItem.stage < VOL1_MAX_STAGE) {
         cell.classList.add('merge-target');
       }
-      // 虫眼鏡が選択中 → Lv1蜘蛛の巣をハイライト
-      if (selItem.isMagnify && item && item.isWebbed && (item.webLevel ?? 1) === 1) {
+      // 虫眼鏡が選択中 → Lv1蜘蛛の巣をハイライト（除去可能なもののみ）
+      if (selItem.isMagnify && item && item.isWebbed && (item.webLevel ?? 1) === 1 &&
+          isVol1WebMergeable(i)) {
         cell.classList.add('merge-target');
       }
-      // Lv2/Lv3通常アイテム選択中 → 同レベル蜘蛛の巣をハイライト
+      // Lv2/Lv3通常アイテム選択中 → 同レベル蜘蛛の巣をハイライト（除去可能なもののみ）
       if (!selItem.isMagnify && !selItem.isWebbed && item && item.isWebbed &&
-          (item.webLevel ?? 1) > 1 && selItem.stage === (item.webLevel ?? 1)) {
+          (item.webLevel ?? 1) > 1 && selItem.stage === (item.webLevel ?? 1) &&
+          isVol1WebMergeable(i)) {
         cell.classList.add('merge-target');
       }
     }
@@ -9250,6 +9917,12 @@ function handleVol1CellTap(idx) {
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
       if (selItem && selItem.isWebbed && (selItem.webLevel ?? 1) === 1) {
+        if (!isVol1WebMergeable(vol1SelectedCell)) {
+          playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+          vol1SelectedCell = null;
+          renderVol1Board();
+          return;
+        }
         const webIdx = vol1SelectedCell;
         eventState.vol1Board[idx] = null;
         eventState.vol1Board[webIdx] = { stage: 1, isWebbed: false };
@@ -9257,7 +9930,7 @@ function handleVol1CellTap(idx) {
         checkVol1Refill();
         hideNaviHint();
         renderVol1Board();
-        triggerMergeAnim('#vol1-board', webIdx);
+        triggerMergeAnim('#vol1-board', webIdx, 'web');
         return;
       }
     }
@@ -9274,17 +9947,29 @@ function handleVol1CellTap(idx) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
       // Lv1: 虫眼鏡で除去
       if (wl === 1 && selItem && selItem.isMagnify) {
+        if (!isVol1WebMergeable(idx)) {
+          playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+          vol1SelectedCell = null;
+          renderVol1Board();
+          return;
+        }
         eventState.vol1Board[vol1SelectedCell] = null;
         eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
         vol1SelectedCell = null;
         checkVol1Refill();
         hideNaviHint();
         renderVol1Board();
-        triggerMergeAnim('#vol1-board', idx);
+        triggerMergeAnim('#vol1-board', idx, 'web');
         return;
       }
       // Lv2/Lv3: 対応ステージのマージアイテムで除去 → 1段上のアイテムを生成
       if (wl > 1 && selItem && !selItem.isWebbed && !selItem.isMagnify && selItem.stage === wl) {
+        if (!isVol1WebMergeable(idx)) {
+          playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+          vol1SelectedCell = null;
+          renderVol1Board();
+          return;
+        }
         eventState.vol1Board[vol1SelectedCell] = null;
         eventState.vol1Board[idx] = { stage: wl + 1, isWebbed: false };
         eventState.vol1Discovered[wl + 1] = true;
@@ -9292,15 +9977,20 @@ function handleVol1CellTap(idx) {
         checkVol1Refill();
         hideNaviHint();
         renderVol1Board();
-        triggerMergeAnim('#vol1-board', idx);
+        triggerMergeAnim('#vol1-board', idx, 'web');
         return;
       }
     }
     vol1SelectedCell = null;
     if (wl === 1) {
       // Lv1: タップで虫眼鏡を自動消費
+      if (!isVol1WebMergeable(idx)) {
+        playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+        renderVol1Board();
+        return;
+      }
       if (eventState.vol1MagnifyGlasses <= 0) {
-        showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
+        playMergeSE('error'); showToast('虫眼鏡が足りません（依頼を解決して獲得しよう！）');
         renderVol1Board();
         return;
       }
@@ -9310,7 +10000,7 @@ function handleVol1CellTap(idx) {
       renderVol1Slot();
       hideNaviHint();
       renderVol1Board();
-      triggerMergeAnim('#vol1-board', idx);
+      triggerMergeAnim('#vol1-board', idx, 'web');
       renderVol1MeterUI();
     } else {
       // Lv2/Lv3: セルを選択してヒント表示
@@ -9358,6 +10048,12 @@ function handleVol1CellTap(idx) {
     const to   = eventState.vol1Board[idx];
     // Lv2/Lv3蜘蛛の巣が選択済み → 対応ステージアイテムをタップで除去
     if (from && from.isWebbed && (from.webLevel ?? 1) > 1 && to.stage === (from.webLevel ?? 1)) {
+      if (!isVol1WebMergeable(vol1SelectedCell)) {
+        playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+        vol1SelectedCell = null;
+        renderVol1Board();
+        return;
+      }
       const webIdx = vol1SelectedCell;
       const wl = from.webLevel;
       eventState.vol1Board[webIdx] = { stage: wl + 1, isWebbed: false };
@@ -9367,7 +10063,7 @@ function handleVol1CellTap(idx) {
       checkVol1Refill();
       hideNaviHint();
       renderVol1Board();
-      triggerMergeAnim('#vol1-board', webIdx);
+      triggerMergeAnim('#vol1-board', webIdx, 'web');
       return;
     }
     if (from && !from.isWebbed && !from.isMagnify && to && !to.isWebbed && !to.isMagnify &&
@@ -9606,7 +10302,7 @@ function endVol1Drag(x, y) {
     }
     const targetItem = eventState.vol1Board[toIdx];
     if (targetItem !== null) {
-      showToast('そのセルには置けません');
+      playMergeSE('error'); showToast('そのセルには置けません');
       renderVol1Board();
       return;
     }
@@ -9625,18 +10321,28 @@ function endVol1Drag(x, y) {
 
   // 虫眼鏡 → Lv1蜘蛛の巣にドロップ → 除去
   if (fromItem.isMagnify && toItem && toItem.isWebbed && (toItem.webLevel ?? 1) === 1) {
+    if (!isVol1WebMergeable(toIdx)) {
+      playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+      renderVol1Board();
+      return;
+    }
     eventState.vol1Board[fromIdx] = null;
     eventState.vol1Board[toIdx]   = { stage: 1, isWebbed: false };
     vol1SelectedCell = null;
     checkVol1Refill();
     hideNaviHint();
     renderVol1Board();
-    triggerMergeAnim('#vol1-board', toIdx);
+    triggerMergeAnim('#vol1-board', toIdx, 'web');
     return;
   }
   // Lv2/Lv3通常アイテム → 同レベル蜘蛛の巣にドロップ → 除去
   if (!fromItem.isWebbed && !fromItem.isMagnify && toItem && toItem.isWebbed &&
       (toItem.webLevel ?? 1) > 1 && fromItem.stage === (toItem.webLevel ?? 1)) {
+    if (!isVol1WebMergeable(toIdx)) {
+      playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
+      renderVol1Board();
+      return;
+    }
     const wl = toItem.webLevel;
     eventState.vol1Board[fromIdx] = null;
     eventState.vol1Board[toIdx]   = { stage: wl + 1, isWebbed: false };
@@ -9645,7 +10351,7 @@ function endVol1Drag(x, y) {
     checkVol1Refill();
     hideNaviHint();
     renderVol1Board();
-    triggerMergeAnim('#vol1-board', toIdx);
+    triggerMergeAnim('#vol1-board', toIdx, 'web');
     return;
   }
 
@@ -9967,6 +10673,50 @@ function showNaviHintForKeikakuGen(item, persistent = false) {
   document.getElementById('navi-stock-btn')?.classList.remove('hidden');
 }
 
+function showNaviHintForSnsGen(item, persistent = false) {
+  const lv = item.snsLevel ?? 0;
+  const isMax = lv >= SNS_GEN_IMAGES.length - 1;
+  const text = isMax
+    ? '第五章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
+    : '第五章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
+  updateSnsNaviLvBtn(lv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch5gen', level: lv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
+}
+
+function showNaviHintForClockGen(item, persistent = false) {
+  const lv = item.clockLevel ?? 0;
+  const isMax = lv >= CLOCK_GEN_IMAGES.length - 1;
+  const text = isMax
+    ? '第六章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
+    : '第六章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
+  updateClockNaviLvBtn(lv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch6gen', level: lv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
+}
+
+function showNaviHintForCh7Gen(item, persistent = false) {
+  const lv = item.ch7Level ?? 0;
+  const isMax = lv >= CH7_GEN_IMAGES.length - 1;
+  const text = isMax
+    ? '第七章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
+    : '第七章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
+  updateCh7NaviLvBtn(lv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch7gen', level: lv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
+}
+
+function showNaviHintForCh8Gen(item, persistent = false) {
+  const lv = item.ch8Level ?? 0;
+  const isMax = lv >= CH8_GEN_IMAGES.length - 1;
+  const text = isMax
+    ? '第八章ジェネレーターは最大Lvです。もう一度タップでアイテムを生成！'
+    : '第八章ジェネレーターをマージしてLvアップ！もう一度タップでアイテム生成。';
+  updateCh8NaviLvBtn(lv);
+  _showNaviHintPanel(text, true, persistent, { type: 'ch8gen', level: lv });
+  document.getElementById('navi-stock-btn')?.classList.remove('hidden');
+}
+
 function showNaviHintForItem(item, persistent = false) {
   const chainInfo = item.chainId !== undefined ? CHAINS[item.chainId] : EVENT_CHAIN;
   const idx  = item.stage - 1;
@@ -10279,6 +11029,74 @@ function renderEventBoard() {
           if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
           cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
           cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
+        } else if (item.isSnsGen) {
+          // SNS解析機ジェネレーター（第五章）
+          const sLv  = item.snsLevel ?? 0;
+          const sImg = SNS_GEN_IMAGES[Math.min(sLv, SNS_GEN_IMAGES.length - 1)];
+          cell.innerHTML = `
+            <img class="item-img item-img-lg" src="${sImg}" alt="SNS解析機">
+            <div class="gen-stars">${starsHtml}</div>
+            <span class="gen-energy-badge">${HP_ICON}</span>
+          `;
+          if (!step) {
+            if (i === eventState.selectedCell) cell.classList.add('selected');
+            if (selItem && selItem.isSnsGen && i !== eventState.selectedCell &&
+                (selItem.snsLevel ?? 0) === sLv) cell.classList.add('merge-target');
+          }
+          if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
+          cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
+          cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
+        } else if (item.isClockGen) {
+          // 時計修復台ジェネレーター（第六章）
+          const cLv  = item.clockLevel ?? 0;
+          const cImg = CLOCK_GEN_IMAGES[Math.min(cLv, CLOCK_GEN_IMAGES.length - 1)];
+          cell.innerHTML = `
+            <img class="item-img item-img-lg" src="${cImg}" alt="時計修復台">
+            <div class="gen-stars">${starsHtml}</div>
+            <span class="gen-energy-badge">${HP_ICON}</span>
+          `;
+          if (!step) {
+            if (i === eventState.selectedCell) cell.classList.add('selected');
+            if (selItem && selItem.isClockGen && i !== eventState.selectedCell &&
+                (selItem.clockLevel ?? 0) === cLv) cell.classList.add('merge-target');
+          }
+          if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
+          cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
+          cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
+        } else if (item.isCh7Gen) {
+          // 調査台ジェネレーター（第七章）
+          const c7Lv  = item.ch7Level ?? 0;
+          const c7Img = CH7_GEN_IMAGES[Math.min(c7Lv, CH7_GEN_IMAGES.length - 1)];
+          cell.innerHTML = `
+            <img class="item-img item-img-lg" src="${c7Img}" alt="調査台">
+            <div class="gen-stars">${starsHtml}</div>
+            <span class="gen-energy-badge">${HP_ICON}</span>
+          `;
+          if (!step) {
+            if (i === eventState.selectedCell) cell.classList.add('selected');
+            if (selItem && selItem.isCh7Gen && i !== eventState.selectedCell &&
+                (selItem.ch7Level ?? 0) === c7Lv) cell.classList.add('merge-target');
+          }
+          if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
+          cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
+          cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
+        } else if (item.isCh8Gen) {
+          // 配信解析機ジェネレーター（第八章）
+          const c8Lv  = item.ch8Level ?? 0;
+          const c8Img = CH8_GEN_IMAGES[Math.min(c8Lv, CH8_GEN_IMAGES.length - 1)];
+          cell.innerHTML = `
+            <img class="item-img item-img-lg" src="${c8Img}" alt="配信解析機">
+            <div class="gen-stars">${starsHtml}</div>
+            <span class="gen-energy-badge">${HP_ICON}</span>
+          `;
+          if (!step) {
+            if (i === eventState.selectedCell) cell.classList.add('selected');
+            if (selItem && selItem.isCh8Gen && i !== eventState.selectedCell &&
+                (selItem.ch8Level ?? 0) === c8Lv) cell.classList.add('merge-target');
+          }
+          if (step || isGenMergeTutActive()) cell.classList.add('tutorial-dim');
+          cell.addEventListener('touchstart', (e) => startEvDragTouch(e, i), { passive: false });
+          cell.addEventListener('mousedown', (e) => startEvDrag(e, i));
         } else {
           // メモ帳ジェネレーター
           cell.innerHTML = `
@@ -10569,6 +11387,7 @@ function progressStory(chapter = 1) {
     leveledUp = true;
   }
   if (leveledUp) {
+    if (_advSceneOpen) { _pendingSE.push('levelup'); } else { playMergeSE('levelup'); }
     const ringEl = document.getElementById('player-level-ring');
     showFloatNearEl(`プレイヤーLv${state.playerLevel}！`, '#f9c846', ringEl);
     if (ringEl) {
@@ -10910,10 +11729,10 @@ function completeEventRequest(index) {
   const newKeys = new Set();
   for (const it of req.items) {
     const key = it.chainId !== undefined ? `${it.chainId}-${it.stage}` : `ev-${it.stage}`;
-    const isCh1Low  = !it.chainId && it.stage <= 5;
+    const isCh1Low  = !it.chainId && it.stage >= 3 && it.stage <= 4;
     const isCh2up   = it.chainId !== undefined;
     if (isCh1Low || (isCh2up && it.stage <= 4)) {
-      // Ch1 Lv1-5 / Ch2以降 Lv1-4: 永久封印（一度解決したら再出現しない）
+      // Ch1 Lv3-4 / Ch2以降 Lv1-4: 永久封印（一度解決したら再出現しない）
       eventState.completedLowStages.add(key);
     } else {
       // Ch1 Lv6+ / Ch2以降 Lv5+: 1件おやすみ後に復活
@@ -10952,38 +11771,97 @@ function completeEventRequest(index) {
 }
 
 // イベントマップ専用の依頼を補充
-// ・最低 MIN_SLOTS 枠、最大 MAX_SLOTS 枠
-// ・各章のジェネレーター解放状況に応じてアイテム種別を均等抽選
-// ・Ch1 Lv1-5 / Ch2以降 Lv1-4 は一度解決したら永久に再出現しない
-// ・Lv6以降は1個か2個かランダム（同Lv2個は不可、直前完了キーは1回スキップ）
+// ・Ch1 6話以降(ch1Count>=6)は最低5枠保証、それ以前は最低3枠
+// ・各章ストーリー完了後は依頼人もアイテムも出現しない
+// ・Ch1 Lv3-4 / Ch2-4 Lv1-4 は一度解決したら永久に再出現しない
+// ・各章: 6話以降 or ジェネレーターLv3(genLv>=2)到達 → 後半レンジのみ出現
+//   Ch1 後半: Lv9〜LvMax / Ch2 後半: Lv9〜LvMax / Ch3-4 後半: Lv12〜LvMax
+// ・通常レンジ: Ch1: genLv*2+3〜genLv*2+6(上限9)
+//              Ch2: genLv*2+3〜genLv*2+9(上限12)
+//              Ch3-4: genLv*2+6〜genLv*2+14(上限17)
 function fillEventRequests() {
-  const MIN_SLOTS = 3;
+  const MIN_SLOTS = state.ch1Count >= 6 ? 5 : 3;
   const MAX_SLOTS = 5;
 
-  // メモ帳ジェネレーターの現在Lv（最も高いものを使う）
-  const genItem = eventState.board.find(c => c && c.isEventGen && !c.isFireGen);
-  const genLv   = genItem ? (genItem.genLevel ?? 0) : 0;
+  // 各ジェネレーターLv（0始まり: 0=Lv1, 1=Lv2, 2=Lv3, ...）
+  const ch1GenLv = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
+  const ch2GenLv = eventState.seizoGenLevel;
+  const ch3GenLv = eventState.kanteGenLevel;
+  const ch4GenLv = eventState.keikakuGenLevel;
+  const ch5GenLv = eventState.snsGenLevel;
+  const ch6GenLv = eventState.clockGenLevel;
+  const ch7GenLv = eventState.ch7GenLevel;
+  const ch8GenLv = eventState.ch8GenLevel;
 
-  // Ch1ステージ範囲（序盤は最低8まで開放して多様性を確保）
-  const ch1StageMin = 3;
-  const ch1StageMax = Math.min(EVENT_CHAIN.stages.length, Math.max(8, genLv * 2 + 5));
-
-  // 章解放・完了フラグ
+  // ストーリー完了フラグ
   const ch1StoryDone = state.ch1Count >= CH1_SCENE_IDS.length;
   const ch2StoryDone = state.ch2Count >= CH2_SCENE_IDS.length;
   const ch3StoryDone = state.ch3Count >= CH3_SCENE_IDS.length;
   const ch4StoryDone = state.ch4Count >= CH4_SCENE_IDS.length;
+  const ch5StoryDone = state.ch5Count >= (CH5_SCENE_IDS?.length ?? 999);
+  const ch6StoryDone = state.ch6Count >= (CH6_SCENE_IDS?.length ?? 999);
+  const ch7StoryDone = state.ch7Count >= (CH7_SCENE_IDS?.length ?? 999);
+  const ch8StoryDone = state.ch8Count >= (CH8_SCENE_IDS?.length ?? 999);
+
+  // 章別出現可否（ストーリー完了後は依頼に出さない）
+  const ch1Available     = !ch1StoryDone;
   const seizoAvailable   = eventState.fireGenUnlocked    && !ch2StoryDone;
   const kanteAvailable   = eventState.kanteGenUnlocked   && !ch3StoryDone;
   const keikakuAvailable = eventState.keikakuGenUnlocked && !ch4StoryDone;
+  const snsAvailable     = eventState.snsGenUnlocked     && !ch5StoryDone;
+  const clockAvailable   = eventState.clockGenUnlocked   && !ch6StoryDone;
+  const ch7Available     = eventState.ch7GenUnlocked     && !ch7StoryDone;
+  const ch8Available     = eventState.ch8GenUnlocked     && !ch8StoryDone;
 
-  // Ch2・Ch3・Ch4のステージ上限（ジェネレーターLvに応じて拡大）
-  const ch2StageMax = Math.min(CHAINS[SEIZO_CHAIN_ID].stages.length,
-    Math.max(3, (eventState.seizoGenLevel + 1) * 2 + 2));
-  const ch3StageMax = Math.min(CHAINS[KANTEITA_CHAIN_ID].stages.length,
-    Math.max(3, (eventState.kanteGenLevel + 1) * 2 + 2));
-  const ch4StageMax = Math.min(CHAINS[KEIKAKU_CHAIN_ID].stages.length,
-    Math.max(3, (eventState.keikakuGenLevel + 1) * 2 + 2));
+  // 後半モード（6話以降 or ジェネレーターLv3以上）
+  const ch1Late = state.ch1Count >= 6 || ch1GenLv >= 2;
+  const ch2Late = state.ch2Count >= 6 || ch2GenLv >= 2;
+  const ch3Late = state.ch3Count >= 6 || ch3GenLv >= 2;
+  const ch4Late = state.ch4Count >= 6 || ch4GenLv >= 2;
+  const ch5Late = (state.ch5Count ?? 0) >= 6 || ch5GenLv >= 2;
+  const ch6Late = (state.ch6Count ?? 0) >= 6 || ch6GenLv >= 2;
+  const ch7Late = (state.ch7Count ?? 0) >= 6 || ch7GenLv >= 2;
+  const ch8Late = (state.ch8Count ?? 0) >= 6 || ch8GenLv >= 2;
+
+  // Ch1ステージ範囲（最大12）
+  const ch1MaxTotal  = EVENT_CHAIN.stages.length;
+  const ch1StageMin  = ch1Late ? 9 : Math.max(3, ch1GenLv * 2 + 3);
+  const ch1StageMax  = ch1Late ? ch1MaxTotal : Math.min(9,  ch1GenLv * 2 + 6);
+
+  // Ch2ステージ範囲（最大15）
+  const ch2MaxTotal  = CHAINS[SEIZO_CHAIN_ID].stages.length;
+  const ch2StageMin  = ch2Late ? 9 : Math.max(1, ch2GenLv * 2 + 3);
+  const ch2StageMax  = ch2Late ? ch2MaxTotal : Math.min(12, ch2GenLv * 2 + 9);
+
+  // Ch3ステージ範囲（最大20）
+  const ch3MaxTotal  = CHAINS[KANTEITA_CHAIN_ID].stages.length;
+  const ch3StageMin  = ch3Late ? 12 : Math.max(1, ch3GenLv * 2 + 6);
+  const ch3StageMax  = ch3Late ? ch3MaxTotal : Math.min(17, ch3GenLv * 2 + 14);
+
+  // Ch4ステージ範囲（最大20）
+  const ch4MaxTotal  = CHAINS[KEIKAKU_CHAIN_ID].stages.length;
+  const ch4StageMin  = ch4Late ? 12 : Math.max(1, ch4GenLv * 2 + 6);
+  const ch4StageMax  = ch4Late ? ch4MaxTotal : Math.min(17, ch4GenLv * 2 + 14);
+
+  // Ch5ステージ範囲（最大20）
+  const ch5MaxTotal  = CHAINS[SNS_CHAIN_ID].stages.length;
+  const ch5StageMin  = ch5Late ? 12 : Math.max(1, ch5GenLv * 2 + 6);
+  const ch5StageMax  = ch5Late ? ch5MaxTotal : Math.min(17, ch5GenLv * 2 + 14);
+
+  // Ch6ステージ範囲（最大12）
+  const ch6MaxTotal  = CHAINS[CLOCK_CHAIN_ID].stages.length;
+  const ch6StageMin  = ch6Late ? 8 : Math.max(1, ch6GenLv * 2 + 3);
+  const ch6StageMax  = ch6Late ? ch6MaxTotal : Math.min(10, ch6GenLv * 2 + 6);
+
+  // Ch7ステージ範囲（最大12）
+  const ch7MaxTotal  = CHAINS[CH7_CHAIN_ID].stages.length;
+  const ch7StageMin  = ch7Late ? 8 : Math.max(1, ch7GenLv * 2 + 3);
+  const ch7StageMax  = ch7Late ? ch7MaxTotal : Math.min(10, ch7GenLv * 2 + 6);
+
+  // Ch8ステージ範囲（最大12）
+  const ch8MaxTotal  = CHAINS[CH8_CHAIN_ID].stages.length;
+  const ch8StageMin  = ch8Late ? 8 : Math.max(1, ch8GenLv * 2 + 3);
+  const ch8StageMax  = ch8Late ? ch8MaxTotal : Math.min(10, ch8GenLv * 2 + 6);
 
   // 既存依頼で使用済みのステージキー（重複防止）
   const usedStageKeys = new Set(
@@ -10995,23 +11873,24 @@ function fillEventRequests() {
 
   const tutDone = eventState.tutorialStep >= TUTORIAL_STEPS.length;
 
-  // アイテムの章番号を返す（1=Ch1, 2=Ch2, 3=Ch3, 4=Ch4）
   function getItemChapter(item) {
     if (item.chainId === SEIZO_CHAIN_ID)    return 2;
     if (item.chainId === KANTEITA_CHAIN_ID) return 3;
     if (item.chainId === KEIKAKU_CHAIN_ID)  return 4;
+    if (item.chainId === SNS_CHAIN_ID)      return 5;
+    if (item.chainId === CLOCK_CHAIN_ID)    return 6;
+    if (item.chainId === CH7_CHAIN_ID)      return 7;
+    if (item.chainId === CH8_CHAIN_ID)      return 8;
     return 1;
   }
 
-  // アイテムリストに合った依頼人候補を返す
-  // ・単一章アイテム → その章のキャラ優先
-  // ・混在 / 同章キャラ枯渇 → 未完了章の全キャラ
   function getCharsForItems(items) {
     const chapters = [...new Set(items.map(getItemChapter))];
 
     if (chapters.length === 1) {
       const ch = chapters[0];
-      const [minId, maxId] = ch === 1 ? [0, 5] : ch === 2 ? [6, 10] : ch === 3 ? [11, 17] : [18, 22];
+      const ranges = { 1:[0,5], 2:[6,10], 3:[11,17], 4:[18,22], 5:[23,28], 6:[29,34], 7:[35,40], 8:[41,46] };
+      const [minId, maxId] = ranges[ch] ?? [0, 5];
       const singleCh = REQUESTERS.filter(r =>
         r.id >= minId && r.id <= maxId &&
         !usedCharIds.has(r.id) &&
@@ -11020,45 +11899,66 @@ function fillEventRequests() {
       if (singleCh.length > 0) return singleCh;
     }
 
-    // 混在 or 同章キャラ枯渇 → 解放済み章・未完了章の全キャラ
     return REQUESTERS.filter(r => {
-      if (r.id <= 5)  return true; // Ch1
-      if (r.id <= 10) return !!eventState.fireGenUnlocked;
-      if (r.id <= 17) return !!eventState.kanteGenUnlocked;
-      return !!eventState.keikakuGenUnlocked;
+      if (r.id <= 5)  return ch1Available;
+      if (r.id <= 10) return seizoAvailable;
+      if (r.id <= 17) return kanteAvailable;
+      if (r.id <= 22) return keikakuAvailable;
+      if (r.id <= 28) return snsAvailable;
+      if (r.id <= 34) return clockAvailable;
+      if (r.id <= 40) return ch7Available;
+      return ch8Available;
     }).filter(r =>
       !usedCharIds.has(r.id) &&
       !(tutDone && r.id === 1)
     );
   }
 
-  // ランダムなステージキーを1つ選ぶ内部ヘルパー
-  // superRelaxed=true のみ recentlySolvedKeys を無視（選択肢が本当にゼロの超緊急時）
-  // completedLowStages は常に尊重（永久封印）
   function pickRandomItem(excludeKeys, superRelaxed = false) {
     for (let t = 0; t < 50; t++) {
       let item;
 
-      // 解放済みプールを均等抽選
       const pools = [];
-      if (!ch1StoryDone) pools.push('ch1');
+      if (ch1Available)     pools.push('ch1');
       if (seizoAvailable)   pools.push('ch2');
       if (kanteAvailable)   pools.push('ch3');
       if (keikakuAvailable) pools.push('ch4');
+      if (snsAvailable)     pools.push('ch5');
+      if (clockAvailable)   pools.push('ch6');
+      if (ch7Available)     pools.push('ch7');
+      if (ch8Available)     pools.push('ch8');
       if (pools.length === 0) return null;
       const pool = pools[Math.floor(Math.random() * pools.length)];
 
       if (pool === 'ch2') {
-        const stage = Math.floor(Math.random() * ch2StageMax) + 1;
+        if (ch2StageMin > ch2StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch2StageMax - ch2StageMin + 1)) + ch2StageMin;
         item = { chainId: SEIZO_CHAIN_ID, stage };
       } else if (pool === 'ch3') {
-        const stage = Math.floor(Math.random() * ch3StageMax) + 1;
+        if (ch3StageMin > ch3StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch3StageMax - ch3StageMin + 1)) + ch3StageMin;
         item = { chainId: KANTEITA_CHAIN_ID, stage };
       } else if (pool === 'ch4') {
-        const stage = Math.floor(Math.random() * ch4StageMax) + 1;
+        if (ch4StageMin > ch4StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch4StageMax - ch4StageMin + 1)) + ch4StageMin;
         item = { chainId: KEIKAKU_CHAIN_ID, stage };
+      } else if (pool === 'ch5') {
+        if (ch5StageMin > ch5StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch5StageMax - ch5StageMin + 1)) + ch5StageMin;
+        item = { chainId: SNS_CHAIN_ID, stage };
+      } else if (pool === 'ch6') {
+        if (ch6StageMin > ch6StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch6StageMax - ch6StageMin + 1)) + ch6StageMin;
+        item = { chainId: CLOCK_CHAIN_ID, stage };
+      } else if (pool === 'ch7') {
+        if (ch7StageMin > ch7StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch7StageMax - ch7StageMin + 1)) + ch7StageMin;
+        item = { chainId: CH7_CHAIN_ID, stage };
+      } else if (pool === 'ch8') {
+        if (ch8StageMin > ch8StageMax) continue;
+        const stage = Math.floor(Math.random() * (ch8StageMax - ch8StageMin + 1)) + ch8StageMin;
+        item = { chainId: CH8_CHAIN_ID, stage };
       } else {
-        // Ch1
         if (ch1StageMin > ch1StageMax) continue;
         const stage = Math.floor(Math.random() * (ch1StageMax - ch1StageMin + 1)) + ch1StageMin;
         item = { stage };
@@ -11066,10 +11966,8 @@ function fillEventRequests() {
 
       const key = item.chainId !== undefined ? `${item.chainId}-${item.stage}` : `ev-${item.stage}`;
       if (excludeKeys.has(key)) continue;
-      // Ch1のみLv1-2をチュートリアル後は除外（Ch2・Ch3は序盤Lvも許可）
-      if (!item.chainId && item.stage <= 2 && tutDone) continue;
-      if (eventState.completedLowStages.has(key)) continue; // 常に尊重（永久封印）
-      if (!superRelaxed && eventState.recentlySolvedKeys.has(key)) continue; // クールダウン中はスキップ
+      if (eventState.completedLowStages.has(key)) continue;
+      if (!superRelaxed && eventState.recentlySolvedKeys.has(key)) continue;
       return { item, key };
     }
     return null;
@@ -11084,20 +11982,18 @@ function fillEventRequests() {
     const items = [reqItem1];
     let totalCoin = calcCoinReward(reqItem1.stage);
 
-    // Lv4以上かつ50%で2個依頼
-    if (reqItem1.stage >= 4 && Math.random() < 0.5) {
+    // Lv5以上かつ50%で2個依頼（Lv3-4は一度限りなので1個のみ）
+    if (reqItem1.stage >= 5 && Math.random() < 0.5) {
       const exclude2 = new Set([...usedStageKeys, key1]);
       const result2 = pickRandomItem(exclude2);
       if (result2 && result2.item.stage !== reqItem1.stage) {
         items.push(result2.item);
         totalCoin += calcCoinReward(result2.item.stage);
         usedStageKeys.add(result2.key);
-        // 2個依頼は合計×2/3（端数切捨て・10の位丸め）
         totalCoin = Math.floor(totalCoin * 2 / 3 / 10) * 10;
       }
     }
 
-    // アイテムの章に合った依頼人を選択
     const chars = getCharsForItems(items);
     if (chars.length === 0) { retry++; continue; }
     const char = chars[Math.floor(Math.random() * chars.length)];
@@ -11109,12 +12005,11 @@ function fillEventRequests() {
     retry = 0;
   }
 
-  // 最低 MIN_SLOTS 枠を保証（2段階フォールバック）
-  // フェーズ1: クールダウンを尊重したまま補充
+  // 最低枠保証フォールバック（クールダウン尊重のまま補充）
   if (eventState.requests.length < MIN_SLOTS) {
     let fallbackRetry = 0;
     while (eventState.requests.length < MIN_SLOTS && fallbackRetry < 30) {
-      const result1 = pickRandomItem(usedStageKeys); // クールダウン尊重
+      const result1 = pickRandomItem(usedStageKeys);
       if (!result1) { fallbackRetry++; continue; }
       const { item: reqItem1, key: key1 } = result1;
       const chars = getCharsForItems([reqItem1]);
@@ -11132,9 +12027,7 @@ function fillEventRequests() {
       fallbackRetry = 0;
     }
   }
-  // フェーズ2（廃止）: superRelaxed でクールダウン無視すると同じアイテムが即再登場するため削除。
-  // クールダウン中で選択肢が少ない場合は MIN_SLOTS を下回ってよい。
-  // 別の依頼が1件解決されるとクールダウンが解除され自然に補充される。
+  // クールダウン中で選択肢が少ない場合は MIN_SLOTS を下回ってよい（次の依頼解決で自然補充）
 }
 
 function renderEventRequest() {
@@ -11298,6 +12191,10 @@ function handleAnyGenTap(i) {
       if (selItem && selItem.isEventGen && !selItem.isFireGen &&
           !item.isKanteGen && !selItem.isKanteGen &&
           !item.isKeikakuGen && !selItem.isKeikakuGen &&
+          !item.isSnsGen && !selItem.isSnsGen &&
+          !item.isClockGen && !selItem.isClockGen &&
+          !item.isCh7Gen && !selItem.isCh7Gen &&
+          !item.isCh8Gen && !selItem.isCh8Gen &&
           (selItem.genLevel ?? 0) === (item.genLevel ?? 0)) {
         mergeEventGenerators(eventState.selectedCell, i);
         eventState.selectedCell = null;
@@ -11316,6 +12213,10 @@ function handleAnyGenTap(i) {
       if (!isFireGen && !selItem.isFireGen &&
           !item.isKanteGen && !selItem.isKanteGen &&
           !item.isKeikakuGen && !selItem.isKeikakuGen &&
+          !item.isSnsGen && !selItem.isSnsGen &&
+          !item.isClockGen && !selItem.isClockGen &&
+          !item.isCh7Gen && !selItem.isCh7Gen &&
+          !item.isCh8Gen && !selItem.isCh8Gen &&
           (selItem.genLevel ?? 0) === (item.genLevel ?? 0)) {
         mergeEventGenerators(eventState.selectedCell, i);
         eventState.selectedCell = null;
@@ -11339,12 +12240,40 @@ function handleAnyGenTap(i) {
         eventState.selectedCell = null;
         return;
       }
+      if (item.isSnsGen && selItem.isSnsGen &&
+          (selItem.snsLevel ?? 0) === (item.snsLevel ?? 0)) {
+        mergeSnsGenerators(eventState.selectedCell, i);
+        eventState.selectedCell = null;
+        return;
+      }
+      if (item.isClockGen && selItem.isClockGen &&
+          (selItem.clockLevel ?? 0) === (item.clockLevel ?? 0)) {
+        mergeClockGenerators(eventState.selectedCell, i);
+        eventState.selectedCell = null;
+        return;
+      }
+      if (item.isCh7Gen && selItem.isCh7Gen &&
+          (selItem.ch7Level ?? 0) === (item.ch7Level ?? 0)) {
+        mergeCh7Generators(eventState.selectedCell, i);
+        eventState.selectedCell = null;
+        return;
+      }
+      if (item.isCh8Gen && selItem.isCh8Gen &&
+          (selItem.ch8Level ?? 0) === (item.ch8Level ?? 0)) {
+        mergeCh8Generators(eventState.selectedCell, i);
+        eventState.selectedCell = null;
+        return;
+      }
     }
     // 種類違い or レベル違いなら選択切替
     eventState.selectedCell = i;
     if (isFireGen)              showNaviHintForFireGen(item, true);
     else if (item.isKanteGen)   showNaviHintForKanteGen(item, true);
     else if (item.isKeikakuGen) showNaviHintForKeikakuGen(item, true);
+    else if (item.isSnsGen)     showNaviHintForSnsGen(item, true);
+    else if (item.isClockGen)   showNaviHintForClockGen(item, true);
+    else if (item.isCh7Gen)     showNaviHintForCh7Gen(item, true);
+    else if (item.isCh8Gen)     showNaviHintForCh8Gen(item, true);
     else                        showNaviHintForGen(item.genLevel ?? 0, true);
     renderEventBoard();
     return;
@@ -11356,12 +12285,20 @@ function handleAnyGenTap(i) {
     if (isFireGen)              onEventFireGenTap(i);
     else if (item.isKanteGen)   onEventKanteGenTap(i);
     else if (item.isKeikakuGen) onEventKeikakuGenTap(i);
+    else if (item.isSnsGen)     onEventSnsGenTap(i);
+    else if (item.isClockGen)   onEventClockGenTap(i);
+    else if (item.isCh7Gen)     onEventCh7GenTap(i);
+    else if (item.isCh8Gen)     onEventCh8GenTap(i);
     else                        onEventGenTap(i);
   } else {
     eventState.selectedCell = i;
     if (isFireGen)              showNaviHintForFireGen(item, true);
     else if (item.isKanteGen)   showNaviHintForKanteGen(item, true);
     else if (item.isKeikakuGen) showNaviHintForKeikakuGen(item, true);
+    else if (item.isSnsGen)     showNaviHintForSnsGen(item, true);
+    else if (item.isClockGen)   showNaviHintForClockGen(item, true);
+    else if (item.isCh7Gen)     showNaviHintForCh7Gen(item, true);
+    else if (item.isCh8Gen)     showNaviHintForCh8Gen(item, true);
     else                        showNaviHintForGen(item.genLevel ?? 0, true);
     renderEventBoard();
   }
@@ -11449,6 +12386,7 @@ function onEventGenTap(tappedCellIdx = null) {
 
   if (!debugState.infiniteEnergy) state.energy -= baseCost;
   eventState.board[emptyIdx] = { stage: finalStage };
+  playMergeSE('spawn');
   discoverEventItem(finalStage);
 
   // アイテム飛び出しアニメーション
@@ -11618,6 +12556,7 @@ function generateBurstItems(count) {
 // CLEARボタン押下 → 12個放出
 function onBurstClear() {
   if (eventState.burstCount < BURST_MAX) return;
+  playMergeSE('siren');
 
   // フリーズオーバーレイを作成（z-index:190 でゲームをブロック）
   const burstStyle = document.createElement('style');
@@ -11955,6 +12894,18 @@ function doEventMerge(fromIdx, toIdx) {
     discoverKanteItem(finalStage);
   } else if (chainId === KEIKAKU_CHAIN_ID) {
     discoverKeikakuItem(finalStage);
+  } else if (chainId === SNS_CHAIN_ID) {
+    discoverSnsItem(finalStage);
+    checkSnsGenLevelUp(finalStage);
+  } else if (chainId === CLOCK_CHAIN_ID) {
+    discoverClockItem(finalStage);
+    checkClockGenLevelUp(finalStage);
+  } else if (chainId === CH7_CHAIN_ID) {
+    discoverCh7Item(finalStage);
+    checkCh7GenLevelUp(finalStage);
+  } else if (chainId === CH8_CHAIN_ID) {
+    discoverCh8Item(finalStage);
+    checkCh8GenLevelUp(finalStage);
   }
 
   // 5%の確率でしゃぼん玉アイテムを追加出現（Lv1/チュートリアル/霧マージは除外）
@@ -11998,7 +12949,7 @@ function doEventMerge(fromIdx, toIdx) {
   renderEventBoard();
   renderEventGenerators();
   renderEventRequest();
-  triggerMergeAnim('#event-board', toIdx);
+  triggerMergeAnim('#event-board', toIdx, toWasFog ? 'web' : 'merge');
 }
 
 // ========================================
@@ -12276,6 +13227,7 @@ function onEventFireGenTap(tappedCellIdx = null) {
   const slot = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
   if (slot !== -1) {
     eventState.board[slot] = { chainId: SEIZO_CHAIN_ID, stage: finalStage };
+    playMergeSE('spawn');
     discoverSeizoItem(finalStage); // 生成時に発見登録
     const imgSrc = chain.stageImages?.[finalStage - 1];
     flyEventItemAnimation(animFrom !== -1 ? animFrom : slot, slot, imgSrc || chain.stages[finalStage - 1]);
@@ -12336,6 +13288,7 @@ function onEventKanteGenTap(tappedCellIdx = null) {
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
   eventState.board[emptyIdx] = { chainId: KANTEITA_CHAIN_ID, stage: finalStage };
+  playMergeSE('spawn');
   discoverKanteItem(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
@@ -12369,31 +13322,63 @@ function unlockKeikakuGenerator() {
 // SNS解析機ジェネレーター解放（第五章ストーリー解放時）
 function unlockSnsGenerator() {
   eventState.snsGenUnlocked = true;
+  eventState.snsGenLevel    = 0;
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx !== -1) {
+    eventState.board[emptyIdx] = { isEventGen: true, isSnsGen: true, snsLevel: 0 };
+    discoverGen('ch5', 0);
+  }
   showToast('第五章が解放されました！');
   renderStoryScreen();
+  renderEventBoard();
+  renderEventRequest();
   updateKankeiChapterSelect();
 }
 
 // 時計修復台ジェネレーター解放（第六章ストーリー解放時）
 function unlockClockGenerator() {
   eventState.clockGenUnlocked = true;
+  eventState.clockGenLevel    = 0;
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx !== -1) {
+    eventState.board[emptyIdx] = { isEventGen: true, isClockGen: true, clockLevel: 0 };
+    discoverGen('ch6', 0);
+  }
   showToast('第六章が解放されました！');
   renderStoryScreen();
+  renderEventBoard();
+  renderEventRequest();
   updateKankeiChapterSelect();
 }
 
 // 第七章ジェネレーター解放（第七章ストーリー解放時）
 function unlockCh7Generator() {
   eventState.ch7GenUnlocked = true;
+  eventState.ch7GenLevel    = 0;
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx !== -1) {
+    eventState.board[emptyIdx] = { isEventGen: true, isCh7Gen: true, ch7Level: 0 };
+    discoverGen('ch7', 0);
+  }
   showToast('第七章が解放されました！');
   renderStoryScreen();
+  renderEventBoard();
+  renderEventRequest();
   updateKankeiChapterSelect();
 }
 
 function unlockCh8Generator() {
   eventState.ch8GenUnlocked = true;
+  eventState.ch8GenLevel    = 0;
+  const emptyIdx = eventState.board.findIndex(c => c === null);
+  if (emptyIdx !== -1) {
+    eventState.board[emptyIdx] = { isEventGen: true, isCh8Gen: true, ch8Level: 0 };
+    discoverGen('ch8', 0);
+  }
   showToast('第八章が解放されました！');
   renderStoryScreen();
+  renderEventBoard();
+  renderEventRequest();
   updateKankeiChapterSelect();
 }
 
@@ -12487,7 +13472,400 @@ function onEventKeikakuGenTap(tappedCellIdx = null) {
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
   eventState.board[emptyIdx] = { chainId: KEIKAKU_CHAIN_ID, stage: finalStage };
+  playMergeSE('spawn');
   discoverKeikakuItem(finalStage);
+
+  const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
+  const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  if (isPower) showPowerOnCell(genShowIdx, 'event-board');
+  else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
+
+  renderEventHeader();
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// ========================================
+// 第五章：SNS解析機ジェネレーター
+// ========================================
+
+function checkSnsGenLevelUp(discoveredStage) {
+  for (const trig of SNS_GEN_LEVELUP_TRIGGERS) {
+    if (discoveredStage === trig.triggerStage &&
+        !eventState.snsLvTriggered.has(trig.triggerStage)) {
+      const existingIdx = eventState.board.findIndex(c => c && c.isSnsGen);
+      if (existingIdx === -1) break;
+      const currentLv = eventState.board[existingIdx].snsLevel ?? 0;
+      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
+      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
+      eventState.board[emptyIdx] = { isEventGen: true, isSnsGen: true, snsLevel: currentLv };
+      eventState.snsLvTriggered.add(trig.triggerStage);
+      showToast('第五章ジェネレータータイルが増えた！マージしてLvアップ！');
+      renderEventBoard();
+      break;
+    }
+  }
+}
+
+function mergeSnsGenerators(fromIdx, toIdx) {
+  const toItem   = eventState.board[toIdx];
+  const newLevel = (toItem.snsLevel ?? 0) + 1;
+  const maxLevel = SNS_GEN_IMAGES.length - 1;
+  if (newLevel > maxLevel) { showToast('第五章ジェネレーターは最大レベルです'); return; }
+  eventState.board[toIdx]   = { isEventGen: true, isSnsGen: true, snsLevel: newLevel };
+  eventState.board[fromIdx] = null;
+  eventState.selectedCell   = null;
+  eventState.snsGenLevel    = Math.max(eventState.snsGenLevel, newLevel);
+  eventState.snsPowerLevel  = getSnsMaxAvailablePowerLv(newLevel);
+  discoverGen('ch5', newLevel);
+  const name = SNS_GEN_NAMES[Math.min(newLevel, SNS_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
+  addEnergy(25, '第五章ジェネレーターLvアップボーナス！');
+  fillEventRequests();
+  renderEventBoard();
+  renderEventRequest();
+  renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
+}
+
+function onEventSnsGenTap(tappedCellIdx = null) {
+  const powerLv    = eventState.snsPowerLevel;
+  const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
+  const outStage   = cfg.startStage;
+  const energyCost = POWER_COSTS[powerLv] ?? 1;
+
+  if (!debugState.infiniteEnergy && state.energy < energyCost) {
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide(['スタミナが不足すると、マージアイテムは出ません...'], '#ev-energy', null);
+    } else {
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isSnsGen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
+    }
+    return;
+  }
+
+  const animFrom = tappedCellIdx !== null
+    ? tappedCellIdx
+    : eventState.board.findIndex(c => c && c.isEventGen && c.isSnsGen);
+  const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
+
+  const chain = CHAINS[SNS_CHAIN_ID];
+  let finalStage = outStage;
+  let isLucky = false, isPower = false;
+
+  const powerStage = rollPower(powerLv, chain.stages.length);
+  if (powerStage !== null) { finalStage = powerStage; isPower = true; }
+  else if (outStage >= 2) {
+    const luckyMult = rollLucky(powerLv);
+    if (luckyMult !== null) {
+      const ls = Math.min(Math.floor(outStage * luckyMult), chain.stages.length);
+      if (ls > outStage) { finalStage = ls; isLucky = true; }
+    }
+  }
+
+  if (!debugState.infiniteEnergy) state.energy -= energyCost;
+  eventState.board[emptyIdx] = { chainId: SNS_CHAIN_ID, stage: finalStage };
+  playMergeSE('spawn');
+  discoverSnsItem(finalStage);
+  checkSnsGenLevelUp(finalStage);
+
+  const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
+  const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  if (isPower) showPowerOnCell(genShowIdx, 'event-board');
+  else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
+
+  renderEventHeader();
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// ========================================
+// 第六章：時計修復台ジェネレーター
+// ========================================
+
+function checkClockGenLevelUp(discoveredStage) {
+  for (const trig of CLOCK_GEN_LEVELUP_TRIGGERS) {
+    if (discoveredStage === trig.triggerStage &&
+        !eventState.clockLvTriggered.has(trig.triggerStage)) {
+      const existingIdx = eventState.board.findIndex(c => c && c.isClockGen);
+      if (existingIdx === -1) break;
+      const currentLv = eventState.board[existingIdx].clockLevel ?? 0;
+      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
+      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
+      eventState.board[emptyIdx] = { isEventGen: true, isClockGen: true, clockLevel: currentLv };
+      eventState.clockLvTriggered.add(trig.triggerStage);
+      showToast('第六章ジェネレータータイルが増えた！マージしてLvアップ！');
+      renderEventBoard();
+      break;
+    }
+  }
+}
+
+function mergeClockGenerators(fromIdx, toIdx) {
+  const toItem   = eventState.board[toIdx];
+  const newLevel = (toItem.clockLevel ?? 0) + 1;
+  const maxLevel = CLOCK_GEN_IMAGES.length - 1;
+  if (newLevel > maxLevel) { showToast('第六章ジェネレーターは最大レベルです'); return; }
+  eventState.board[toIdx]   = { isEventGen: true, isClockGen: true, clockLevel: newLevel };
+  eventState.board[fromIdx] = null;
+  eventState.selectedCell   = null;
+  eventState.clockGenLevel  = Math.max(eventState.clockGenLevel, newLevel);
+  eventState.clockPowerLevel = getClockMaxAvailablePowerLv(newLevel);
+  discoverGen('ch6', newLevel);
+  const name = CLOCK_GEN_NAMES[Math.min(newLevel, CLOCK_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
+  addEnergy(25, '第六章ジェネレーターLvアップボーナス！');
+  fillEventRequests();
+  renderEventBoard();
+  renderEventRequest();
+  renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
+}
+
+function onEventClockGenTap(tappedCellIdx = null) {
+  const powerLv    = eventState.clockPowerLevel;
+  const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
+  const outStage   = cfg.startStage;
+  const energyCost = POWER_COSTS[powerLv] ?? 1;
+
+  if (!debugState.infiniteEnergy && state.energy < energyCost) {
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide(['スタミナが不足すると、マージアイテムは出ません...'], '#ev-energy', null);
+    } else {
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isClockGen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
+    }
+    return;
+  }
+
+  const animFrom = tappedCellIdx !== null
+    ? tappedCellIdx
+    : eventState.board.findIndex(c => c && c.isEventGen && c.isClockGen);
+  const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
+
+  const chain = CHAINS[CLOCK_CHAIN_ID];
+  let finalStage = outStage;
+  let isLucky = false, isPower = false;
+
+  const powerStage = rollPower(powerLv, chain.stages.length);
+  if (powerStage !== null) { finalStage = powerStage; isPower = true; }
+  else if (outStage >= 2) {
+    const luckyMult = rollLucky(powerLv);
+    if (luckyMult !== null) {
+      const ls = Math.min(Math.floor(outStage * luckyMult), chain.stages.length);
+      if (ls > outStage) { finalStage = ls; isLucky = true; }
+    }
+  }
+
+  if (!debugState.infiniteEnergy) state.energy -= energyCost;
+  eventState.board[emptyIdx] = { chainId: CLOCK_CHAIN_ID, stage: finalStage };
+  playMergeSE('spawn');
+  discoverClockItem(finalStage);
+  checkClockGenLevelUp(finalStage);
+
+  const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
+  const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  if (isPower) showPowerOnCell(genShowIdx, 'event-board');
+  else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
+
+  renderEventHeader();
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// ========================================
+// 第七章：調査台ジェネレーター
+// ========================================
+
+function checkCh7GenLevelUp(discoveredStage) {
+  for (const trig of CH7_GEN_LEVELUP_TRIGGERS) {
+    if (discoveredStage === trig.triggerStage &&
+        !eventState.ch7LvTriggered.has(trig.triggerStage)) {
+      const existingIdx = eventState.board.findIndex(c => c && c.isCh7Gen);
+      if (existingIdx === -1) break;
+      const currentLv = eventState.board[existingIdx].ch7Level ?? 0;
+      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
+      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
+      eventState.board[emptyIdx] = { isEventGen: true, isCh7Gen: true, ch7Level: currentLv };
+      eventState.ch7LvTriggered.add(trig.triggerStage);
+      showToast('第七章ジェネレータータイルが増えた！マージしてLvアップ！');
+      renderEventBoard();
+      break;
+    }
+  }
+}
+
+function mergeCh7Generators(fromIdx, toIdx) {
+  const toItem   = eventState.board[toIdx];
+  const newLevel = (toItem.ch7Level ?? 0) + 1;
+  const maxLevel = CH7_GEN_IMAGES.length - 1;
+  if (newLevel > maxLevel) { showToast('第七章ジェネレーターは最大レベルです'); return; }
+  eventState.board[toIdx]   = { isEventGen: true, isCh7Gen: true, ch7Level: newLevel };
+  eventState.board[fromIdx] = null;
+  eventState.selectedCell   = null;
+  eventState.ch7GenLevel    = Math.max(eventState.ch7GenLevel, newLevel);
+  eventState.ch7PowerLevel  = getCh7MaxAvailablePowerLv(newLevel);
+  discoverGen('ch7', newLevel);
+  const name = CH7_GEN_NAMES[Math.min(newLevel, CH7_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
+  addEnergy(25, '第七章ジェネレーターLvアップボーナス！');
+  fillEventRequests();
+  renderEventBoard();
+  renderEventRequest();
+  renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
+}
+
+function onEventCh7GenTap(tappedCellIdx = null) {
+  const powerLv    = eventState.ch7PowerLevel;
+  const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
+  const outStage   = cfg.startStage;
+  const energyCost = POWER_COSTS[powerLv] ?? 1;
+
+  if (!debugState.infiniteEnergy && state.energy < energyCost) {
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide(['スタミナが不足すると、マージアイテムは出ません...'], '#ev-energy', null);
+    } else {
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isCh7Gen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
+    }
+    return;
+  }
+
+  const animFrom = tappedCellIdx !== null
+    ? tappedCellIdx
+    : eventState.board.findIndex(c => c && c.isEventGen && c.isCh7Gen);
+  const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
+
+  const chain = CHAINS[CH7_CHAIN_ID];
+  let finalStage = outStage;
+  let isLucky = false, isPower = false;
+
+  const powerStage = rollPower(powerLv, chain.stages.length);
+  if (powerStage !== null) { finalStage = powerStage; isPower = true; }
+  else if (outStage >= 2) {
+    const luckyMult = rollLucky(powerLv);
+    if (luckyMult !== null) {
+      const ls = Math.min(Math.floor(outStage * luckyMult), chain.stages.length);
+      if (ls > outStage) { finalStage = ls; isLucky = true; }
+    }
+  }
+
+  if (!debugState.infiniteEnergy) state.energy -= energyCost;
+  eventState.board[emptyIdx] = { chainId: CH7_CHAIN_ID, stage: finalStage };
+  playMergeSE('spawn');
+  discoverCh7Item(finalStage);
+  checkCh7GenLevelUp(finalStage);
+
+  const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
+  const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  if (isPower) showPowerOnCell(genShowIdx, 'event-board');
+  else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
+
+  renderEventHeader();
+  renderEventBoard();
+  renderEventRequest();
+}
+
+// ========================================
+// 第八章：配信解析機ジェネレーター
+// ========================================
+
+function checkCh8GenLevelUp(discoveredStage) {
+  for (const trig of CH8_GEN_LEVELUP_TRIGGERS) {
+    if (discoveredStage === trig.triggerStage &&
+        !eventState.ch8LvTriggered.has(trig.triggerStage)) {
+      const existingIdx = eventState.board.findIndex(c => c && c.isCh8Gen);
+      if (existingIdx === -1) break;
+      const currentLv = eventState.board[existingIdx].ch8Level ?? 0;
+      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
+      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
+      eventState.board[emptyIdx] = { isEventGen: true, isCh8Gen: true, ch8Level: currentLv };
+      eventState.ch8LvTriggered.add(trig.triggerStage);
+      showToast('第八章ジェネレータータイルが増えた！マージしてLvアップ！');
+      renderEventBoard();
+      break;
+    }
+  }
+}
+
+function mergeCh8Generators(fromIdx, toIdx) {
+  const toItem   = eventState.board[toIdx];
+  const newLevel = (toItem.ch8Level ?? 0) + 1;
+  const maxLevel = CH8_GEN_IMAGES.length - 1;
+  if (newLevel > maxLevel) { showToast('第八章ジェネレーターは最大レベルです'); return; }
+  eventState.board[toIdx]   = { isEventGen: true, isCh8Gen: true, ch8Level: newLevel };
+  eventState.board[fromIdx] = null;
+  eventState.selectedCell   = null;
+  eventState.ch8GenLevel    = Math.max(eventState.ch8GenLevel, newLevel);
+  eventState.ch8PowerLevel  = getCh8MaxAvailablePowerLv(newLevel);
+  discoverGen('ch8', newLevel);
+  const name = CH8_GEN_NAMES[Math.min(newLevel, CH8_GEN_NAMES.length - 1)];
+  showSpecialOnCell(toIdx, 'event-board', `${name} Lv${newLevel + 1}！`, '#f9c846');
+  trackDailyMerge();
+  addEnergy(25, '第八章ジェネレーターLvアップボーナス！');
+  fillEventRequests();
+  renderEventBoard();
+  renderEventRequest();
+  renderEventHeader();
+  triggerMergeAnim('#event-board', toIdx);
+}
+
+function onEventCh8GenTap(tappedCellIdx = null) {
+  const powerLv    = eventState.ch8PowerLevel;
+  const cfg        = POWER_CONFIG[powerLv] ?? POWER_CONFIG[0];
+  const outStage   = cfg.startStage;
+  const energyCost = POWER_COSTS[powerLv] ?? 1;
+
+  if (!debugState.infiniteEnergy && state.energy < energyCost) {
+    if (!eventState.energyTutShown && !isDebugModeActive()) {
+      eventState.energyTutShown = true;
+      startGuide(['スタミナが不足すると、マージアイテムは出ません...'], '#ev-energy', null);
+    } else {
+      const errIdx = tappedCellIdx ?? eventState.board.findIndex(c => c && c.isCh8Gen);
+      showSpecialOnCell(errIdx, 'event-board', `${HP_ICON}が不足しています（必要：${HP_ICON}${energyCost}）`, '#e74c3c');
+    }
+    return;
+  }
+
+  const animFrom = tappedCellIdx !== null
+    ? tappedCellIdx
+    : eventState.board.findIndex(c => c && c.isEventGen && c.isCh8Gen);
+  const emptyIdx = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
+  if (emptyIdx === -1) { showBoardFullToast(animFrom !== -1 ? animFrom : null, true); return; }
+
+  const chain = CHAINS[CH8_CHAIN_ID];
+  let finalStage = outStage;
+  let isLucky = false, isPower = false;
+
+  const powerStage = rollPower(powerLv, chain.stages.length);
+  if (powerStage !== null) { finalStage = powerStage; isPower = true; }
+  else if (outStage >= 2) {
+    const luckyMult = rollLucky(powerLv);
+    if (luckyMult !== null) {
+      const ls = Math.min(Math.floor(outStage * luckyMult), chain.stages.length);
+      if (ls > outStage) { finalStage = ls; isLucky = true; }
+    }
+  }
+
+  if (!debugState.infiniteEnergy) state.energy -= energyCost;
+  eventState.board[emptyIdx] = { chainId: CH8_CHAIN_ID, stage: finalStage };
+  playMergeSE('spawn');
+  discoverCh8Item(finalStage);
+  checkCh8GenLevelUp(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
@@ -12535,6 +13913,11 @@ function startEvDrag(e, fromIdx) {
   if (item.isEventGen) {
     if (item.isFireGen)          showNaviHintForFireGen(item, true);
     else if (item.isKanteGen)    showNaviHintForKanteGen(item, true);
+    else if (item.isKeikakuGen)  showNaviHintForKeikakuGen(item, true);
+    else if (item.isSnsGen)      showNaviHintForSnsGen(item, true);
+    else if (item.isClockGen)    showNaviHintForClockGen(item, true);
+    else if (item.isCh7Gen)      showNaviHintForCh7Gen(item, true);
+    else if (item.isCh8Gen)      showNaviHintForCh8Gen(item, true);
     else                         showNaviHintForGen(item.genLevel ?? 0, true);
   } else if (item.isBubble) {
     showNaviHintForBubble(item);
@@ -14068,3 +15451,13 @@ const CH8_KANKEI_EDGES = [
 
 // ADV_SCENESに第8章を追加
 Object.assign(ADV_SCENES, CH8_ADV_SCENES);
+
+// ========================================
+// UIボタン グローバルタップ音
+// ========================================
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  if (btn.closest('#debug-screen')) return; // デバッグ画面は除外
+  playMergeSE('tap');
+}, { capture: false, passive: true });
