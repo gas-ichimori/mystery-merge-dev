@@ -4132,6 +4132,85 @@ body {
   text-align: right;
 }
 
+/* Vol1 報酬インフォボタン */
+#vol1-reward-info-btn {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid #c084fc;
+  background: rgba(106,61,232,0.3);
+  color: #c084fc;
+  font-size: 11px;
+  font-weight: bold;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+#vol1-reward-info-btn:active { opacity: 0.6; }
+
+/* Vol1 報酬ポップアップ（オーバーレイ） */
+#vol1-reward-popup {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 360;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#vol1-reward-popup.hidden { display: none; }
+#vol1-reward-popup-inner {
+  background: linear-gradient(160deg, #1a1040 0%, #0d0820 100%);
+  border: 1px solid rgba(192,132,252,0.5);
+  border-radius: 14px;
+  padding: 18px 24px 16px;
+  min-width: 200px;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(106,61,232,0.4);
+}
+.vol1-popup-title {
+  color: #c084fc;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.vol1-popup-subtitle {
+  color: #a0a0c0;
+  font-size: 11px;
+  margin-bottom: 14px;
+}
+.vol1-reward-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+}
+.vol1-reward-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+#vol1-reward-popup-close {
+  margin-top: 14px;
+  background: rgba(106,61,232,0.5);
+  border: 1px solid rgba(192,132,252,0.5);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 20px;
+  cursor: pointer;
+}
+#vol1-reward-popup-close:active { opacity: 0.7; }
+
 /* 盤面エリア（固定・スクロールなし） */
 #vol1-board-wrap {
   flex: 1;

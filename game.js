@@ -9068,6 +9068,37 @@ function renderVol1MeterUI() {
   // ジェネレーターセルのカウントは renderVol1Board 内で描画
 }
 
+// Vol1 報酬インフォポップアップ
+(function() {
+  const infoBtn  = document.getElementById('vol1-reward-info-btn');
+  const popup    = document.getElementById('vol1-reward-popup');
+  const closeBtn = document.getElementById('vol1-reward-popup-close');
+  if (!infoBtn || !popup || !closeBtn) return;
+
+  infoBtn.addEventListener('click', () => {
+    const lv      = eventState.vol1LevelsCleared + 1;
+    const hp      = VOL1_HP_BASE   + VOL1_HP_STEP   * (lv - 1);
+    const coins   = VOL1_COIN_BASE + VOL1_COIN_STEP  * (lv - 1);
+    const subtitle = document.getElementById('vol1-reward-subtitle');
+    const content  = document.getElementById('vol1-reward-content');
+    if (subtitle) subtitle.textContent = `Lv${lv} クリアで獲得`;
+    if (content) content.innerHTML = `
+      <div class="vol1-reward-row">
+        <img src="img/UI/image_merge_navi_hp.png" class="vol1-reward-icon" alt="体力">
+        <span>× ${hp}</span>
+      </div>
+      <div class="vol1-reward-row">
+        <img src="img/UI/image_merge_icon_coin01.png" class="vol1-reward-icon" alt="コイン">
+        <span>× ${coins.toLocaleString()}</span>
+      </div>
+    `;
+    popup.classList.remove('hidden');
+  });
+
+  closeBtn.addEventListener('click', () => popup.classList.add('hidden'));
+  popup.addEventListener('click', e => { if (e.target === popup) popup.classList.add('hidden'); });
+})();
+
 // Vol1 ポイント加算（レベルクリア判定込み）
 function addVol1Points(pts) {
   eventState.vol1LevelPoints += pts;
