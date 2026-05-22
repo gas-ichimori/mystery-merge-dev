@@ -1136,6 +1136,12 @@ function _playMergeSEImpl(ctx, type, t) {
       // 最終和音
       [523, 659, 784].forEach(f => _osc(ctx, 'sine', f, 0.12, t + 0.72, t + 1.3));
 
+    } else if (type === 'lucky') {
+      // ラッキー/パワー出現チャイム（短い昇順ベル3音）
+      _osc(ctx, 'sine', 880,  0.18, t,        t + 0.22);
+      _osc(ctx, 'sine', 1109, 0.15, t + 0.10, t + 0.34);
+      _osc(ctx, 'sine', 1319, 0.12, t + 0.20, t + 0.46);
+
     } else if (type === 'bubble') {
       // しゃぼん玉を割る音（柔らかいポン）
       _osc(ctx, 'sine', 1200, 0.10, t,        t + 0.06);
@@ -1463,10 +1469,12 @@ function showSpecialOnCell(cellIdx, boardId, text, color) {
 }
 
 function showLuckyOnCell(cellIdx, boardId = 'board') {
+  playMergeSE('lucky');
   showSpecialOnCell(cellIdx, boardId, '🍀 Lucky!', '#4cff6e');
 }
 
 function showPowerOnCell(cellIdx, boardId = 'board') {
+  playMergeSE('lucky');
   showSpecialOnCell(cellIdx, boardId, `${HP_ICON} Power!`, '#e74c3c');
 }
 
@@ -14164,6 +14172,21 @@ function createEvGhost(x, y, fromIdx) {
   } else if (item.isEventGen && item.isKanteGen) {
     const kLv = item.kanteLevel ?? 0;
     imgSrc = KANTEITA_GEN_IMAGES[Math.min(kLv, KANTEITA_GEN_IMAGES.length - 1)];
+  } else if (item.isEventGen && item.isKeikakuGen) {
+    const kkLv = item.keikakuLevel ?? 0;
+    imgSrc = KEIKAKU_GEN_IMAGES[Math.min(kkLv, KEIKAKU_GEN_IMAGES.length - 1)];
+  } else if (item.isEventGen && item.isSnsGen) {
+    const snsLv = item.snsLevel ?? 0;
+    imgSrc = SNS_GEN_IMAGES[Math.min(snsLv, SNS_GEN_IMAGES.length - 1)];
+  } else if (item.isEventGen && item.isClockGen) {
+    const cLv = item.clockLevel ?? 0;
+    imgSrc = CLOCK_GEN_IMAGES[Math.min(cLv, CLOCK_GEN_IMAGES.length - 1)];
+  } else if (item.isEventGen && item.isCh7Gen) {
+    const c7Lv = item.ch7Level ?? 0;
+    imgSrc = CH7_GEN_IMAGES[Math.min(c7Lv, CH7_GEN_IMAGES.length - 1)];
+  } else if (item.isEventGen && item.isCh8Gen) {
+    const c8Lv = item.ch8Level ?? 0;
+    imgSrc = CH8_GEN_IMAGES[Math.min(c8Lv, CH8_GEN_IMAGES.length - 1)];
   } else if (item.isEventGen) {
     imgSrc = EVENT_GEN_IMAGES[Math.min(item.genLevel ?? 0, EVENT_GEN_IMAGES.length - 1)];
   } else if (item.chainId !== undefined) {
@@ -14399,6 +14422,10 @@ function endEvDrag(x, y) {
   } else if (!fromItem.isFireGen && !toItem.isFireGen &&
              !fromItem.isKanteGen && !toItem.isKanteGen &&
              !fromItem.isKeikakuGen && !toItem.isKeikakuGen &&
+             !fromItem.isSnsGen && !toItem.isSnsGen &&
+             !fromItem.isClockGen && !toItem.isClockGen &&
+             !fromItem.isCh7Gen && !toItem.isCh7Gen &&
+             !fromItem.isCh8Gen && !toItem.isCh8Gen &&
              fromItem.isEventGen && toItem.isEventGen &&
              (fromItem.genLevel ?? 0) === (toItem.genLevel ?? 0)) {
     // メモ帳ジェネレータータイル同士のマージ → Lvアップ
@@ -14406,13 +14433,31 @@ function endEvDrag(x, y) {
     return;
   } else if (fromItem.isFireGen && toItem.isFireGen &&
              (fromItem.seizoLevel ?? 0) === (toItem.seizoLevel ?? 0)) {
-    // 製造機ジェネレータータイル同士のマージ → Lvアップ
     mergeFireGenerators(fromIdx, toIdx);
     return;
   } else if (fromItem.isKanteGen && toItem.isKanteGen &&
              (fromItem.kanteLevel ?? 0) === (toItem.kanteLevel ?? 0)) {
-    // 鑑定台ジェネレータータイル同士のマージ → Lvアップ
     mergeKanteGenerators(fromIdx, toIdx);
+    return;
+  } else if (fromItem.isKeikakuGen && toItem.isKeikakuGen &&
+             (fromItem.keikakuLevel ?? 0) === (toItem.keikakuLevel ?? 0)) {
+    mergeKeikakuGenerators(fromIdx, toIdx);
+    return;
+  } else if (fromItem.isSnsGen && toItem.isSnsGen &&
+             (fromItem.snsLevel ?? 0) === (toItem.snsLevel ?? 0)) {
+    mergeSnsGenerators(fromIdx, toIdx);
+    return;
+  } else if (fromItem.isClockGen && toItem.isClockGen &&
+             (fromItem.clockLevel ?? 0) === (toItem.clockLevel ?? 0)) {
+    mergeClockGenerators(fromIdx, toIdx);
+    return;
+  } else if (fromItem.isCh7Gen && toItem.isCh7Gen &&
+             (fromItem.ch7Level ?? 0) === (toItem.ch7Level ?? 0)) {
+    mergeCh7Generators(fromIdx, toIdx);
+    return;
+  } else if (fromItem.isCh8Gen && toItem.isCh8Gen &&
+             (fromItem.ch8Level ?? 0) === (toItem.ch8Level ?? 0)) {
+    mergeCh8Generators(fromIdx, toIdx);
     return;
   } else if (!fromItem.isEventGen && evItemCanMerge(fromItem, toItem)) {
     // 通常/霧アイテムのマージ（ロック済み霧はターゲット不可）
