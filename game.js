@@ -14515,6 +14515,8 @@ document.getElementById('event-btn').addEventListener('click', () => {
   renderEventBoard();
   renderEventHeader();
   renderEventRequest();
+  renderBurstSlot();
+  renderVol1Slot();
   renderTutorialPanel();
 });
 

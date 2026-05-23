@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mystery-merge-v1';
+const CACHE_NAME = 'mystery-merge-v2';
 
 // インストール時にコアファイルをキャッシュ
 const CORE_ASSETS = [
