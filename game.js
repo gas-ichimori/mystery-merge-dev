@@ -1439,6 +1439,7 @@ function rollPower(powerLv, chainMaxStage) {
 
 // ジェネレーターセル近くに特殊テキスト（Lucky!/Power!）を表示
 function showSpecialOnCell(cellIdx, boardId, text, color) {
+  if (!text.includes('Lucky') && !text.includes('Power')) return;
   setTimeout(() => {
     const cells = document.querySelectorAll(`#${boardId} .cell`);
     const cell = cells[cellIdx];
@@ -2416,6 +2417,7 @@ function shopRemaining(lastTs) {
 // ========================================
 // 画面中央ポップアップ（最大値通知など）
 function showCenterPopup(msg) {
+  return;
   if (document.getElementById('center-popup-overlay')) return; // 多重表示防止
   const el = document.createElement('div');
   el.id = 'center-popup-overlay';
@@ -2474,6 +2476,7 @@ function _naviAboveY() {
 }
 
 function showToast(msg) {
+  return;
   const topY = _naviAboveY();
   const el = document.createElement('div');
   el.innerHTML = msg;
@@ -2550,6 +2553,7 @@ function showChapterCompleteBanner(imgSrc, displayMs = 1800) {
 // ジェネレータータイルの直上にトーストを表示（ボード満杯などの通知用）
 // パネル要素のすぐ下にトーストを表示（依頼完了など）
 function showToastRed(msg) {
+  return;
   const topY = _naviAboveY();
   const el = document.createElement('div');
   el.innerHTML = msg;
@@ -2567,6 +2571,7 @@ function showToastRed(msg) {
 }
 
 function showToastNearPanel(msg, panelEl) {
+  return;
   if (!panelEl) { showToast(msg); return; }
   const rect = panelEl.getBoundingClientRect();
   const el = document.createElement('div');
@@ -2594,6 +2599,7 @@ function showToastNearPanel(msg, panelEl) {
 
 // ナビパネルの直上（盤面下部）にトーストを表示（ジェネレーターLvアップ体力ボーナスなど）
 function showAboveNaviToast(msg) {
+  return;
   if (isMenuPageOpen()) return;
   const topY = _naviAboveY();
   const el = document.createElement('div');
@@ -2613,6 +2619,7 @@ function showAboveNaviToast(msg) {
 
 // 依頼完了メッセージ（ナビパネル上部に表示）
 function showRewardInPanel(msg, panelEl, textColor = '#fff') {
+  return;
   const topY = _naviAboveY();
   const el = document.createElement('div');
   el.textContent = msg;
