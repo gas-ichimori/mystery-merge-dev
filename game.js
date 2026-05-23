@@ -7584,7 +7584,7 @@ const INITIAL_UNLOCKED_FOG = new Set([30,31,32, 36,40, 43,47, 50,54, 58,59,60]);
 
 // ジェネレーターマージ誘導チュートリアルのステップ定義
 const GEN_MERGE_TUT_STEPS = [
-  { type: 'focus', text: 'もうひとつの"メモ机"が出ました。\n"メモ机"と"メモ机"を組み合わせてください。' },
+  { type: 'focus', text: 'もうひとつの"メモ机"がストックに追加されました。\nストックのアイコンをタップして盤面に移動し、"メモ机"と"メモ机"を組み合わせてください。' },
   { type: 'msg',   text: '"メモ机"がレベルアップしました。\n出せるアイテムのLvが上がります。' },
   { type: 'msg',   text: '出すアイテムレベルを上下したい時は、"メモ机"を選択するとメッセージの横にレベルボタンが出るので、タップしてレベルを変更してください。' },
 ];
@@ -9428,15 +9428,15 @@ function renderGenMergeTutPanel() {
     return;
   }
   panel.classList.remove('hidden');
-  msgEl.textContent = gmStep.text;
+  hintEl.style.display = 'none';
   if (gmStep.type === 'focus') {
     // フォーカス: オーバーレイ非表示、ジェネレーターだけ操作可
     overlay.classList.add('hidden');
-    hintEl.style.display = 'none';
+    _startTypewriter(msgEl, gmStep.text, null, false);
   } else {
     // メッセージ: オーバーレイで他の操作をブロック
     overlay.classList.remove('hidden');
-    hintEl.style.display = '';
+    _startTypewriter(msgEl, gmStep.text, () => { hintEl.style.display = ''; }, false);
   }
 }
 
@@ -11618,16 +11618,7 @@ function progressStory(chapter = 1) {
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
       if (genTileCount >= 2) return;
       eventState.genUpTriggered.add('ch1lv3');
-      const eIdx = eventState.board.findIndex(
-        c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
-      );
-      const slot = findNearestEmptyEventCell(eIdx);
-      if (slot !== -1) {
-        eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel ?? 0 };
-        playMergeSE('spawn');
-        renderEventBoard();
-        showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
-      }
+      addGenTileToStock({ isEventGen: true, genLevel: ch1Gen.genLevel ?? 0 }, '第一章');
     });
   }
 
@@ -11652,16 +11643,7 @@ function progressStory(chapter = 1) {
       );
       if (ch1Gen && (ch1Gen.genLevel ?? 0) >= 2) {
         eventState.genUpTriggered.add('ch1lv4');
-        const eIdx = eventState.board.findIndex(
-          c => c && c.isEventGen && !c.isFireGen && !c.isKanteGen && !c.isKeikakuGen
-        );
-        const slot = findNearestEmptyEventCell(eIdx);
-        if (slot !== -1) {
-          eventState.board[slot] = { isEventGen: true, genLevel: ch1Gen.genLevel };
-          playMergeSE('spawn');
-          showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
-          renderEventBoard();
-        }
+        addGenTileToStock({ isEventGen: true, genLevel: ch1Gen.genLevel }, '第一章');
       }
     });
   }
@@ -12735,6 +12717,16 @@ function flyFromElementToCell(fromEl, toIdx, imgSrc) {
 
 // アイテムの画像パスを取得
 function getBurstItemImgSrc(item) {
+  if (item.isEventGen) {
+    if (item.isFireGen)    return SEIZO_GEN_IMAGES[Math.min(item.seizoLevel ?? 0, SEIZO_GEN_IMAGES.length - 1)];
+    if (item.isKanteGen)   return KANTEITA_GEN_IMAGES[Math.min(item.kanteLevel ?? 0, KANTEITA_GEN_IMAGES.length - 1)];
+    if (item.isKeikakuGen) return KEIKAKU_GEN_IMAGES[Math.min(item.keikakuLevel ?? 0, KEIKAKU_GEN_IMAGES.length - 1)];
+    if (item.isSnsGen)     return SNS_GEN_IMAGES[Math.min(item.snsLevel ?? 0, SNS_GEN_IMAGES.length - 1)];
+    if (item.isClockGen)   return CLOCK_GEN_IMAGES[Math.min(item.clockLevel ?? 0, CLOCK_GEN_IMAGES.length - 1)];
+    if (item.isCh7Gen)     return CH7_GEN_IMAGES[Math.min(item.ch7Level ?? 0, CH7_GEN_IMAGES.length - 1)];
+    if (item.isCh8Gen)     return CH8_GEN_IMAGES[Math.min(item.ch8Level ?? 0, CH8_GEN_IMAGES.length - 1)];
+    return EVENT_GEN_IMAGES[Math.min(item.genLevel ?? 0, EVENT_GEN_IMAGES.length - 1)];
+  }
   const chain = item.chainId !== undefined ? CHAINS[item.chainId] : EVENT_CHAIN;
   return chain.stageImages?.[item.stage - 1] ?? null;
 }
@@ -12821,6 +12813,26 @@ function onBurstClear() {
 // ========================================
 // 依頼バースト — ストック枠
 // ========================================
+
+// ジェネレータータイルをストックに追加（満杯時はボードへフォールバック）
+function addGenTileToStock(genTile, chName) {
+  if (eventState.burstStock.length >= 99) {
+    const emptyIdx = eventState.board.findIndex(c => c === null);
+    if (emptyIdx !== -1) {
+      eventState.board[emptyIdx] = genTile;
+      playMergeSE('spawn');
+      renderEventBoard();
+      showToast(`ストック満杯！${chName}ジェネレータータイルをボードに配置`);
+    } else {
+      showToast('ボードもストックも満杯です');
+    }
+    return;
+  }
+  eventState.burstStock.push(genTile);
+  playMergeSE('spawn');
+  showToast(`${chName}ジェネレーターがストックに追加！タップしてボードへ`);
+  renderBurstStock();
+}
 
 // ストックに追加（99個制限、超過はコイン変換）
 function addToBurstStock(item) {
@@ -13067,13 +13079,10 @@ function doEventMerge(fromIdx, toIdx) {
       eventState.genUpTriggered.add(4);
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
       if (genTileCount < 2) {
-        const curGenLv  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
-        const emptyIdx2 = eventState.board.findIndex(c => c === null);
-        if (emptyIdx2 !== -1) {
-          eventState.board[emptyIdx2] = { isEventGen: true, genLevel: curGenLv };
-          hideNaviHint();
-          setTimeout(() => startGenMergeTut(), 400);
-        }
+        const curGenLv = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
+        addGenTileToStock({ isEventGen: true, genLevel: curGenLv }, '第一章');
+        hideNaviHint();
+        setTimeout(() => startGenMergeTut(), 400);
       }
     }
 
@@ -13083,12 +13092,8 @@ function doEventMerge(fromIdx, toIdx) {
       eventState.genUpTriggered.add('ch1lv3');
       const genTileCount = eventState.board.filter(c => c && c.isEventGen && !c.isFireGen).length;
       if (genTileCount < 2) {
-        const curGenLv  = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
-        const emptyIdx2 = eventState.board.findIndex(c => c === null);
-        if (emptyIdx2 !== -1) {
-          eventState.board[emptyIdx2] = { isEventGen: true, genLevel: curGenLv };
-          showToast('ジェネレーターが2枚出現！重ねてLvアップ！');
-        }
+        const curGenLv = eventState.board.find(c => c && c.isEventGen && !c.isFireGen)?.genLevel ?? 0;
+        addGenTileToStock({ isEventGen: true, genLevel: curGenLv }, '第一章');
       }
     }
 
@@ -13257,17 +13262,8 @@ function _spawnChGenLvUpTile(chapter, triggerKey, triggeredSet) {
     chName   = '第四章';
   } else { return; }
 
-  const emptyIdx = findNearestEmptyEventCell(existingIdx);
-  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
-  eventState.board[emptyIdx] = newTile;
   triggeredSet.add(triggerKey);
-  eventState.pendingGenLvUpNotice.push({
-    idx: emptyIdx,
-    msg: `${chName}ジェネレータータイルが増えた！\nマージしてLvアップ！`,
-  });
-  playMergeSE('spawn');
-  showToast(`${chName}ジェネレータータイルが増えた！マージしてLvアップ！`);
-  renderEventBoard();
+  addGenTileToStock(newTile, chName);
 }
 
 // 製造機ジェネレーターLvアップ判定：プレイヤーLvベース（旧ロジック・未使用）
@@ -13280,13 +13276,8 @@ function checkSeizoGenLevelUpByPlayerLevel(playerLevel) {
   const existingIdx = eventState.board.findIndex(c => c && c.isFireGen);
   if (existingIdx === -1) return;
   const currentLv = eventState.board[existingIdx].seizoLevel ?? 0;
-  const emptyIdx = findNearestEmptyEventCell(existingIdx);
-  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
-  eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: currentLv };
   eventState.seizoLvTriggered.add(playerLevel);
-  eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第二章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
-  showToast('第二章ジェネレータータイルが増えた！マージしてLvアップ！');
-  renderEventBoard();
+  addGenTileToStock({ isEventGen: true, isFireGen: true, seizoLevel: currentLv }, '第二章');
 }
 
 // 鑑定台ジェネレーターLvアップ判定：プレイヤーLvベース（旧ロジック・未使用）
@@ -13299,13 +13290,8 @@ function checkKanteGenLevelUpByPlayerLevel(playerLevel) {
   const existingIdx = eventState.board.findIndex(c => c && c.isKanteGen);
   if (existingIdx === -1) return;
   const currentLv = eventState.board[existingIdx].kanteLevel ?? 0;
-  const emptyIdx = findNearestEmptyEventCell(existingIdx);
-  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
-  eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: currentLv };
   eventState.kanteLvTriggered.add(playerLevel);
-  eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第三章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
-  showToast('第三章ジェネレータータイルが増えた！マージしてLvアップ！');
-  renderEventBoard();
+  addGenTileToStock({ isEventGen: true, isKanteGen: true, kanteLevel: currentLv }, '第三章');
 }
 
 // 製造機ジェネレーターLvアップ判定（旧：アイテムStageベース・現在は未使用）
@@ -13313,18 +13299,11 @@ function checkSeizoGenLevelUp(discoveredStage) {
   for (const trig of SEIZO_GEN_LEVELUP_TRIGGERS) {
     if (discoveredStage === trig.triggerStage &&
         !eventState.seizoLvTriggered.has(trig.triggerStage)) {
-      // 既存の製造機タイルを探す
       const existingIdx = eventState.board.findIndex(c => c && c.isFireGen);
       if (existingIdx === -1) break;
-      const existingTile = eventState.board[existingIdx];
-      const currentLv = existingTile.seizoLevel ?? 0;
-      // 同Lvの複製タイルを近くに配置（マージして昇格させる）
-      const emptyIdx = findNearestEmptyEventCell(existingIdx);
-      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
-      eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: currentLv };
+      const currentLv = eventState.board[existingIdx].seizoLevel ?? 0;
       eventState.seizoLvTriggered.add(trig.triggerStage);
-      showToast('第二章ジェネレータータイルが増えた！マージしてLvアップ！');
-      renderEventBoard();
+      addGenTileToStock({ isEventGen: true, isFireGen: true, seizoLevel: currentLv }, '第二章');
       break;
     }
   }
@@ -13608,13 +13587,8 @@ function checkKeikakuGenLevelUpByPlayerLevel(playerLevel) {
   const existingIdx = eventState.board.findIndex(c => c && c.isKeikakuGen);
   if (existingIdx === -1) return;
   const currentLv = eventState.board[existingIdx].keikakuLevel ?? 0;
-  const emptyIdx = findNearestEmptyEventCell(existingIdx);
-  if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); return; }
-  eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: currentLv };
   eventState.keikakuLvTriggered.add(playerLevel);
-  eventState.pendingGenLvUpNotice.push({ idx: emptyIdx, msg: '第四章ジェネレータータイルが増えた！\nマージしてLvアップ！' });
-  showToast('第四章ジェネレータータイルが増えた！マージしてLvアップ！');
-  renderEventBoard();
+  addGenTileToStock({ isEventGen: true, isKeikakuGen: true, keikakuLevel: currentLv }, '第四章');
 }
 
 // 設計台ジェネレータータイル同士のマージ（Lvアップ）
@@ -13713,12 +13687,8 @@ function checkSnsGenLevelUp(discoveredStage) {
       const existingIdx = eventState.board.findIndex(c => c && c.isSnsGen);
       if (existingIdx === -1) break;
       const currentLv = eventState.board[existingIdx].snsLevel ?? 0;
-      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
-      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
-      eventState.board[emptyIdx] = { isEventGen: true, isSnsGen: true, snsLevel: currentLv };
       eventState.snsLvTriggered.add(trig.triggerStage);
-      showToast('第五章ジェネレータータイルが増えた！マージしてLvアップ！');
-      renderEventBoard();
+      addGenTileToStock({ isEventGen: true, isSnsGen: true, snsLevel: currentLv }, '第五章');
       break;
     }
   }
@@ -13811,12 +13781,8 @@ function checkClockGenLevelUp(discoveredStage) {
       const existingIdx = eventState.board.findIndex(c => c && c.isClockGen);
       if (existingIdx === -1) break;
       const currentLv = eventState.board[existingIdx].clockLevel ?? 0;
-      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
-      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
-      eventState.board[emptyIdx] = { isEventGen: true, isClockGen: true, clockLevel: currentLv };
       eventState.clockLvTriggered.add(trig.triggerStage);
-      showToast('第六章ジェネレータータイルが増えた！マージしてLvアップ！');
-      renderEventBoard();
+      addGenTileToStock({ isEventGen: true, isClockGen: true, clockLevel: currentLv }, '第六章');
       break;
     }
   }
@@ -13909,12 +13875,8 @@ function checkCh7GenLevelUp(discoveredStage) {
       const existingIdx = eventState.board.findIndex(c => c && c.isCh7Gen);
       if (existingIdx === -1) break;
       const currentLv = eventState.board[existingIdx].ch7Level ?? 0;
-      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
-      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
-      eventState.board[emptyIdx] = { isEventGen: true, isCh7Gen: true, ch7Level: currentLv };
       eventState.ch7LvTriggered.add(trig.triggerStage);
-      showToast('第七章ジェネレータータイルが増えた！マージしてLvアップ！');
-      renderEventBoard();
+      addGenTileToStock({ isEventGen: true, isCh7Gen: true, ch7Level: currentLv }, '第七章');
       break;
     }
   }
@@ -14007,12 +13969,8 @@ function checkCh8GenLevelUp(discoveredStage) {
       const existingIdx = eventState.board.findIndex(c => c && c.isCh8Gen);
       if (existingIdx === -1) break;
       const currentLv = eventState.board[existingIdx].ch8Level ?? 0;
-      const emptyIdx  = findNearestEmptyEventCell(existingIdx);
-      if (emptyIdx === -1) { showBoardFullToast(existingIdx, true); break; }
-      eventState.board[emptyIdx] = { isEventGen: true, isCh8Gen: true, ch8Level: currentLv };
       eventState.ch8LvTriggered.add(trig.triggerStage);
-      showToast('第八章ジェネレータータイルが増えた！マージしてLvアップ！');
-      renderEventBoard();
+      addGenTileToStock({ isEventGen: true, isCh8Gen: true, ch8Level: currentLv }, '第八章');
       break;
     }
   }
