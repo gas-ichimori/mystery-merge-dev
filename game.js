@@ -2188,6 +2188,14 @@ function renderCatalog() {
     tabsEl.appendChild(tab4);
   }
 
+  if (eventState.vol1Unlocked) {
+    const tabV = document.createElement('div');
+    tabV.className = 'catalog-tab' + (catalogCurrentChain === 'vol1' ? ' active' : '');
+    tabV.textContent = 'Vol.1';
+    tabV.addEventListener('click', () => { catalogCurrentChain = 'vol1'; renderCatalog(); });
+    tabsEl.appendChild(tabV);
+  }
+
   const listEl = document.getElementById('catalog-list');
   listEl.innerHTML = '';
 
@@ -2358,6 +2366,20 @@ function renderCatalog() {
       const stageName = kkChain.stageNames?.[idx] ?? `${kkChain.name} Lv${stage}`;
       const itemState = rev ? 'revealed' : disc ? 'pending' : 'locked';
       const card = makeCard(imgSrc, emoji, `Lv${stage}`, stageName, itemState, () => revealCatalogItem('keikaku', stage));
+      listEl.appendChild(card);
+    });
+
+  } else if (catalogCurrentChain === 'vol1') {
+    const itemHeader = document.createElement('div');
+    itemHeader.className = 'catalog-section-header';
+    itemHeader.textContent = 'マージアイテム（Vol.1）';
+    listEl.appendChild(itemHeader);
+
+    VOL1_STAGE_IMAGES.forEach((imgSrc, idx) => {
+      const stage     = idx + 1;
+      const disc      = !!eventState.vol1Discovered[stage];
+      const stageName = VOL1_STAGE_NAMES[idx] ?? `Vol.1 Lv${stage}`;
+      const card = makeCard(imgSrc, '🔍', `Lv${stage}`, stageName, disc ? 'revealed' : 'locked', null);
       listEl.appendChild(card);
     });
   }
@@ -10046,6 +10068,18 @@ function handleVol1CellTap(idx) {
   if (item.isMagnify) {
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
+      // 虫眼鏡 + 虫眼鏡 → Lv1マージアイテム生成
+      if (selItem && selItem.isMagnify) {
+        eventState.vol1Board[vol1SelectedCell] = null;
+        eventState.vol1Board[idx] = { stage: 1, isWebbed: false };
+        eventState.vol1Discovered[1] = true;
+        vol1SelectedCell = null;
+        checkVol1Refill();
+        hideNaviHint();
+        renderVol1Board();
+        triggerMergeAnim('#vol1-board', idx);
+        return;
+      }
       if (selItem && selItem.isWebbed && (selItem.webLevel ?? 1) === 1) {
         if (!isVol1WebMergeable(vol1SelectedCell)) {
           playMergeSE('error'); showToast('周囲の蜘蛛の巣を先に除去してください');
@@ -10144,7 +10178,7 @@ function handleVol1CellTap(idx) {
   // Lv4★ → ダブルタップで消費してポイント付与
   if (item.stage === VOL1_MAX_STAGE) {
     const now = Date.now();
-    if (vol1LastTapIdx === idx && now - vol1LastTapTime < 400) {
+    if (vol1LastTapIdx === idx && now - vol1LastTapTime < 700) {
       eventState.vol1Board[idx] = null;
       vol1SelectedCell = null;
       vol1LastTapIdx  = -1;
@@ -10448,6 +10482,19 @@ function endVol1Drag(x, y) {
   const fromItem = eventState.vol1Board[fromIdx];
   const toItem   = eventState.vol1Board[toIdx];
   if (!fromItem) { renderVol1Board(); return; }
+
+  // 虫眼鏡 → 虫眼鏡にドロップ → Lv1マージアイテム生成
+  if (fromItem.isMagnify && toItem && toItem.isMagnify) {
+    eventState.vol1Board[fromIdx] = null;
+    eventState.vol1Board[toIdx]   = { stage: 1, isWebbed: false };
+    eventState.vol1Discovered[1]  = true;
+    vol1SelectedCell = null;
+    checkVol1Refill();
+    hideNaviHint();
+    renderVol1Board();
+    triggerMergeAnim('#vol1-board', toIdx);
+    return;
+  }
 
   // 虫眼鏡 → Lv1蜘蛛の巣にドロップ → 除去
   if (fromItem.isMagnify && toItem && toItem.isWebbed && (toItem.webLevel ?? 1) === 1) {
