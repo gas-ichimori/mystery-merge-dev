@@ -8878,9 +8878,9 @@ function renderStoryScreen() {
   const ch2Complete = state.ch2Count >= CH2_SCENE_IDS.length;
   const ch3Unlocked = eventState.kanteGenUnlocked;
   const ch3Complete = state.ch3Count >= CH3_SCENE_IDS.length;
-  const cost        = getStoryCost(state.playerLevel);
-  const canAfford   = state.coin >= cost;
-  const costLabel   = `${COIN_ICON} ${cost.toLocaleString()}消費`;
+  const _epCost = (n) => n >= 6 ? 2000 : 1000;
+  const _epLbl  = (n) => `${COIN_ICON} ${_epCost(n).toLocaleString()}消費`;
+  const _epOk   = (n) => state.coin >= _epCost(n);
 
   // ── 第一章 ──
   const ch1NextWrap   = document.getElementById('story-ch1-next-wrap');
@@ -8896,9 +8896,9 @@ function renderStoryScreen() {
   } else {
     ch1NextWrap.classList.remove('hidden');
     ch1Complete_.classList.add('hidden');
-    ch1NextBtn.disabled = !canAfford;
-    ch1CostLabel.innerHTML = costLabel;
-    if (canAfford) ch1NextBtn.classList.add('guide-attention');
+    ch1NextBtn.disabled = !_epOk(state.ch1Count);
+    ch1CostLabel.innerHTML = _epLbl(state.ch1Count);
+    if (_epOk(state.ch1Count)) ch1NextBtn.classList.add('guide-attention');
     else ch1NextBtn.classList.remove('guide-attention');
   }
   // 既読シーンがあれば章完了前でも見返し可能
@@ -8930,9 +8930,9 @@ function renderStoryScreen() {
     } else {
       ch2NextWrap.classList.remove('hidden');
       ch2Complete_.classList.add('hidden');
-      ch2NextBtn.disabled = !canAfford;
-      ch2CostLbl.innerHTML = costLabel;
-      if (canAfford) ch2NextBtn.classList.add('guide-attention');
+      ch2NextBtn.disabled = !_epOk(state.ch2Count);
+      ch2CostLbl.innerHTML = _epLbl(state.ch2Count);
+      if (_epOk(state.ch2Count)) ch2NextBtn.classList.add('guide-attention');
       else ch2NextBtn.classList.remove('guide-attention');
     }
     // 既読シーンがあれば章完了前でも見返し可能
@@ -8968,9 +8968,9 @@ function renderStoryScreen() {
     } else {
       ch3NextWrap.classList.remove('hidden');
       ch3Complete_.classList.add('hidden');
-      ch3NextBtn.disabled = !canAfford;
-      ch3CostLbl.innerHTML = costLabel;
-      if (canAfford) ch3NextBtn.classList.add('guide-attention');
+      ch3NextBtn.disabled = !_epOk(state.ch3Count);
+      ch3CostLbl.innerHTML = _epLbl(state.ch3Count);
+      if (_epOk(state.ch3Count)) ch3NextBtn.classList.add('guide-attention');
       else ch3NextBtn.classList.remove('guide-attention');
     }
     // 既読シーンがあれば章完了前でも見返し可能
@@ -9008,11 +9008,11 @@ function renderStoryScreen() {
       ch4NextWrap?.classList.remove('hidden');
       ch4Complete_?.classList.add('hidden');
       if (ch4NextBtn) {
-        ch4NextBtn.disabled = !canAfford;
-        if (canAfford) ch4NextBtn.classList.add('guide-attention');
+        ch4NextBtn.disabled = !_epOk(state.ch4Count);
+        if (_epOk(state.ch4Count)) ch4NextBtn.classList.add('guide-attention');
         else ch4NextBtn.classList.remove('guide-attention');
       }
-      if (ch4CostLbl) ch4CostLbl.innerHTML = costLabel;
+      if (ch4CostLbl) ch4CostLbl.innerHTML = _epLbl(state.ch4Count);
     }
     // 既読シーンがあれば章完了前でも見返し可能
     {
@@ -9050,11 +9050,11 @@ function renderStoryScreen() {
       ch5NextWrap?.classList.remove('hidden');
       ch5Complete_?.classList.add('hidden');
       if (ch5NextBtn) {
-        ch5NextBtn.disabled = !canAfford;
-        if (canAfford) ch5NextBtn.classList.add('guide-attention');
+        ch5NextBtn.disabled = !_epOk(state.ch5Count);
+        if (_epOk(state.ch5Count)) ch5NextBtn.classList.add('guide-attention');
         else ch5NextBtn.classList.remove('guide-attention');
       }
-      if (ch5CostLbl) ch5CostLbl.innerHTML = costLabel;
+      if (ch5CostLbl) ch5CostLbl.innerHTML = _epLbl(state.ch5Count);
     }
     {
       const seenCh5 = (state.seenScenes ?? []).some(id => CH5_SCENE_LIST.some(s => s.id === id));
@@ -9091,11 +9091,11 @@ function renderStoryScreen() {
       ch6NextWrap?.classList.remove('hidden');
       ch6Complete_?.classList.add('hidden');
       if (ch6NextBtn) {
-        ch6NextBtn.disabled = !canAfford;
-        if (canAfford) ch6NextBtn.classList.add('guide-attention');
+        ch6NextBtn.disabled = !_epOk(state.ch6Count);
+        if (_epOk(state.ch6Count)) ch6NextBtn.classList.add('guide-attention');
         else ch6NextBtn.classList.remove('guide-attention');
       }
-      if (ch6CostLbl) ch6CostLbl.innerHTML = costLabel;
+      if (ch6CostLbl) ch6CostLbl.innerHTML = _epLbl(state.ch6Count);
     }
     {
       const seenCh6 = (state.seenScenes ?? []).some(id => CH6_SCENE_LIST.some(s => s.id === id));
@@ -9132,11 +9132,11 @@ function renderStoryScreen() {
       ch7NextWrap?.classList.remove('hidden');
       ch7Complete_?.classList.add('hidden');
       if (ch7NextBtn) {
-        ch7NextBtn.disabled = !canAfford;
-        if (canAfford) ch7NextBtn.classList.add('guide-attention');
+        ch7NextBtn.disabled = !_epOk(state.ch7Count);
+        if (_epOk(state.ch7Count)) ch7NextBtn.classList.add('guide-attention');
         else ch7NextBtn.classList.remove('guide-attention');
       }
-      if (ch7CostLbl) ch7CostLbl.innerHTML = costLabel;
+      if (ch7CostLbl) ch7CostLbl.innerHTML = _epLbl(state.ch7Count);
     }
     {
       const seenCh7 = (state.seenScenes ?? []).some(id => CH7_SCENE_LIST.some(s => s.id === id));
@@ -9173,11 +9173,11 @@ function renderStoryScreen() {
       ch8NextWrap?.classList.remove('hidden');
       ch8Complete_?.classList.add('hidden');
       if (ch8NextBtn) {
-        ch8NextBtn.disabled = !canAfford;
-        if (canAfford) ch8NextBtn.classList.add('guide-attention');
+        ch8NextBtn.disabled = !_epOk(state.ch8Count);
+        if (_epOk(state.ch8Count)) ch8NextBtn.classList.add('guide-attention');
         else ch8NextBtn.classList.remove('guide-attention');
       }
-      if (ch8CostLbl) ch8CostLbl.innerHTML = costLabel;
+      if (ch8CostLbl) ch8CostLbl.innerHTML = _epLbl(state.ch8Count);
     }
     {
       const seenCh8 = (state.seenScenes ?? []).some(id => CH8_SCENE_LIST.some(s => s.id === id));
@@ -9736,12 +9736,11 @@ const BURST_STAGE_WEIGHTS = [35, 25, 15, 10, 7, 4, 3, 1];
 // 依頼にバーストポイントを計算（0/+1/+2）
 function calcBurstPoints(req) {
   if (!eventState.burstUnlocked) return 0;
-  const maxStage = Math.max(...req.items.map(it => it.stage));
   if (!eventState.burstFirstCleared) {
-    // 初回サイクル: Lv4〜7 → +1
-    return (maxStage >= 4 && maxStage <= 7) ? 1 : 0;
+    return 1; // 初回サイクル: Lv問わず全員 +1
   }
   // 2サイクル目以降: Lv8〜9 → +1、10以上 → +2
+  const maxStage = Math.max(...req.items.map(it => it.stage));
   if (maxStage < 8) return 0;
   return maxStage >= 10 ? 2 : 1;
 }
@@ -11537,7 +11536,8 @@ function progressStory(chapter = 1) {
     showToast('第七章を全話読了してから続きを読めます'); return;
   }
 
-  const cost = getStoryCost(state.playerLevel);
+  const _chCounts = [0, state.ch1Count, state.ch2Count, state.ch3Count, state.ch4Count, state.ch5Count, state.ch6Count, state.ch7Count, state.ch8Count];
+  const cost = (_chCounts[chapter] ?? 0) >= 6 ? 2000 : 1000;
   if (state.coin < cost) { showToast('コインが足りません'); return; }
   state.coin    -= cost;
   state.playerXP += cost;
