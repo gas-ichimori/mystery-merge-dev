@@ -277,11 +277,7 @@ const MAX_ENERGY  = 9999;
 // ========================================
 // 現在のレベルでストーリー1話を進めるのに必要なコイン
 function getStoryCost(level) {
-  if (level <= 1)  return 1000;  // Lv1（Lv2到達前）
-  if (level <= 11) return 2000;
-  if (level <= 21) return 4000;
-  if (level <= 31) return 8000;
-  return 16000; // Lv32-41+
+  return 1000;
 }
 // 現在のレベルからレベルアップに必要な経験値（コイン換算）
 function getLevelUpXP(level) {
@@ -9713,12 +9709,12 @@ function calcBurstPoints(req) {
   if (!eventState.burstUnlocked) return 0;
   const maxStage = Math.max(...req.items.map(it => it.stage));
   if (!eventState.burstFirstCleared) {
-    // 初回サイクル: Lv6〜8 → +1
-    return (maxStage >= 6 && maxStage <= 8) ? 1 : 0;
+    // 初回サイクル: Lv4〜7 → +1
+    return (maxStage >= 4 && maxStage <= 7) ? 1 : 0;
   }
-  // 2サイクル目以降: Lv9〜12
-  if (maxStage < 9) return 0;
-  return maxStage >= 10 ? 2 : 1; // maxStage=9 → +1、10以上 → +2
+  // 2サイクル目以降: Lv8〜9 → +1、10以上 → +2
+  if (maxStage < 8) return 0;
+  return maxStage >= 10 ? 2 : 1;
 }
 
 // バースト解放チェック（第二章ジェネレーター出現 + ch2依頼1件解決）
@@ -10571,6 +10567,10 @@ function onVol1MagnifyGenTap() {
 
 // Vol1 画面を開く
 function openVol1Screen() {
+  // メインゲーム・イベントゲームの選択状態とナビヒントをクリア
+  hideNaviHint();
+  state.selectedCell = null;
+  eventState.selectedCell = null;
   document.getElementById('vol1-screen').classList.remove('hidden');
   renderVol1Board();
   renderVol1MeterUI();
@@ -10582,6 +10582,7 @@ function closeVol1Screen() {
   document.getElementById('vol1-drag-ghost')?.remove();
   vol1Drag.active = false;
   vol1SelectedCell = null;
+  hideNaviHint();
   document.getElementById('vol1-screen').classList.add('hidden');
 }
 
@@ -11885,10 +11886,10 @@ function completeEventRequest(index) {
     checkBurstUnlock();
     checkVol1Unlock();
   }
-  // 虫眼鏡報酬（Vol1解放後、全依頼対象・maxStage/6 個）
+  // 虫眼鏡報酬（Vol1解放後、全依頼対象・maxStage/2 個、最大10）
   if (eventState.vol1Unlocked) {
     const maxStage = Math.max(...req.items.map(it => it.stage));
-    const glasses  = Math.floor(maxStage / 6);
+    const glasses  = Math.min(Math.floor(maxStage / 2), 10);
     if (glasses > 0) {
       eventState.vol1MagnifyGlasses += glasses;
       renderVol1Slot();
@@ -12288,7 +12289,7 @@ function renderEventRequest() {
     // 虫眼鏡報酬バッジ（Vol1解放後）
     const maxStageForVol1 = Math.max(...req.items.map(it => it.stage));
     const glassesReward   = eventState.vol1Unlocked
-      ? (eventState.vol1DebugMagnify ? 1 : Math.floor(maxStageForVol1 / 6))
+      ? (eventState.vol1DebugMagnify ? 1 : Math.min(Math.floor(maxStageForVol1 / 2), 10))
       : 0;
     const magnifyBadge    = glassesReward > 0
       ? `<span class="req-magnify-badge"><img src="img/EventVol1/image_vol1_magnify.png" class="req-magnify-img" alt="虫眼鏡">×${glassesReward}</span>`
