@@ -10175,10 +10175,10 @@ function handleVol1CellTap(idx) {
     return;
   }
 
-  // Lv4★ → ダブルタップで消費してポイント付与
+  // Lv4★ → シングルタップ: 選択表示。ダブルタップ: 消費してポイント付与
   if (item.stage === VOL1_MAX_STAGE) {
     const now = Date.now();
-    if (vol1LastTapIdx === idx && now - vol1LastTapTime < 700) {
+    if (vol1LastTapIdx === idx && now - vol1LastTapTime < 400) {
       eventState.vol1Board[idx] = null;
       vol1SelectedCell = null;
       vol1LastTapIdx  = -1;
@@ -10192,7 +10192,9 @@ function handleVol1CellTap(idx) {
     } else {
       vol1LastTapIdx  = idx;
       vol1LastTapTime = now;
+      vol1SelectedCell = idx;
       showNaviHintForVol1Item(item, true);
+      renderVol1Board();
     }
     return;
   }
@@ -10440,14 +10442,14 @@ function endVol1Drag(x, y) {
   vol1Drag.fromIdx  = null;
   vol1Drag.isFromGen = false;
 
-  // 指が動いていない = タップ相当
+  // 指が動いていない = タップ相当（先に処理し、後続 click をブロック）
   if (!vol1Drag.hasMoved) {
     if (isFromGen) {
-      vol1Drag.tapHandled = true; // 後続 click イベントをブロック
       onVol1MagnifyGenTap();
-    } else {
-      vol1Drag.tapHandled = false;
+    } else if (fromIdx !== null) {
+      handleVol1CellTap(fromIdx);
     }
+    vol1Drag.tapHandled = true; // click イベントをブロック（処理後にセット）
     return;
   }
   vol1Drag.tapHandled = true;
