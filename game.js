@@ -9230,9 +9230,9 @@ function renderStoryScreen() {
   const ch7Complete_ = document.getElementById('story-ch7-complete');
   const ch7LockedLbl = document.getElementById('story-ch7-locked');
 
-  // 第七章: 常に表示、ロック中は条件テキストを表示
-  ch7Block?.classList.remove('hidden');
+  // 第七章: 他の章と同様、解放前は完全非表示
   if (ch7Unlocked4) {
+    ch7Block?.classList.remove('hidden');
     ch7LockedLbl?.classList.add('hidden');
     if (ch7Complete) {
       ch7NextWrap?.classList.add('hidden');
@@ -9259,12 +9259,7 @@ function renderStoryScreen() {
       }
     }
   } else {
-    ch7NextWrap?.classList.add('hidden');
-    ch7Complete_?.classList.add('hidden');
-    if (ch7LockedLbl) {
-      ch7LockedLbl.classList.remove('hidden');
-      ch7LockedLbl.textContent = '🔒 第六章6話以上・第三章完結で解放';
-    }
+    ch7Block?.classList.add('hidden');
   }
 
   // ── 第八章 ──
@@ -9277,9 +9272,9 @@ function renderStoryScreen() {
   const ch8Complete_ = document.getElementById('story-ch8-complete');
   const ch8LockedLbl = document.getElementById('story-ch8-locked');
 
-  // 第八章: 常に表示、ロック中は条件テキストを表示
-  ch8Block?.classList.remove('hidden');
+  // 第八章: 他の章と同様、解放前は完全非表示
   if (ch8Unlocked4) {
+    ch8Block?.classList.remove('hidden');
     ch8LockedLbl?.classList.add('hidden');
     if (ch8Complete) {
       ch8NextWrap?.classList.add('hidden');
@@ -9306,20 +9301,11 @@ function renderStoryScreen() {
       }
     }
   } else {
-    ch8NextWrap?.classList.add('hidden');
-    ch8Complete_?.classList.add('hidden');
-    if (ch8LockedLbl) {
-      ch8LockedLbl.classList.remove('hidden');
-      ch8LockedLbl.textContent = '🔒 第七章6話以上・第五章完結で解放';
-    }
+    ch8Block?.classList.add('hidden');
   }
 
-  // ロック中の章がある場合は下部に告知を表示
-  const lockedNotice = document.getElementById('story-locked-notice');
-  if (lockedNotice) {
-    if (!ch7Unlocked4 || !ch8Unlocked4) lockedNotice.classList.remove('hidden');
-    else lockedNotice.classList.add('hidden');
-  }
+  // ロック告知は非表示（章は隠すため不要）
+  document.getElementById('story-locked-notice')?.classList.add('hidden');
 }
 
 function renderCh3ReplayList() {
@@ -11699,6 +11685,14 @@ function progressStory(chapter = 1) {
     state.ch4Count = Math.min(state.ch4Count + 1, CH4_SCENE_IDS.length);
   }
 
+  // ── シーン終了後コールバックを構築 ──────────────────────────────
+  // 複数の条件が同時に成立する場合は chain で順次実行
+  let postSceneCallback = null;
+  function _chain(cb) {
+    const prev = postSceneCallback;
+    postSceneCallback = prev ? () => { prev(); cb(); } : cb;
+  }
+
   // レベルアップ判定（複数回上がる場合も対応）
   let leveledUp = false;
   let energyBonus = 0;
@@ -11750,14 +11744,6 @@ function progressStory(chapter = 1) {
   if (!state.seenScenes.includes(sceneId)) state.seenScenes.push(sceneId);
   // 相関図アテンション更新（新アイテム解放時にバッジ表示）
   updateKankeiAttention();
-
-  // ── シーン終了後コールバックを構築 ──────────────────────────────
-  // 複数の条件が同時に成立する場合は chain で順次実行
-  let postSceneCallback = null;
-  function _chain(cb) {
-    const prev = postSceneCallback;
-    postSceneCallback = prev ? () => { prev(); cb(); } : cb;
-  }
 
   // ── 第一章完了バナー：第一章最終話終了時に一度だけ表示
   if (chapter === 1 && state.ch1Count >= CH1_SCENE_IDS.length && !eventState.ch1BannerShown) {
