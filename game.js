@@ -2695,6 +2695,84 @@ function showEnergyGain(amount) {
   showFloatNearEl(`+${amount}`, '#ff8c00', energyEl, 24);
 }
 
+// プレイヤーレベルアップ体力ボーナス演出
+function showLevelUpEnergyAnim(amount) {
+  const viewW = window.innerWidth;
+  const viewH = window.innerHeight;
+  const cx = viewW / 2;
+  const cy = viewH / 2;
+
+  // 中央に大きいHP画像 + "+N" テキスト表示
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;';
+
+  const iconEl = document.createElement('img');
+  iconEl.src = 'img/UI/image_merge_navi_hp.png';
+  iconEl.style.cssText = 'width:72px;height:72px;object-fit:contain;opacity:0;transition:opacity 0.4s ease;';
+
+  const textEl = document.createElement('div');
+  textEl.textContent = `+${amount}`;
+  textEl.style.cssText = 'font-size:30px;font-weight:bold;color:#8B4513;text-shadow:0 1px 4px rgba(0,0,0,0.5);opacity:0;transition:opacity 0.4s ease;';
+
+  overlay.appendChild(iconEl);
+  overlay.appendChild(textEl);
+  document.body.appendChild(overlay);
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    iconEl.style.opacity = '1';
+    textEl.style.opacity = '1';
+  }));
+
+  // 1.2秒後: パーティクルをヘッダーHPアイコンへ吸い寄せる
+  setTimeout(() => {
+    iconEl.style.opacity = '0';
+    textEl.style.opacity = '0';
+
+    const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
+    const targetEl = document.getElementById(eventVisible ? 'ev-energy' : 'energy-text');
+    if (!targetEl) { setTimeout(() => overlay.remove(), 400); return; }
+
+    const tr = targetEl.getBoundingClientRect();
+    const tx = tr.left + tr.width / 2;
+    const ty = tr.top + tr.height / 2;
+
+    const COUNT = 8;
+    const SZ = 22;
+    let done = 0;
+
+    for (let i = 0; i < COUNT; i++) {
+      setTimeout(() => {
+        const p = document.createElement('img');
+        p.src = 'img/UI/image_merge_navi_hp.png';
+        p.style.cssText = `position:fixed;width:${SZ}px;height:${SZ}px;object-fit:contain;z-index:9501;pointer-events:none;`;
+        document.body.appendChild(p);
+
+        // 弧の中間点: 各方向に広がってから収束
+        const angle = (i / COUNT) * Math.PI * 2;
+        const midX = (cx + tx) / 2 + Math.cos(angle) * 80;
+        const midY = (cy + ty) / 2 + Math.sin(angle) * 80 - 30;
+
+        const dur = 1150 + i * 20;
+        p.animate([
+          { left: `${cx - SZ / 2}px`, top: `${cy - SZ / 2}px`, opacity: 1 },
+          { left: `${midX - SZ / 2}px`, top: `${midY - SZ / 2}px`, opacity: 0.9, offset: 0.45 },
+          { left: `${tx - SZ / 2}px`, top: `${ty - SZ / 2}px`, opacity: 0 },
+        ], { duration: dur, easing: 'ease-in', fill: 'forwards' }).onfinish = () => {
+          p.remove();
+          done++;
+          if (done === COUNT) {
+            setTimeout(() => overlay.remove(), 200);
+            const floatEl = document.getElementById(eventVisible ? 'ev-energy' : 'energy-wrap');
+            if (floatEl) showFloatNearEl(`+${amount}`, '#8B4513', floatEl, 26);
+            renderEventHeader();
+            renderHeader();
+          }
+        };
+      }, i * 65);
+    }
+  }, 1200);
+}
+
 // 「捜査盤面が満杯です」専用トースト
 function showBoardFullToast(cellIdx, isEventBoard) {
   const topY = _naviAboveY() - 140;
@@ -3027,6 +3105,7 @@ document.getElementById('debug-popup-levelup').addEventListener('click', () => {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
     }
+    setTimeout(() => showLevelUpEnergyAnim(100), 0);
   }, 100);
 });
 document.getElementById('debug-popup-genlvup').addEventListener('click', () => {
@@ -11582,10 +11661,14 @@ function progressStory(chapter = 1) {
 
   // レベルアップ判定（複数回上がる場合も対応）
   let leveledUp = false;
+  let energyBonus = 0;
   while (state.playerXP >= getLevelUpXP(state.playerLevel)) {
     state.playerXP -= getLevelUpXP(state.playerLevel);
     state.playerLevel++;
     leveledUp = true;
+    if (state.playerLevel >= 2 && state.playerLevel <= 10) {
+      energyBonus += 100;
+    }
   }
   if (leveledUp) {
     _pendingSE.push('levelup');
@@ -11593,6 +11676,12 @@ function progressStory(chapter = 1) {
     if (ringEl) {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+    }
+    // Lv2–10 到達: 体力+100付与 → 演出
+    if (energyBonus > 0) {
+      state.maxEnergy += energyBonus;
+      state.energy = Math.min(state.energy + energyBonus, state.maxEnergy);
+      setTimeout(() => showLevelUpEnergyAnim(energyBonus), 900);
     }
     // Lv2 到達時に霧アイテムが残っていたら注意メッセージ
     if (state.playerLevel === 2) {
