@@ -2900,6 +2900,14 @@ body {
   text-align: center;
   padding: 6px 0 2px;
 }
+.story-locked-notice {
+  color: #a88;
+  font-size: 12px;
+  text-align: center;
+  padding: 10px 0 4px;
+  border-top: 1px solid rgba(255,150,150,0.15);
+  margin-top: 4px;
+}
 
 /* 第一章 見返し */
 .story-replay-details {

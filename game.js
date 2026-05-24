@@ -9209,8 +9209,9 @@ function renderStoryScreen() {
   const ch7Complete_ = document.getElementById('story-ch7-complete');
   const ch7LockedLbl = document.getElementById('story-ch7-locked');
 
+  // 第七章: 常に表示、ロック中は条件テキストを表示
+  ch7Block?.classList.remove('hidden');
   if (ch7Unlocked4) {
-    ch7Block?.classList.remove('hidden');
     ch7LockedLbl?.classList.add('hidden');
     if (ch7Complete) {
       ch7NextWrap?.classList.add('hidden');
@@ -9237,7 +9238,12 @@ function renderStoryScreen() {
       }
     }
   } else {
-    ch7Block?.classList.add('hidden');
+    ch7NextWrap?.classList.add('hidden');
+    ch7Complete_?.classList.add('hidden');
+    if (ch7LockedLbl) {
+      ch7LockedLbl.classList.remove('hidden');
+      ch7LockedLbl.textContent = '🔒 第六章6話以上・第三章完結で解放';
+    }
   }
 
   // ── 第八章 ──
@@ -9250,8 +9256,9 @@ function renderStoryScreen() {
   const ch8Complete_ = document.getElementById('story-ch8-complete');
   const ch8LockedLbl = document.getElementById('story-ch8-locked');
 
+  // 第八章: 常に表示、ロック中は条件テキストを表示
+  ch8Block?.classList.remove('hidden');
   if (ch8Unlocked4) {
-    ch8Block?.classList.remove('hidden');
     ch8LockedLbl?.classList.add('hidden');
     if (ch8Complete) {
       ch8NextWrap?.classList.add('hidden');
@@ -9278,7 +9285,19 @@ function renderStoryScreen() {
       }
     }
   } else {
-    ch8Block?.classList.add('hidden');
+    ch8NextWrap?.classList.add('hidden');
+    ch8Complete_?.classList.add('hidden');
+    if (ch8LockedLbl) {
+      ch8LockedLbl.classList.remove('hidden');
+      ch8LockedLbl.textContent = '🔒 第七章6話以上・第五章完結で解放';
+    }
+  }
+
+  // ロック中の章がある場合は下部に告知を表示
+  const lockedNotice = document.getElementById('story-locked-notice');
+  if (lockedNotice) {
+    if (!ch7Unlocked4 || !ch8Unlocked4) lockedNotice.classList.remove('hidden');
+    else lockedNotice.classList.add('hidden');
   }
 }
 
