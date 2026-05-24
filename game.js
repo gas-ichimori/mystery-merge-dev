@@ -2697,7 +2697,7 @@ function showEnergyGain(amount) {
 
 // 「捜査盤面が満杯です」専用トースト
 function showBoardFullToast(cellIdx, isEventBoard) {
-  const topY = _naviAboveY() - 70;
+  const topY = _naviAboveY() - 140;
   const el = document.createElement('div');
   el.textContent = '捜査盤面が満杯です';
   el.style.cssText = `
