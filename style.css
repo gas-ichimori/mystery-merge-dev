@@ -1718,7 +1718,7 @@ body {
   gap: 8px;
   padding: 12px 10px;
   width: 100%;
-  max-width: 400px;
+  max-width: 300px;
   box-sizing: border-box;
 }
 .page2-btn {
@@ -1730,8 +1730,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: 10px;
-  gap: 4px;
+  padding-bottom: 6px;
+  gap: 2px;
   cursor: pointer;
   color: #e8f4fd;
   transition: background 0.15s, transform 0.1s;
@@ -1749,15 +1749,20 @@ body {
   line-height: 1;
 }
 .page2-icon-img {
-  width: 52px;
-  height: 52px;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
 .page2-label {
+  position: relative;
+  z-index: 1;
   font-size: clamp(10px, 2.8vw, 13px);
   font-weight: bold;
   text-align: center;
+  text-shadow: 0 1px 4px #000, 0 0 8px rgba(0,0,0,0.8);
 }
 /* ========================================
    メニューページ内ガイドオーバーレイ
