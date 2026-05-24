@@ -14496,6 +14496,10 @@ function endEvDrag(x, y) {
     }
     doEventMerge(fromIdx, toIdx);
     return;
+  } else if (!step && (fromItem.isEventGen !== toItem.isEventGen) && !toItem.isFog) {
+    // ジェネレーター ↔ マージアイテムの入れ替え
+    eventState.board[toIdx]   = fromItem;
+    eventState.board[fromIdx] = toItem;
   } else if (!step && !toItem.isEventGen && !fromItem.isEventGen && !toItem.isFog) {
     // チュートリアル完了後のみ通常アイテム同士の入れ替え許可
     eventState.board[toIdx]   = fromItem;
