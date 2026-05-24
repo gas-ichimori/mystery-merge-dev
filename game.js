@@ -2617,6 +2617,30 @@ function showAboveNaviToast(msg) {
   setTimeout(() => el.remove(), 4000);
 }
 
+// 盤面上部（ナビパネル上）にメッセージを表示（ストーリー読み制限通知など）
+function showBoardMsg(msg) {
+  const topY = _naviAboveY() - 20;
+  const el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = [
+    'position:fixed',
+    'left:50%',
+    `top:${topY}px`,
+    'transform:translate(-50%,-100%)',
+    'color:#fff',
+    'font-size:14px',
+    'font-weight:bold',
+    'pointer-events:none',
+    'z-index:9999',
+    'text-align:center',
+    'white-space:nowrap',
+    'text-shadow:0 1px 5px #000,0 0 8px rgba(0,0,0,0.7)',
+    'animation:lucky-fade 4s ease-out forwards',
+  ].join(';');
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
 // 依頼完了メッセージ（ナビパネル上部に表示） ※非使用・互換残存
 function showRewardInPanel(msg, panelEl, textColor = '#fff') {
   return;
@@ -11629,25 +11653,25 @@ const CH7_SCENE_LIST = [
 function progressStory(chapter = 1) {
   // Scene8以降の読み制限（コイン消費前）
   if (chapter === 2 && state.ch2Count >= 7 && state.ch1Count < CH1_SCENE_IDS.length) {
-    showToast('第一章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第一章を全話読了してから続きを読めます'); return;
   }
   if (chapter === 3 && state.ch3Count >= 7 && state.ch2Count < CH2_SCENE_IDS.length) {
-    showToast('第二章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第二章を全話読了してから続きを読めます'); return;
   }
   if (chapter === 4 && state.ch4Count >= 7 && state.ch3Count < CH3_SCENE_IDS.length) {
-    showToast('第三章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第三章を全話読了してから続きを読めます'); return;
   }
   if (chapter === 5 && state.ch5Count >= 7 && state.ch4Count < CH4_SCENE_IDS.length) {
-    showToast('第四章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第四章を全話読了してから続きを読めます'); return;
   }
   if (chapter === 6 && state.ch6Count >= 7 && state.ch4Count < CH4_SCENE_IDS.length) {
-    showToast('第四章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第四章を全話読了してから続きを読めます'); return;
   }
   if (chapter === 7 && state.ch7Count >= 7 && state.ch5Count < CH5_SCENE_IDS.length) {
-    showToast('第五章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第五章を全話読了してから続きを読めます'); return;
   }
   if (chapter === 8 && state.ch8Count >= 7 && state.ch7Count < CH7_SCENE_IDS.length) {
-    showToast('第七章を全話読了してから続きを読めます'); return;
+    showBoardMsg('第七章を全話読了してから続きを読めます'); return;
   }
 
   const _chCounts = [0, state.ch1Count, state.ch2Count, state.ch3Count, state.ch4Count, state.ch5Count, state.ch6Count, state.ch7Count, state.ch8Count];
