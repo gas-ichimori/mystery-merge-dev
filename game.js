@@ -11587,7 +11587,6 @@ function progressStory(chapter = 1) {
   if (leveledUp) {
     _pendingSE.push('levelup');
     const ringEl = document.getElementById('player-level-ring');
-    showFloatNearEl(`プレイヤーLv${state.playerLevel}！`, '#f9c846', ringEl);
     if (ringEl) {
       ringEl.classList.add('player-level-up-flash');
       setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
