@@ -1850,7 +1850,7 @@ function completeRequest(index) {
   state.requestCompletedTotal++;
   trackDailyRequest();
   checkStoryGuide();
-  showRewardInPanel('依頼完了！', document.getElementById('request-panel'), '#ff8c00');
+  showAboveReqPanel('依頼完了！', '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
   }
@@ -2617,21 +2617,57 @@ function showAboveNaviToast(msg) {
   setTimeout(() => el.remove(), 4000);
 }
 
-// 依頼完了メッセージ（ナビパネル上部に表示）
+// 依頼完了メッセージ（ナビパネル上部に表示） ※非使用・互換残存
 function showRewardInPanel(msg, panelEl, textColor = '#fff') {
   return;
-  const topY = _naviAboveY();
+}
+
+// 要素のすぐ右にテキストを浮かせる（ジェネレーターLvアップ演出など）
+function showFloatRightOfEl(text, color, el) {
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const div = document.createElement('div');
+  div.textContent = text;
+  div.style.cssText = [
+    `position:fixed`,
+    `left:${rect.right + 4}px`,
+    `top:${rect.top + rect.height / 2}px`,
+    `transform:translateY(-50%)`,
+    `color:${color}`,
+    `font-size:13px`,
+    `font-weight:bold`,
+    `pointer-events:none`,
+    `z-index:9999`,
+    `text-shadow:0 1px 5px #000,0 0 8px rgba(0,0,0,0.6)`,
+    `white-space:nowrap`,
+    `animation:lucky-fade 4s ease-out forwards`,
+  ].join(';');
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 4000);
+}
+
+// 依頼枠の真上にテキストを表示（依頼完了演出）
+function showAboveReqPanel(msg, textColor = '#ff8c00') {
+  const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
+  const panelEl = document.getElementById(eventVisible ? 'event-req-panel' : 'request-panel');
+  if (!panelEl) return;
+  const rect = panelEl.getBoundingClientRect();
   const el = document.createElement('div');
   el.textContent = msg;
-  el.style.cssText = `
-    position:fixed;
-    left:50%; top:${topY}px;
-    background:rgba(10,30,70,0.92); color:${textColor}; padding:8px 18px;
-    border-radius:20px; font-size:15px; font-weight:bold;
-    pointer-events:none; z-index:9999; white-space:nowrap;
-    text-shadow:0 1px 4px #000;
-    animation:toast-pop 4s ease-out forwards;
-  `;
+  el.style.cssText = [
+    `position:fixed`,
+    `left:${rect.left + rect.width / 2}px`,
+    `top:${rect.top - 8}px`,
+    `transform:translate(-50%,-100%)`,
+    `color:${textColor}`,
+    `font-size:18px`,
+    `font-weight:bold`,
+    `pointer-events:none`,
+    `z-index:9999`,
+    `text-shadow:0 1px 5px #000,0 0 8px rgba(0,0,0,0.6)`,
+    `white-space:nowrap`,
+    `animation:lucky-fade 4s ease-out forwards`,
+  ].join(';');
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 4000);
 }
@@ -2697,79 +2733,46 @@ function showEnergyGain(amount) {
 
 // プレイヤーレベルアップ体力ボーナス演出
 function showLevelUpEnergyAnim(amount) {
-  const viewW = window.innerWidth;
-  const viewH = window.innerHeight;
-  const cx = viewW / 2;
-  const cy = viewH / 2;
-
-  // 中央に大きいHP画像 + "+N" テキスト表示
+  // 中央にHP画像 + "+N" テキストを横並び表示
   const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9500;pointer-events:none;display:flex;align-items:center;justify-content:center;';
+
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;gap:6px;opacity:0;transition:opacity 0.4s ease;';
 
   const iconEl = document.createElement('img');
   iconEl.src = 'img/UI/image_merge_navi_hp.png';
-  iconEl.style.cssText = 'width:72px;height:72px;object-fit:contain;opacity:0;transition:opacity 0.4s ease;';
+  iconEl.style.cssText = 'width:60px;height:60px;object-fit:contain;';
 
   const textEl = document.createElement('div');
   textEl.textContent = `+${amount}`;
-  textEl.style.cssText = 'font-size:30px;font-weight:bold;color:#8B4513;text-shadow:0 1px 4px rgba(0,0,0,0.5);opacity:0;transition:opacity 0.4s ease;';
+  textEl.style.cssText = [
+    'font-size:32px',
+    'font-weight:bold',
+    'color:#fff',
+    'font-family:"Hiragino Sans","Meiryo","Yu Gothic",sans-serif',
+    'text-shadow:0 2px 6px rgba(0,0,0,0.85),0 0 14px rgba(0,0,0,0.6)',
+  ].join(';');
 
-  overlay.appendChild(iconEl);
-  overlay.appendChild(textEl);
+  row.appendChild(iconEl);
+  row.appendChild(textEl);
+  overlay.appendChild(row);
   document.body.appendChild(overlay);
 
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    iconEl.style.opacity = '1';
-    textEl.style.opacity = '1';
-  }));
+  requestAnimationFrame(() => requestAnimationFrame(() => { row.style.opacity = '1'; }));
 
-  // 1.2秒後: パーティクルをヘッダーHPアイコンへ吸い寄せる
+  // 1.2秒後: flyHpIcons で体力回復アニメーション
   setTimeout(() => {
-    iconEl.style.opacity = '0';
-    textEl.style.opacity = '0';
+    row.style.opacity = '0';
+    setTimeout(() => overlay.remove(), 400);
 
-    const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
-    const targetEl = document.getElementById(eventVisible ? 'ev-energy' : 'energy-text');
-    if (!targetEl) { setTimeout(() => overlay.remove(), 400); return; }
-
-    const tr = targetEl.getBoundingClientRect();
-    const tx = tr.left + tr.width / 2;
-    const ty = tr.top + tr.height / 2;
-
-    const COUNT = 8;
-    const SZ = 22;
-    let done = 0;
-
-    for (let i = 0; i < COUNT; i++) {
-      setTimeout(() => {
-        const p = document.createElement('img');
-        p.src = 'img/UI/image_merge_navi_hp.png';
-        p.style.cssText = `position:fixed;width:${SZ}px;height:${SZ}px;object-fit:contain;z-index:9501;pointer-events:none;`;
-        document.body.appendChild(p);
-
-        // 弧の中間点: 各方向に広がってから収束
-        const angle = (i / COUNT) * Math.PI * 2;
-        const midX = (cx + tx) / 2 + Math.cos(angle) * 80;
-        const midY = (cy + ty) / 2 + Math.sin(angle) * 80 - 30;
-
-        const dur = 1150 + i * 20;
-        p.animate([
-          { left: `${cx - SZ / 2}px`, top: `${cy - SZ / 2}px`, opacity: 1 },
-          { left: `${midX - SZ / 2}px`, top: `${midY - SZ / 2}px`, opacity: 0.9, offset: 0.45 },
-          { left: `${tx - SZ / 2}px`, top: `${ty - SZ / 2}px`, opacity: 0 },
-        ], { duration: dur, easing: 'ease-in', fill: 'forwards' }).onfinish = () => {
-          p.remove();
-          done++;
-          if (done === COUNT) {
-            setTimeout(() => overlay.remove(), 200);
-            const floatEl = document.getElementById(eventVisible ? 'ev-energy' : 'energy-wrap');
-            if (floatEl) showFloatNearEl(`+${amount}`, '#8B4513', floatEl, 26);
-            renderEventHeader();
-            renderHeader();
-          }
-        };
-      }, i * 65);
-    }
+    flyHpIcons(() => {
+      const eventVisible = !document.getElementById('event-screen')?.classList.contains('hidden');
+      const floatEl = document.getElementById(eventVisible ? 'ev-energy' : 'energy-wrap');
+      if (floatEl) showFloatNearEl(`+${amount}`, '#8B4513', floatEl, 26);
+      renderEventHeader();
+      renderHeader();
+    });
   }, 1200);
 }
 
@@ -3109,10 +3112,10 @@ document.getElementById('debug-popup-levelup').addEventListener('click', () => {
   }, 100);
 });
 document.getElementById('debug-popup-genlvup').addEventListener('click', () => {
-  showSpecialFixed('メモ机 Lv3！', '#f9c846');
+  addGenTileToStock({ isEventGen: true, genLevel: 2 }, '第一章');
 });
 document.getElementById('debug-popup-request').addEventListener('click', () => {
-  showSpecialFixed('依頼完了！', '#ff8c00');
+  showAboveReqPanel('依頼完了！', '#ff8c00');
 });
 document.getElementById('debug-popup-discover').addEventListener('click', () => {
   showSpecialFixed('新アイテム発見！', '#f9c846');
@@ -7047,6 +7050,24 @@ document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
     showToast(`第八章ジェネレーター Lv${lv + 1} を出現`);
   }
   renderEventBoard();
+});
+
+// デバッグ：ジェネレーターをストックに追加
+document.getElementById('debug-gen-stock-btn').addEventListener('click', () => {
+  const val = document.getElementById('debug-gen-spawn-select').value;
+  if (!val) { showToast('ジェネレーターを選択してください'); return; }
+  const [type, lvStr] = val.split('-');
+  const lv = parseInt(lvStr, 10);
+  let genTile, chName;
+  if (type === 'ev')      { genTile = { isEventGen: true, genLevel: lv };                         chName = '第一章'; }
+  else if (type === 'fire')    { genTile = { isEventGen: true, isFireGen: true, seizoLevel: lv };     chName = '第二章'; }
+  else if (type === 'kante')   { genTile = { isEventGen: true, isKanteGen: true, kanteLevel: lv };    chName = '第三章'; }
+  else if (type === 'keikaku') { genTile = { isEventGen: true, isKeikakuGen: true, keikakuLevel: lv }; chName = '第四章'; }
+  else if (type === 'sns')     { genTile = { isEventGen: true, isSnsGen: true, snsLevel: lv };        chName = '第五章'; }
+  else if (type === 'clock')   { genTile = { isEventGen: true, isClockGen: true, clockLevel: lv };    chName = '第六章'; }
+  else if (type === 'ch7')     { genTile = { isEventGen: true, isCh7Gen: true, ch7Level: lv };        chName = '第七章'; }
+  else if (type === 'ch8')     { genTile = { isEventGen: true, isCh8Gen: true, ch8Level: lv };        chName = '第八章'; }
+  if (genTile) addGenTileToStock(genTile, chName);
 });
 
 // デバッグ：マージアイテム出現
@@ -12957,6 +12978,15 @@ function addGenTileToStock(genTile, chName) {
   playMergeSE('spawn');
   showToast(`${chName}ジェネレーターがストックに追加！タップしてボードへ`);
   renderBurstStock();
+  // Lvアップテキストをストックの新アイテム右隣に表示
+  const lv = genTile.genLevel ?? genTile.seizoLevel ?? genTile.kanteLevel ?? genTile.keikakuLevel ?? genTile.snsLevel ?? genTile.clockLevel ?? genTile.ch7Level ?? genTile.ch8Level ?? 0;
+  requestAnimationFrame(() => {
+    const list = document.getElementById('burst-stock-list');
+    if (!list) return;
+    const items = list.querySelectorAll('.burst-stock-item');
+    const lastItem = items[items.length - 1];
+    if (lastItem) showFloatRightOfEl(`${chName} Lv${lv + 1}！`, '#f9c846', lastItem);
+  });
 }
 
 // ストックに追加（99個制限、超過はコイン変換）
