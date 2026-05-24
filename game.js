@@ -3019,12 +3019,15 @@ document.getElementById('debug-popup-power').addEventListener('click', () => {
   showSpecialFixed(`${HP_ICON} Power!`, '#e74c3c');
 });
 document.getElementById('debug-popup-levelup').addEventListener('click', () => {
-  const ringEl = document.getElementById('player-level-ring');
-  showFloatNearEl(`プレイヤーLv${state.playerLevel + 1}！`, '#f9c846', ringEl ?? document.getElementById('debug-screen'));
-  if (ringEl) {
-    ringEl.classList.add('player-level-up-flash');
-    setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
-  }
+  document.getElementById('debug-screen').classList.add('hidden');
+  setTimeout(() => {
+    const ringEl = document.getElementById('player-level-ring');
+    if (ringEl) {
+      playMergeSE('levelup');
+      ringEl.classList.add('player-level-up-flash');
+      setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+    }
+  }, 100);
 });
 document.getElementById('debug-popup-genlvup').addEventListener('click', () => {
   showSpecialFixed('メモ机 Lv3！', '#f9c846');
