@@ -7591,9 +7591,15 @@ const INITIAL_UNLOCKED_FOG = new Set([30,31,32, 36,40, 43,47, 50,54, 58,59,60]);
 
 // ジェネレーターマージ誘導チュートリアルのステップ定義
 const GEN_MERGE_TUT_STEPS = [
-  { type: 'focus', text: 'もうひとつの"メモ机"がストックに追加されました。\nストックのアイコンをタップして盤面に移動し、"メモ机"と"メモ机"を組み合わせてください。' },
-  { type: 'msg',   text: '"メモ机"がレベルアップしました。\n出せるアイテムのLvが上がります。' },
-  { type: 'msg',   text: '出すアイテムレベルを上下したい時は、"メモ机"を選択するとメッセージの横にレベルボタンが出るので、タップしてレベルを変更してください。' },
+  { type: 'msg',   text: 'もうひとつの"メモ机"がストックに追加されました...' },
+  { type: 'focus', text: '倉庫（ストック）のアイコンをタップして盤面に移動してください...' },
+  { type: 'focus', text: '"メモ机"と"メモ机"を組み合わせてください...' },
+  { type: 'msg',   text: '"メモ机"がレベルアップしました...' },
+  { type: 'msg',   text: '今後、出るアイテムのLvが上がります...' },
+  { type: 'msg',   text: '出るアイテムレベルを上下したい時は、"メモ机"を選択してください...' },
+  { type: 'msg',   text: 'メッセージの横にレベルボタンが出ます...' },
+  { type: 'msg',   text: 'タップすればレベル変更ができます...' },
+  { type: 'msg',   text: '最大レベルは⚡️マークが付きます...' },
 ];
 
 // アイテムヒントテキスト（アイテム名は後で差し替え）
@@ -12889,6 +12895,10 @@ function onBurstStockTap(idx) {
   if (stockEl) flyFromElementToCell(stockEl, emptyIdx, imgSrc);
   eventState.burstStock.splice(idx, 1);
   setTimeout(() => { renderEventBoard(); renderBurstStock(); }, 390);
+  // ジェネレーターマージ誘導チュートリアル: ストックタップでStep2（マージ誘導）へ
+  if (eventState.genMergeTutStep === 1) {
+    setTimeout(() => advanceGenMergeTut(), 500);
+  }
 }
 
 // ========================================
@@ -13202,7 +13212,7 @@ function mergeEventGenerators(fromIdx, toIdx) {
   // Lvアップ時に出力Lvを自動で新しい最大値に設定
   eventState.genPowerLevel = getGenMaxAvailablePowerLv(newLevel);
   // ジェネレーターマージ誘導チュートリアルのフォーカスステップを完了
-  if (eventState.genMergeTutStep === 0) {
+  if (eventState.genMergeTutStep === 2) {
     setTimeout(() => advanceGenMergeTut(), 400);
   }
 
