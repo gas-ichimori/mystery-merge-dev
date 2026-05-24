@@ -2655,6 +2655,11 @@ body {
 /* ===== シャボン玉 ===== */
 .cell.has-bubble {
   position: relative;
+  animation: bubble-float 2.2s ease-in-out infinite;
+}
+@keyframes bubble-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
 }
 .bubble-overlay {
   position: absolute;
@@ -2773,7 +2778,7 @@ body {
   100% { transform: scale(1.0);  opacity: 1; }
 }
 .cell.has-bubble.bubble-appear {
-  animation: bubble-appear 0.45s ease-out forwards;
+  animation: bubble-appear 0.45s ease-out forwards !important;
 }
 
 /* ===== ストーリー選択画面 ===== */
