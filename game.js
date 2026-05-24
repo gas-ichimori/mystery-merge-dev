@@ -11712,20 +11712,34 @@ function progressStory(chapter = 1) {
   }
   if (leveledUp) {
     _pendingSE.push('levelup');
-    const ringEl = document.getElementById('player-level-ring');
-    if (ringEl) {
-      ringEl.classList.add('player-level-up-flash');
-      setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
-    }
-    // Lv2–10 到達: 体力+100付与 → 演出
+    // Lv2–10 到達: 体力+100付与 → アドベンチャー閉幕後（SE再生後）に演出
     if (energyBonus > 0) {
       state.maxEnergy += energyBonus;
       state.energy = Math.min(state.energy + energyBonus, state.maxEnergy);
-      setTimeout(() => showLevelUpEnergyAnim(energyBonus), 900);
+      const _bonus = energyBonus;
+      _chain(() => {
+        // リングフラッシュ（SE直後）
+        const ringEl = document.getElementById('player-level-ring');
+        if (ringEl) {
+          ringEl.classList.add('player-level-up-flash');
+          setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+        }
+        // 少し遅らせてHP演出（リングが光ってから）
+        setTimeout(() => showLevelUpEnergyAnim(_bonus), 400);
+      });
+    } else {
+      // 体力ボーナスなし（Lv11以降）はリングフラッシュのみ
+      _chain(() => {
+        const ringEl = document.getElementById('player-level-ring');
+        if (ringEl) {
+          ringEl.classList.add('player-level-up-flash');
+          setTimeout(() => ringEl.classList.remove('player-level-up-flash'), 800);
+        }
+      });
     }
     // Lv2 到達時に霧アイテムが残っていたら注意メッセージ
     if (state.playerLevel === 2) {
-      setTimeout(checkFogReminder, 900);
+      _chain(() => setTimeout(checkFogReminder, 400));
     }
   }
 
@@ -12032,7 +12046,7 @@ function completeEventRequest(index) {
   state.requestCompletedTotal++;
   trackDailyRequest();
   checkStoryGuide();
-  if (!isMenuPageOpen()) showRewardInPanel('依頼完了！', document.getElementById('event-req-panel'), '#ff8c00');
+  if (!isMenuPageOpen()) showAboveReqPanel('依頼完了！', '#ff8c00');
   if (state.requestCompletedTotal % 10 === 0) {
     addEnergy(25, `依頼${state.requestCompletedTotal}回達成ボーナス！`);
   }
@@ -13160,7 +13174,7 @@ function completeTutorialRequest() {
   if (idx === -1) { showToast('アイテムがありません'); return; }
   eventState.board[idx] = null;
   addCoin(100);
-  showToastNearPanel(`依頼完了！ ${COIN_ICON}+100`, document.getElementById('event-req-panel'));
+  showAboveReqPanel(`依頼完了！`, '#ff8c00');
   renderEventHeader();
   renderEventBoard();
   advanceTutorial();
