@@ -1749,8 +1749,8 @@ body {
   line-height: 1;
 }
 .page2-icon-img {
-  width: clamp(36px, 10vw, 52px);
-  height: clamp(36px, 10vw, 52px);
+  width: 72px;
+  height: 72px;
   object-fit: contain;
 }
 
@@ -1848,8 +1848,8 @@ body {
 #ev-page2-btn:active { background: rgba(255,255,255,0.1); }
 #main-page2-btn .navi-icon-img,
 #ev-page2-btn .navi-icon-img {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
 }
 /* メニューボタンのアテンション：枠なし・赤い丸バッジのみ */
 #main-page2-btn.catalog-badge-active,
