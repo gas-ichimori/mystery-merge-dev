@@ -807,13 +807,79 @@ function dropItem(fromIdx, toIdx) {
     mergeItems(fromIdx, toIdx);
     return;
   } else {
-    // 異種 → 入れ替え
-    state.board[toIdx]   = fromItem;
-    state.board[fromIdx] = toItem;
+    // 異種 → 入れ替え（スライドアニメーション）
+    state.selectedCell = null;
+    swapWithSlide(fromIdx, toIdx, document.getElementById('board'),
+      () => { state.board[toIdx] = fromItem; state.board[fromIdx] = toItem; },
+      renderAll
+    );
+    return;
   }
 
   state.selectedCell = null;
   renderAll();
+}
+
+// ========================================
+// アイテム入れ替えスライドアニメーション
+// ========================================
+function swapWithSlide(fromIdx, toIdx, boardEl, doSwap, reRender) {
+  const cells    = boardEl.querySelectorAll('.cell');
+  const fromCell = cells[fromIdx];
+  const toCell   = cells[toIdx];
+  if (!fromCell || !toCell) { doSwap(); reRender(); return; }
+
+  const fromRect  = fromCell.getBoundingClientRect();
+  const toRect    = toCell.getBoundingClientRect();
+  const toImgEl   = toCell.querySelector('img');
+  const toImgSrc  = toImgEl ? toImgEl.src : null;
+  const toEmojiEl = toImgSrc ? null : toCell.querySelector('.item-emoji');
+
+  doSwap();
+  reRender();
+
+  const newCells    = boardEl.querySelectorAll('.cell');
+  const newFromCell = newCells[fromIdx];
+  if (!newFromCell) return;
+  newFromCell.style.visibility = 'hidden';
+
+  const slide = document.createElement('div');
+  slide.style.cssText = [
+    'position:fixed',
+    `left:${toRect.left}px`,
+    `top:${toRect.top}px`,
+    `width:${toRect.width}px`,
+    `height:${toRect.height}px`,
+    'pointer-events:none',
+    'z-index:500',
+    'display:flex',
+    'align-items:center',
+    'justify-content:center',
+  ].join(';');
+
+  if (toImgSrc) {
+    const img = document.createElement('img');
+    img.src = toImgSrc;
+    img.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+    slide.appendChild(img);
+  } else if (toEmojiEl) {
+    const sp = toEmojiEl.cloneNode(true);
+    slide.appendChild(sp);
+  } else {
+    newFromCell.style.visibility = '';
+    return;
+  }
+  document.body.appendChild(slide);
+
+  const dx = fromRect.left - toRect.left;
+  const dy = fromRect.top  - toRect.top;
+  slide.animate(
+    [{ transform: 'translate(0,0)' }, { transform: `translate(${dx}px,${dy}px)` }],
+    { duration: 200, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)' }
+  ).onfinish = () => {
+    slide.remove();
+    if (newFromCell) newFromCell.style.visibility = '';
+  };
 }
 
 // ========================================
@@ -14907,13 +14973,23 @@ function endEvDrag(x, y) {
     doEventMerge(fromIdx, toIdx);
     return;
   } else if (!step && (fromItem.isEventGen !== toItem.isEventGen) && !toItem.isFog) {
-    // ジェネレーター ↔ マージアイテムの入れ替え
-    eventState.board[toIdx]   = fromItem;
-    eventState.board[fromIdx] = toItem;
+    // ジェネレーター ↔ マージアイテムの入れ替え（スライドアニメーション）
+    eventState.selectedCell = null;
+    hideNaviHint();
+    swapWithSlide(fromIdx, toIdx, document.getElementById('event-board'),
+      () => { eventState.board[toIdx] = fromItem; eventState.board[fromIdx] = toItem; },
+      () => { renderEventBoard(); renderEventRequest(); }
+    );
+    return;
   } else if (!step && !toItem.isEventGen && !fromItem.isEventGen && !toItem.isFog) {
-    // チュートリアル完了後のみ通常アイテム同士の入れ替え許可
-    eventState.board[toIdx]   = fromItem;
-    eventState.board[fromIdx] = toItem;
+    // チュートリアル完了後のみ通常アイテム同士の入れ替え許可（スライドアニメーション）
+    eventState.selectedCell = null;
+    hideNaviHint();
+    swapWithSlide(fromIdx, toIdx, document.getElementById('event-board'),
+      () => { eventState.board[toIdx] = fromItem; eventState.board[fromIdx] = toItem; },
+      () => { renderEventBoard(); renderEventRequest(); }
+    );
+    return;
   }
 
   // ドラッグ後の選択状態更新
