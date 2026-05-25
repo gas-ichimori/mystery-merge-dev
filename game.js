@@ -13360,6 +13360,7 @@ function addGenTileToStock(genTile, chName) {
     }
     return;
   }
+  genTile._newGen = true;
   eventState.burstStock.push(genTile);
   playMergeSE('spawn');
   showToast(`${chName}ジェネレーターがストックに追加！タップしてボードへ`);
@@ -13372,8 +13373,6 @@ function addGenTileToStock(genTile, chName) {
     const items = list.querySelectorAll('.burst-stock-item');
     const lastItem = items[items.length - 1];
     if (lastItem) {
-      lastItem.classList.add('burst-stock-item--new');
-      setTimeout(() => lastItem.classList.remove('burst-stock-item--new'), 3000);
       showFloatRightOfEl(`${chName} Lv${lv + 1}！`, '#f9c846', lastItem);
     }
   });
@@ -13403,6 +13402,7 @@ function renderBurstStock() {
     const imgSrc = getBurstItemImgSrc(item);
     const div = document.createElement('div');
     div.className = 'burst-stock-item';
+    if (item._newGen) div.classList.add('burst-stock-item--new');
     if (imgSrc) {
       div.innerHTML = `<img src="${imgSrc}" alt="アイテム">`;
     } else {
