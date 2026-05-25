@@ -7173,40 +7173,22 @@ document.getElementById('story-ch8-next-btn')?.addEventListener('click', () => {
   progressStory(8);
 });
 
-// デバッグ：ジェネレーター出現
+// デバッグ：ジェネレーター出現（ストック経由）
 document.getElementById('debug-gen-spawn-btn').addEventListener('click', () => {
   const val = document.getElementById('debug-gen-spawn-select').value;
   if (!val) { showToast('ジェネレーターを選択してください'); return; }
-  const emptyIdx = eventState.board.findIndex(c => c === null);
-  if (emptyIdx === -1) { showToast('ボードが満杯です'); return; }
   const [type, lvStr] = val.split('-');
   const lv = parseInt(lvStr, 10);
-  if (type === 'ev') {
-    eventState.board[emptyIdx] = { isEventGen: true, genLevel: lv };
-    showToast(`第一章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'fire') {
-    eventState.board[emptyIdx] = { isEventGen: true, isFireGen: true, seizoLevel: lv };
-    showToast(`第二章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'kante') {
-    eventState.board[emptyIdx] = { isEventGen: true, isKanteGen: true, kanteLevel: lv };
-    showToast(`第三章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'keikaku') {
-    eventState.board[emptyIdx] = { isEventGen: true, isKeikakuGen: true, keikakuLevel: lv };
-    showToast(`第四章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'sns') {
-    eventState.board[emptyIdx] = { isEventGen: true, isSnsGen: true, snsLevel: lv };
-    showToast(`第五章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'clock') {
-    eventState.board[emptyIdx] = { isEventGen: true, isClockGen: true, clockLevel: lv };
-    showToast(`第六章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'ch7') {
-    eventState.board[emptyIdx] = { isEventGen: true, isCh7Gen: true, ch7Level: lv };
-    showToast(`第七章ジェネレーター Lv${lv + 1} を出現`);
-  } else if (type === 'ch8') {
-    eventState.board[emptyIdx] = { isEventGen: true, isCh8Gen: true, ch8Level: lv };
-    showToast(`第八章ジェネレーター Lv${lv + 1} を出現`);
-  }
-  renderEventBoard();
+  let genTile, chName;
+  if (type === 'ev')      { genTile = { isEventGen: true, genLevel: lv };                          chName = '第一章'; }
+  else if (type === 'fire')    { genTile = { isEventGen: true, isFireGen: true, seizoLevel: lv };      chName = '第二章'; }
+  else if (type === 'kante')   { genTile = { isEventGen: true, isKanteGen: true, kanteLevel: lv };     chName = '第三章'; }
+  else if (type === 'keikaku') { genTile = { isEventGen: true, isKeikakuGen: true, keikakuLevel: lv };  chName = '第四章'; }
+  else if (type === 'sns')     { genTile = { isEventGen: true, isSnsGen: true, snsLevel: lv };         chName = '第五章'; }
+  else if (type === 'clock')   { genTile = { isEventGen: true, isClockGen: true, clockLevel: lv };     chName = '第六章'; }
+  else if (type === 'ch7')     { genTile = { isEventGen: true, isCh7Gen: true, ch7Level: lv };         chName = '第七章'; }
+  else if (type === 'ch8')     { genTile = { isEventGen: true, isCh8Gen: true, ch8Level: lv };         chName = '第八章'; }
+  if (genTile) addGenTileToStock(genTile, chName);
 });
 
 // デバッグ：ジェネレーターをストックに追加
