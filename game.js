@@ -13335,17 +13335,15 @@ function _isSameGenType(a, b) {
 
 function addGenTileToStock(genTile, chName) {
   // ストック・ボードに同タイプが既にある場合は次のLvで出現
-  const lKey   = _genLevelKey(genTile);
-  const maxLv  = _genMaxLevel(genTile);
-  const existing = [
-    ...eventState.burstStock,
-    ...eventState.board.filter(Boolean),
-  ].filter(t => t.isEventGen && _isSameGenType(t, genTile));
-  if (existing.length > 0) {
-    const maxExistingLv = Math.max(...existing.map(t => t[lKey] ?? 0));
-    if (maxExistingLv >= (genTile[lKey] ?? 0)) {
-      genTile = { ...genTile, [lKey]: Math.min(maxExistingLv + 1, maxLv) };
-    }
+  // ストックに同タイプ・同レベルが既にある場合のみ+1Lvで出現
+  const lKey  = _genLevelKey(genTile);
+  const maxLv = _genMaxLevel(genTile);
+  const curLv = genTile[lKey] ?? 0;
+  const sameInStock = eventState.burstStock.some(
+    t => t.isEventGen && _isSameGenType(t, genTile) && (t[lKey] ?? 0) === curLv
+  );
+  if (sameInStock) {
+    genTile = { ...genTile, [lKey]: Math.min(curLv + 1, maxLv) };
   }
 
   if (eventState.burstStock.length >= 99) {
