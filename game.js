@@ -875,7 +875,7 @@ function swapWithSlide(fromIdx, toIdx, boardEl, doSwap, reRender) {
   const dy = fromRect.top  - toRect.top;
   slide.animate(
     [{ transform: 'translate(0,0)' }, { transform: `translate(${dx}px,${dy}px)` }],
-    { duration: 200, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)' }
+    { duration: 360, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)' }
   ).onfinish = () => {
     slide.remove();
     if (newFromCell) newFromCell.style.visibility = '';
@@ -1210,6 +1210,61 @@ function _playMergeSEImpl(ctx, type, t) {
       _osc(ctx, 'sine', 1200, 0.10, t,        t + 0.06);
       _osc(ctx, 'sine',  800, 0.08, t + 0.04, t + 0.14);
       _osc(ctx, 'sine',  500, 0.05, t + 0.08, t + 0.22);
+
+    } else if (type === 'gameStart') {
+      // 重厚な門を開く音（ドーン・重低音インパクト）
+      const nDur  = 2.0;
+      const nBuf  = ctx.createBuffer(1, Math.floor(ctx.sampleRate * nDur), ctx.sampleRate);
+      const nData = nBuf.getChannelData(0);
+      for (let i = 0; i < nData.length; i++) {
+        const env  = Math.pow(1 - i / nData.length, 0.25);
+        nData[i]   = (Math.random() * 2 - 1) * env;
+      }
+      const nSrc  = ctx.createBufferSource();
+      const nFilt = ctx.createBiquadFilter();
+      const nGain = ctx.createGain();
+      nFilt.type  = 'lowpass';
+      nFilt.frequency.setValueAtTime(200, t);
+      nFilt.frequency.exponentialRampToValueAtTime(42, t + 0.8);
+      nGain.gain.setValueAtTime(0.7, t);
+      nGain.gain.exponentialRampToValueAtTime(0.001, t + nDur);
+      nSrc.buffer = nBuf;
+      nSrc.connect(nFilt); nFilt.connect(nGain); nGain.connect(ctx.destination);
+      nSrc.start(t);
+      _osc(ctx, 'sine',     58, 0.55, t,        t + 2.2, 28);   // サブベース
+      _osc(ctx, 'sine',    116, 0.30, t,        t + 1.6, 55);   // 中低音
+      _osc(ctx, 'sine',    174, 0.12, t + 0.02, t + 1.0);       // 倍音
+      _osc(ctx, 'sawtooth', 280, 0.09, t,       t + 0.22, 100); // 金属的な打撃
+
+    } else if (type === 'gameStart2') {
+      // 重厚な門を開く音 Ver2（ドーーーン・3段波）
+      const hits = [
+        { ht: 0,   g: 0.70, fS: 200, fE: 42, nd: 2.4 },
+        { ht: 0.7, g: 0.55, fS: 180, fE: 38, nd: 2.0 },
+        { ht: 1.4, g: 0.40, fS: 160, fE: 35, nd: 1.6 },
+      ];
+      hits.forEach(({ ht, g, fS, fE, nd }) => {
+        const nBuf  = ctx.createBuffer(1, Math.floor(ctx.sampleRate * nd), ctx.sampleRate);
+        const nData = nBuf.getChannelData(0);
+        for (let i = 0; i < nData.length; i++) {
+          nData[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / nData.length, 0.28);
+        }
+        const nSrc  = ctx.createBufferSource();
+        const nFilt = ctx.createBiquadFilter();
+        const nGain = ctx.createGain();
+        nFilt.type  = 'lowpass';
+        nFilt.frequency.setValueAtTime(fS, t + ht);
+        nFilt.frequency.exponentialRampToValueAtTime(fE, t + ht + 0.8);
+        nGain.gain.setValueAtTime(g, t + ht);
+        nGain.gain.exponentialRampToValueAtTime(0.001, t + ht + nd);
+        nSrc.buffer = nBuf;
+        nSrc.connect(nFilt); nFilt.connect(nGain); nGain.connect(ctx.destination);
+        nSrc.start(t + ht);
+        _osc(ctx, 'sine',  58, 0.45 * (g / 0.70), t + ht, t + ht + nd * 0.90, 28);
+        _osc(ctx, 'sine', 116, 0.25 * (g / 0.70), t + ht, t + ht + nd * 0.65, 55);
+      });
+      _osc(ctx, 'sine', 42, 0.35, t, t + 3.6, 20);         // 通底する重低音
+      _osc(ctx, 'sawtooth', 280, 0.09, t, t + 0.22, 100);  // 最初の金属打撃
 
     } else if (type === 'pageFlip') {
       // 本のページを捲る音（ザッ） 0.35s版
@@ -3344,6 +3399,8 @@ document.getElementById('debug-ch5to8-unlock-all').addEventListener('click', () 
   ['debug-se-error',           'error'],
   ['debug-se-typo',            'typo'],
   ['debug-se-siren',           'siren'],
+  ['debug-se-game-start',      'gameStart'],
+  ['debug-se-game-start2',     'gameStart2'],
 ].forEach(([id, type]) => {
   document.getElementById(id)?.addEventListener('click', () => playMergeSE(type));
 });
@@ -15223,7 +15280,9 @@ function requestAppFullscreen() {
 // タイトル画面スタートボタン
 document.getElementById('title-start-btn').addEventListener('click', () => {
   requestAppFullscreen();
-  playMergeSE('complete');
+  playMergeSE('gameStart');
+  const btn = document.getElementById('title-start-btn');
+  btn.style.animation = 'title-btn-flash 0.48s ease-out forwards';
   const ts = document.getElementById('title-screen');
   // 0.5秒後：全画面ブラックを表示しつつタイトルフェードアウト開始
   setTimeout(() => {
