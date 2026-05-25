@@ -13320,7 +13320,52 @@ function onBurstClear() {
 // ========================================
 
 // ジェネレータータイルをストックに追加（満杯時はボードへフォールバック）
+function _genLevelKey(tile) {
+  if (tile.isFireGen)    return 'seizoLevel';
+  if (tile.isKanteGen)   return 'kanteLevel';
+  if (tile.isKeikakuGen) return 'keikakuLevel';
+  if (tile.isSnsGen)     return 'snsLevel';
+  if (tile.isClockGen)   return 'clockLevel';
+  if (tile.isCh7Gen)     return 'ch7Level';
+  if (tile.isCh8Gen)     return 'ch8Level';
+  return 'genLevel';
+}
+function _genMaxLevel(tile) {
+  if (tile.isFireGen)    return SEIZO_GEN_IMAGES.length - 1;
+  if (tile.isKanteGen)   return KANTEITA_GEN_IMAGES.length - 1;
+  if (tile.isKeikakuGen) return KEIKAKU_GEN_IMAGES.length - 1;
+  if (tile.isSnsGen)     return SNS_GEN_IMAGES.length - 1;
+  if (tile.isClockGen)   return CLOCK_GEN_IMAGES.length - 1;
+  if (tile.isCh7Gen)     return CH7_GEN_IMAGES.length - 1;
+  if (tile.isCh8Gen)     return CH8_GEN_IMAGES.length - 1;
+  return EVENT_GEN_IMAGES.length - 1;
+}
+function _isSameGenType(a, b) {
+  return !!(a.isEventGen && b.isEventGen &&
+    !!a.isFireGen    === !!b.isFireGen    &&
+    !!a.isKanteGen   === !!b.isKanteGen   &&
+    !!a.isKeikakuGen === !!b.isKeikakuGen &&
+    !!a.isSnsGen     === !!b.isSnsGen     &&
+    !!a.isClockGen   === !!b.isClockGen   &&
+    !!a.isCh7Gen     === !!b.isCh7Gen     &&
+    !!a.isCh8Gen     === !!b.isCh8Gen);
+}
+
 function addGenTileToStock(genTile, chName) {
+  // ストック・ボードに同タイプが既にある場合は次のLvで出現
+  const lKey   = _genLevelKey(genTile);
+  const maxLv  = _genMaxLevel(genTile);
+  const existing = [
+    ...eventState.burstStock,
+    ...eventState.board.filter(Boolean),
+  ].filter(t => t.isEventGen && _isSameGenType(t, genTile));
+  if (existing.length > 0) {
+    const maxExistingLv = Math.max(...existing.map(t => t[lKey] ?? 0));
+    if (maxExistingLv >= (genTile[lKey] ?? 0)) {
+      genTile = { ...genTile, [lKey]: Math.min(maxExistingLv + 1, maxLv) };
+    }
+  }
+
   if (eventState.burstStock.length >= 99) {
     const emptyIdx = eventState.board.findIndex(c => c === null);
     if (emptyIdx !== -1) {
@@ -15282,7 +15327,7 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
   requestAppFullscreen();
   playMergeSE('gameStart');
   const btn = document.getElementById('title-start-btn');
-  btn.style.animation = 'title-btn-flash 0.48s ease-out forwards';
+  btn.style.animation = 'title-btn-flash 0.72s ease-out forwards';
   const ts = document.getElementById('title-screen');
   // 0.5秒後：全画面ブラックを表示しつつタイトルフェードアウト開始
   setTimeout(() => {
