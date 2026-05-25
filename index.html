@@ -333,27 +333,79 @@
           <button id="debug-burst-reset" class="debug-loop-btn">🔄</button>
         </div>
       </div>
-      <div class="debug-section-label">効果音テスト</div>
+      <div class="debug-section-label">効果音テスト（全種）</div>
       <div id="debug-se-row">
         <div class="debug-gen-row">
-          <span class="debug-gen-label">新章解放音</span>
-          <button id="debug-se-chapter-unlock" class="debug-loop-btn">🔔</button>
+          <span class="debug-gen-label">merge｜マージ成功</span>
+          <button id="debug-se-merge" class="debug-loop-btn">▶</button>
         </div>
         <div class="debug-gen-row">
-          <span class="debug-gen-label">章完了音</span>
-          <button id="debug-se-chapter-complete" class="debug-loop-btn">🎉</button>
+          <span class="debug-gen-label">spawn｜アイテム出現</span>
+          <button id="debug-se-spawn" class="debug-loop-btn">▶</button>
         </div>
         <div class="debug-gen-row">
-          <span class="debug-gen-label">しゃぼん玉を割る音</span>
-          <button id="debug-se-bubble" class="debug-loop-btn">🫧</button>
+          <span class="debug-gen-label">complete｜依頼完了</span>
+          <button id="debug-se-complete" class="debug-loop-btn">▶</button>
         </div>
         <div class="debug-gen-row">
-          <span class="debug-gen-label">ページ捲り音</span>
-          <button id="debug-se-page-flip" class="debug-loop-btn">📖</button>
+          <span class="debug-gen-label">levelup｜レベルアップ</span>
+          <button id="debug-se-levelup" class="debug-loop-btn">▶</button>
         </div>
         <div class="debug-gen-row">
-          <span class="debug-gen-label">コイン獲得音</span>
-          <button id="debug-se-coin" class="debug-loop-btn">🪙</button>
+          <span class="debug-gen-label">chapterUnlock｜新章解放</span>
+          <button id="debug-se-chapter-unlock" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">chapterComplete｜章完了</span>
+          <button id="debug-se-chapter-complete" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">lucky｜ラッキー/パワー</span>
+          <button id="debug-se-lucky" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">heal｜体力回復</span>
+          <button id="debug-se-heal" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">coin｜コイン獲得</span>
+          <button id="debug-se-coin" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">diamond｜ダイヤ獲得</span>
+          <button id="debug-se-diamond" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">pageFlip｜ページ捲り</span>
+          <button id="debug-se-page-flip" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">bubble｜しゃぼん玉</span>
+          <button id="debug-se-bubble" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">attention｜アテンション</span>
+          <button id="debug-se-attention" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">tap｜UIタップ</span>
+          <button id="debug-se-tap" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">web｜蜘蛛の巣除去</span>
+          <button id="debug-se-web" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">error｜エラー</span>
+          <button id="debug-se-error" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">typo｜タイプライター</span>
+          <button id="debug-se-typo" class="debug-loop-btn">▶</button>
+        </div>
+        <div class="debug-gen-row">
+          <span class="debug-gen-label">siren｜バースト発動</span>
+          <button id="debug-se-siren" class="debug-loop-btn">▶</button>
         </div>
       </div>
       <div class="debug-section-label">イベントゲーム Vol1</div>
@@ -906,6 +958,58 @@
             <option value="c8s25">Ch8 Scene25（再起の配信）</option>
           </select>
           <button id="debug-adv-ch8-play" class="debug-loop-btn">▶</button>
+        </div>
+        <!-- アニメーション確認 -->
+        <div class="debug-section-label">アニメーション確認</div>
+        <div class="debug-row" style="flex-direction:column;gap:5px;align-items:stretch;">
+          <div style="display:flex;gap:6px;align-items:center;">
+            <select id="debug-anim-img-select" class="debug-select" style="flex:1;">
+              <option value="img/Chapter1/Icon/image_merge_icon1_01.png">Ch1 アイテム Lv1</option>
+              <option value="img/Chapter1/Icon/image_merge_icon1_06.png">Ch1 アイテム Lv6</option>
+              <option value="img/Chapter1/Icon/image_merge_icon1_12.png">Ch1 アイテム Lv12</option>
+              <option value="img/Chapter2/Icon/image_merge_icon2_01.png">Ch2 アイテム Lv1</option>
+              <option value="img/Chapter2/Icon/image_merge_icon2_08.png">Ch2 アイテム Lv8</option>
+              <option value="img/Chapter1/Icon/image_merge_gene1_01.png">Ch1 ジェネ Lv1</option>
+              <option value="img/Chapter1/Icon/image_merge_gene1_04.png">Ch1 ジェネ Lv4</option>
+              <option value="img/Chapter2/Icon/image_merge_gene2_01.png">Ch2 ジェネ Lv1</option>
+            </select>
+          </div>
+          <div class="debug-anim-preview-wrap">
+            <div class="debug-anim-preview-box">
+              <div id="debug-anim-item"><img id="debug-anim-img" src="img/Chapter1/Icon/image_merge_icon1_01.png" alt="preview"></div>
+            </div>
+            <div id="debug-anim-label" class="debug-anim-label-text">アニメを選択してください</div>
+          </div>
+          <div class="debug-anim-cat-label">📦 出現</div>
+          <div class="debug-anim-btn-row">
+            <button class="debug-anim-btn" data-anim="pop">pop</button>
+            <button class="debug-anim-btn" data-anim="bounce">bounce</button>
+            <button class="debug-anim-btn" data-anim="elastic">elastic</button>
+            <button class="debug-anim-btn" data-anim="float-in">float-in</button>
+            <button class="debug-anim-btn" data-anim="spin-in">spin-in</button>
+            <button class="debug-anim-btn" data-anim="flip-in">flip-in</button>
+          </div>
+          <div class="debug-anim-cat-label">🔀 マージ後出現</div>
+          <div class="debug-anim-btn-row">
+            <button class="debug-anim-btn" data-anim="zoom-pop">zoom-pop</button>
+            <button class="debug-anim-btn" data-anim="flash-pop">flash-pop</button>
+            <button class="debug-anim-btn" data-anim="slam-in">slam-in</button>
+            <button class="debug-anim-btn" data-anim="drop-bounce">drop-bounce</button>
+          </div>
+          <div class="debug-anim-cat-label">🔄 待機（ループ）</div>
+          <div class="debug-anim-btn-row">
+            <button class="debug-anim-btn debug-anim-toggle" data-anim="idle-bob">bob</button>
+            <button class="debug-anim-btn debug-anim-toggle" data-anim="idle-pulse">pulse</button>
+            <button class="debug-anim-btn debug-anim-toggle" data-anim="idle-glow">glow</button>
+            <button class="debug-anim-btn debug-anim-toggle" data-anim="idle-swing">swing</button>
+          </div>
+          <div class="debug-anim-cat-label">👆 タップ反応</div>
+          <div class="debug-anim-btn-row">
+            <button class="debug-anim-btn" data-anim="tap-squish">squish</button>
+            <button class="debug-anim-btn" data-anim="tap-jump">jump</button>
+            <button class="debug-anim-btn" data-anim="tap-spin">spin</button>
+            <button class="debug-anim-btn" data-anim="tap-rubber">rubber</button>
+          </div>
         </div>
         <!-- 相関図デバッグ -->
         <div class="debug-row">

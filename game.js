@@ -1227,10 +1227,13 @@ function triggerMergeAnim(boardSelector, cellIdx, seType = 'merge') {
       if (!cell) return;
       const target = cell.querySelector('img, .item-emoji, .item-stage') || cell;
       target.animate([
-        { transform: 'scale(1)',    offset: 0,    easing: 'ease-in'  },
-        { transform: 'scale(0.1)',  offset: 0.3,  easing: 'ease-out' },
-        { transform: 'scale(1.25)', offset: 0.75, easing: 'ease-out' },
-        { transform: 'scale(1)',    offset: 1                         }
+        { transform: 'scale(0)',    offset: 0    },
+        { transform: 'scale(1.45)', offset: 0.28 },
+        { transform: 'scale(0.72)', offset: 0.45 },
+        { transform: 'scale(1.18)', offset: 0.62 },
+        { transform: 'scale(0.93)', offset: 0.78 },
+        { transform: 'scale(1.06)', offset: 0.90 },
+        { transform: 'scale(1)',    offset: 1    }
       ], {
         duration: 750,
         fill: 'none'
@@ -3255,21 +3258,28 @@ document.getElementById('debug-ch5to8-unlock-all').addEventListener('click', () 
 // ========================================
 // 効果音テスト デバッグボタン
 // ========================================
-document.getElementById('debug-se-chapter-unlock').addEventListener('click', () => {
-  playMergeSE('chapterUnlock');
-});
-document.getElementById('debug-se-chapter-complete').addEventListener('click', () => {
-  playMergeSE('chapterComplete');
-  showChapterCompleteBanner('img/UI/image_merge_ch1_complete.png', 2000);
-});
-document.getElementById('debug-se-bubble').addEventListener('click', () => {
-  playMergeSE('bubble');
-});
-document.getElementById('debug-se-page-flip').addEventListener('click', () => {
-  playMergeSE('pageFlip');
-});
-document.getElementById('debug-se-coin').addEventListener('click', () => {
-  playMergeSE('coin');
+// 効果音テスト（全種）
+[
+  ['debug-se-merge',           'merge'],
+  ['debug-se-spawn',           'spawn'],
+  ['debug-se-complete',        'complete'],
+  ['debug-se-levelup',         'levelup'],
+  ['debug-se-chapter-unlock',  'chapterUnlock'],
+  ['debug-se-chapter-complete','chapterComplete'],
+  ['debug-se-lucky',           'lucky'],
+  ['debug-se-heal',            'heal'],
+  ['debug-se-coin',            'coin'],
+  ['debug-se-diamond',         'diamond'],
+  ['debug-se-page-flip',       'pageFlip'],
+  ['debug-se-bubble',          'bubble'],
+  ['debug-se-attention',       'attention'],
+  ['debug-se-tap',             'tap'],
+  ['debug-se-web',             'web'],
+  ['debug-se-error',           'error'],
+  ['debug-se-typo',            'typo'],
+  ['debug-se-siren',           'siren'],
+].forEach(([id, type]) => {
+  document.getElementById(id)?.addEventListener('click', () => playMergeSE(type));
 });
 
 // ========================================
@@ -7206,6 +7216,83 @@ document.getElementById('debug-kankei-all').addEventListener('click', () => {
   showToast('相関図を全解放しました');
 });
 
+// ========================================
+// アニメーション確認デバッグ
+// ========================================
+(function() {
+  const imgEl    = document.getElementById('debug-anim-img');
+  const itemEl   = document.getElementById('debug-anim-item');
+  const labelEl  = document.getElementById('debug-anim-label');
+  const selEl    = document.getElementById('debug-anim-img-select');
+
+  selEl.addEventListener('change', () => { imgEl.src = selEl.value; });
+
+  const DEFS = {
+    'pop':         { kf: 'dbg-pop',         dur: 600,  label: 'pop ポン' },
+    'bounce':      { kf: 'dbg-bounce',       dur: 900,  label: 'bounce バウンド' },
+    'elastic':     { kf: 'dbg-elastic',      dur: 950,  label: 'elastic 弾性' },
+    'float-in':    { kf: 'dbg-float-in',     dur: 700,  label: 'float-in 浮き上がり' },
+    'spin-in':     { kf: 'dbg-spin-in',      dur: 750,  label: 'spin-in 回転出現' },
+    'flip-in':     { kf: 'dbg-flip-in',      dur: 650,  label: 'flip-in 3Dフリップ' },
+    'zoom-pop':    { kf: 'dbg-zoom-pop',     dur: 480,  label: 'zoom-pop ズームポン' },
+    'flash-pop':   { kf: 'dbg-flash-pop',    dur: 520,  label: 'flash-pop フラッシュ' },
+    'slam-in':     { kf: 'dbg-slam-in',      dur: 560,  label: 'slam-in スラム' },
+    'drop-bounce': { kf: 'dbg-drop-bounce',  dur: 950,  label: 'drop-bounce ドロップ' },
+    'idle-bob':    { kf: 'dbg-idle-bob',     dur: 1500, label: 'idle bob ↕ (ループ中)' },
+    'idle-pulse':  { kf: 'dbg-idle-pulse',   dur: 1200, label: 'idle pulse ∿ (ループ中)' },
+    'idle-glow':   { kf: 'dbg-idle-glow',    dur: 1800, label: 'idle glow ✨ (ループ中)' },
+    'idle-swing':  { kf: 'dbg-idle-swing',   dur: 1600, label: 'idle swing ⟳ (ループ中)' },
+    'tap-squish':  { kf: 'dbg-tap-squish',   dur: 380,  label: 'tap squish つぶれ' },
+    'tap-jump':    { kf: 'dbg-tap-jump',     dur: 520,  label: 'tap jump ジャンプ' },
+    'tap-spin':    { kf: 'dbg-tap-spin',     dur: 430,  label: 'tap spin スピン' },
+    'tap-rubber':  { kf: 'dbg-tap-rubber',   dur: 520,  label: 'tap rubber ゴム' },
+  };
+
+  let activeIdle = null;
+
+  function clearAnim() {
+    itemEl.style.animation = '';
+    void itemEl.offsetWidth;
+  }
+
+  document.querySelectorAll('.debug-anim-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.dataset.anim;
+      const def = DEFS[name];
+      if (!def) return;
+
+      const isIdle = name.startsWith('idle-');
+
+      if (isIdle) {
+        if (activeIdle === name) {
+          clearAnim();
+          btn.classList.remove('active');
+          activeIdle = null;
+          labelEl.textContent = 'アニメを選択してください';
+          return;
+        }
+        document.querySelectorAll('.debug-anim-toggle').forEach(b => b.classList.remove('active'));
+        clearAnim();
+        itemEl.style.animation = `${def.kf} ${def.dur}ms ease-in-out infinite`;
+        btn.classList.add('active');
+        activeIdle = name;
+      } else {
+        if (activeIdle) {
+          document.querySelectorAll('.debug-anim-toggle').forEach(b => b.classList.remove('active'));
+          activeIdle = null;
+        }
+        clearAnim();
+        itemEl.style.animation = `${def.kf} ${def.dur}ms ease-out forwards`;
+        setTimeout(() => {
+          if (!activeIdle) clearAnim();
+          labelEl.textContent = 'アニメを選択してください';
+        }, def.dur + 80);
+      }
+      labelEl.textContent = def.label;
+    });
+  });
+})();
+
 document.getElementById('settings-close').addEventListener('click', () => {
   document.getElementById('settings-screen').classList.add('hidden');
   if (returnToMenu) { returnToMenu = false; openMainPage2(); }
@@ -7414,6 +7501,24 @@ function flyBadgesToRequests(iconSelector, imgSrc, onDone, onEachLand) {
         { transform: `translate(-50%,-50%) translate(${dx * 0.45 + arcX}px,${dy * 0.3 + arcY}px) scale(1.4)`, opacity: 1, offset: 0.4 },
         { transform: `translate(-50%,-50%) translate(${dx}px,${dy}px) scale(0.4)`, opacity: 0 },
       ], { duration, delay: i * 130, easing: 'ease-in', fill: 'forwards' });
+
+      // アニメーション開始と同タイミングで流星トレイルを並走させる
+      setTimeout(() => {
+        const trailEnd = performance.now() + duration * 0.82;
+        let lastTrail  = 0;
+        (function trail(now) {
+          if (now > trailEnd) return;
+          if (now - lastTrail > 32) {
+            lastTrail = now;
+            const r = img.getBoundingClientRect();
+            const cx = r.left + r.width  / 2;
+            const cy = r.top  + r.height / 2;
+            spawnMeteorParticle(cx, cy);
+            if (Math.random() < 0.5) spawnMeteorParticle(cx, cy);
+          }
+          requestAnimationFrame(trail);
+        })(performance.now());
+      }, i * 130);
 
       anim.onfinish = () => {
         img.remove();
@@ -10210,6 +10315,13 @@ function handleVol1CellTap(idx) {
 
   // 虫眼鏡アイテム（ボード上）のタップ
   if (item.isMagnify) {
+    // 同じセルを再タップ → 選択解除のみ（自分自身とのマージ防止）
+    if (vol1SelectedCell === idx) {
+      vol1SelectedCell = null;
+      hideNaviHint();
+      renderVol1Board();
+      return;
+    }
     if (vol1SelectedCell !== null) {
       const selItem = eventState.vol1Board[vol1SelectedCell];
       // 虫眼鏡 + 虫眼鏡 → Lv1マージアイテム生成
@@ -10718,6 +10830,7 @@ function onVol1MagnifyGenTap() {
   }
   eventState.vol1MagnifyGlasses--;
   eventState.vol1Board[emptyIdx] = { isMagnify: true };
+  playMergeSE('spawn');
   renderVol1Slot();
 
   // フライアニメーション：ジェネレーターセル → 対象セル
@@ -12670,6 +12783,9 @@ function handleFireGenTapMobile(i) { handleAnyGenTap(i); }
 
 // ジェネレータータップ
 // ジェネレーターセルから最も近い空きセルを返す（Manhattanデイスタンス）
+// 飛翔中アニメーションの目的地セルを予約（連打による二重スポーン防止）
+const _spawnReserved = new Set();
+
 function findNearestEmptyEventCell(fromIdx) {
   const COLS = 7;
   const fromRow = Math.floor(fromIdx / COLS);
@@ -12677,7 +12793,7 @@ function findNearestEmptyEventCell(fromIdx) {
   let bestIdx = -1;
   let bestDist = Infinity;
   eventState.board.forEach((cell, i) => {
-    if (cell !== null) return;
+    if (cell !== null || _spawnReserved.has(i)) return;
     const row = Math.floor(i / COLS);
     const col = i % COLS;
     const dist = Math.abs(row - fromRow) + Math.abs(col - fromCol);
@@ -12745,14 +12861,19 @@ function onEventGenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= baseCost;
-  eventState.board[emptyIdx] = { stage: finalStage };
-  playMergeSE('spawn');
-  discoverEventItem(finalStage);
 
-  // アイテム飛び出しアニメーション
+  // アイテム飛び出しアニメーション（着地後にセル上に出現）
   const stageContent = EVENT_CHAIN.stageImages?.[finalStage - 1] || EVENT_CHAIN.stages[finalStage - 1];
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
-  flyEventItemAnimation(genShowIdx, emptyIdx, stageContent);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, stageContent, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { stage: finalStage };
+    discoverEventItem(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
@@ -12764,16 +12885,14 @@ function onEventGenTap(tappedCellIdx = null) {
   }
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // イベントボード専用：アイテム飛び出しアニメーション
-function flyEventItemAnimation(fromIdx, toIdx, emoji) {
+function flyEventItemAnimation(fromIdx, toIdx, emoji, onComplete = null) {
   const cells    = document.querySelectorAll('#event-board .cell');
   const fromCell = cells[fromIdx];
   const toCell   = cells[toIdx];
-  if (!fromCell || !toCell) return;
+  if (!fromCell || !toCell) { if (onComplete) onComplete(); return; }
 
   const fromRect = fromCell.getBoundingClientRect();
   const toRect   = toCell.getBoundingClientRect();
@@ -12812,6 +12931,7 @@ function flyEventItemAnimation(fromIdx, toIdx, emoji) {
 
   const DURATION = 350;
   const startTime = performance.now();
+  let callbackFired = false;
 
   function animate(now) {
     const raw = Math.min((now - startTime) / DURATION, 1);
@@ -12819,15 +12939,23 @@ function flyEventItemAnimation(fromIdx, toIdx, emoji) {
     const x = (1 - raw) * (1 - raw) * startX + 2 * (1 - raw) * raw * cpX + raw * raw * endX;
     const y = (1 - raw) * (1 - raw) * startY + 2 * (1 - raw) * raw * cpY + raw * raw * endY;
 
+    // 飛翔中は大きく、着地点に近づくにつれ scale 1 に収束
     const scale = raw < 0.4
       ? 0.5 + raw * 2.5
-      : 1.5 - (raw - 0.4) * 1.2;
+      : 1.5 - (raw - 0.4) * 0.833;
 
+    // フェードイン: 0〜15%、フェードアウト: 82〜100%
     const opacity = raw < 0.15
       ? raw / 0.15
-      : raw > 0.75
-        ? (1 - raw) / 0.25
+      : raw > 0.82
+        ? 1 - (raw - 0.82) / 0.18
         : 1;
+
+    // 82% 地点でセル上にアイテム出現 + elastic アニメーション開始
+    if (raw >= 0.82 && !callbackFired) {
+      callbackFired = true;
+      if (onComplete) onComplete();
+    }
 
     el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%) scale(${scale})`;
     el.style.opacity   = opacity;
@@ -12844,7 +12972,37 @@ function flyEventItemAnimation(fromIdx, toIdx, emoji) {
 // ========================================
 
 // DOM要素（burst-slot-btn等）から盤面セルへのアーク飛翔アニメーション
-function flyFromElementToCell(fromEl, toIdx, imgSrc) {
+// 流星粒子を1個スポーン（バースト放出演出用）
+function spawnMeteorParticle(x, y) {
+  const size = 5 + Math.random() * 9;
+  const hue  = 20 + Math.random() * 50;           // ゴールド〜オレンジ
+  const ox   = (Math.random() - 0.5) * 16;        // 軌跡から少しランダムにばらつかせる
+  const oy   = (Math.random() - 0.5) * 16;
+  const p    = document.createElement('div');
+  p.style.cssText = [
+    'position:fixed',
+    `left:${x + ox - size / 2}px`,
+    `top:${y + oy - size / 2}px`,
+    `width:${size}px`,
+    `height:${size}px`,
+    'border-radius:50%',
+    `background:radial-gradient(circle,hsl(${hue},100%,95%) 0%,hsl(${hue},100%,62%) 45%,transparent 70%)`,
+    'pointer-events:none',
+    'z-index:199',
+    'will-change:opacity',
+  ].join(';');
+  document.body.appendChild(p);
+  const life = 180 + Math.random() * 120;
+  const t0 = performance.now();
+  (function fade(now) {
+    const prog = (now - t0) / life;
+    if (prog >= 1) { p.remove(); return; }
+    p.style.opacity = String(1 - prog * prog);     // 二乗カーブでスムーズに消える
+    requestAnimationFrame(fade);
+  })(t0);
+}
+
+function flyFromElementToCell(fromEl, toIdx, imgSrc, withTrail = false) {
   const cells  = document.querySelectorAll('#event-board .cell');
   const toCell = cells[toIdx];
   if (!fromEl || !toCell) return;
@@ -12872,6 +13030,7 @@ function flyFromElementToCell(fromEl, toIdx, imgSrc) {
 
   const DURATION = 380;
   const t0 = performance.now();
+  let lastTrail = 0;
   (function animate(now) {
     const r = Math.min((now - t0) / DURATION, 1);
     const x = (1-r)*(1-r)*startX + 2*(1-r)*r*cpX + r*r*endX;
@@ -12880,6 +13039,12 @@ function flyFromElementToCell(fromEl, toIdx, imgSrc) {
     const op = r < 0.15 ? r/0.15 : r > 0.75 ? (1-r)/0.25 : 1;
     el.style.transform = `translate(${x}px,${y}px) translate(-50%,-50%) scale(${sc})`;
     el.style.opacity   = op;
+    // 流星群トレイル：28ms間隔でゴールドの光点をスポーン
+    if (withTrail && r > 0.08 && r < 0.82 && now - lastTrail > 28) {
+      lastTrail = now;
+      spawnMeteorParticle(x, y);
+      if (Math.random() < 0.55) spawnMeteorParticle(x, y); // 55%で2個同時
+    }
     if (r < 1) requestAnimationFrame(animate);
     else el.remove();
   })(t0);
@@ -12923,29 +13088,44 @@ function generateBurstItems(count) {
   });
 }
 
-// CLEARボタン押下 → 12個放出
+// CLEARアイコンタップ → 演出シーケンス → アイテム放出
 function onBurstClear() {
   if (eventState.burstCount < BURST_MAX) return;
-  playMergeSE('siren');
 
-  // フリーズオーバーレイを作成（z-index:190 でゲームをブロック）
+  // CSS keyframes（3フェーズ分）
   const burstStyle = document.createElement('style');
   burstStyle.id = 'burst-clear-style';
   burstStyle.textContent = `
-    @keyframes burst-icon-pulse {
-      0%   { transform: scale(1);    filter: drop-shadow(0 0 0px #ffcc00); }
-      50%  { transform: scale(1.18); filter: drop-shadow(0 0 24px #ffcc00) drop-shadow(0 0 48px #ff8800); }
-      100% { transform: scale(1);    filter: drop-shadow(0 0 0px #ffcc00); }
+    @keyframes burst-spin-in {
+      0%   { transform: scale(0)    rotate(0deg);   opacity: 0; }
+      55%  { transform: scale(1.2)  rotate(600deg); opacity: 1; }
+      75%  { transform: scale(0.9)  rotate(680deg); opacity: 1; }
+      90%  { transform: scale(1.08) rotate(710deg); opacity: 1; }
+      100% { transform: scale(1)    rotate(720deg); opacity: 1; }
+    }
+    @keyframes burst-icon-flash {
+      0%,40%  { filter: brightness(1) drop-shadow(0 0 10px rgba(255,200,0,0.6)); }
+      50%,90% { filter: brightness(5) drop-shadow(0 0 60px rgba(255,220,80,1)) drop-shadow(0 0 30px #fff); }
+      100%    { filter: brightness(1) drop-shadow(0 0 10px rgba(255,200,0,0.6)); }
+    }
+    @keyframes burst-icon-spin {
+      from { transform: rotate(0deg)   scale(1.1); }
+      to   { transform: rotate(360deg) scale(1.1); }
+    }
+    @keyframes burst-icon-fadeout {
+      0%   { opacity: 1; transform: scale(1.05); }
+      100% { opacity: 0; transform: scale(0.7); }
     }
   `;
   document.head.appendChild(burstStyle);
 
+  // フリーズオーバーレイ（ゲーム操作をブロック）
   const freeze = document.createElement('div');
   freeze.id = 'burst-clear-freeze';
-  freeze.style.cssText = 'position:fixed;inset:0;z-index:190;pointer-events:all;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;';
+  freeze.style.cssText = 'position:fixed;inset:0;z-index:190;pointer-events:all;background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;';
   const centerIcon = document.createElement('img');
   centerIcon.src = 'img/UI/image_merge_burst_icon.png';
-  centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;animation:burst-icon-pulse 0.6s ease-in-out infinite;';
+  centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;opacity:0;';
   freeze.appendChild(centerIcon);
   document.body.appendChild(freeze);
 
@@ -12953,31 +13133,63 @@ function onBurstClear() {
   eventState.burstFirstCleared = true;
   renderBurstSlot();
 
-  requestAnimationFrame(() => {
-    const items = generateBurstItems(BURST_RELEASE_COUNT);
-    items.forEach((item, i) => {
-      setTimeout(() => {
-        const emptyIdx = eventState.board.findIndex(c => c === null);
-        const imgSrc   = getBurstItemImgSrc(item);
-        if (emptyIdx !== -1) {
-          eventState.board[emptyIdx] = item;
-          flyFromElementToCell(centerIcon, emptyIdx, imgSrc);
-          setTimeout(() => renderEventBoard(), 390);
-        } else {
-          addToBurstStock(item);
-        }
-      }, i * 110);
-    });
+  // ② 1秒後：LvUp音 + Spin-in（0.8s）
+  setTimeout(() => {
+    playMergeSE('levelup');
+    centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;animation:burst-spin-in 0.8s cubic-bezier(0.17,0.89,0.32,1.49) forwards;';
 
-    // 全アニメ完了（20アイテム×110ms + 400ms余裕）+ 1秒待機後に再開
-    const totalMs = BURST_RELEASE_COUNT * 110 + 400 + 1000;
+    // Spin-in完了後：Flash（0.3s × 3回 = 0.9s）
     setTimeout(() => {
-      freeze.remove();
-      burstStyle.remove();
-      fillEventRequests();
-      renderEventRequest();
-    }, totalMs);
-  });
+      centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;transform:scale(1);animation-name:burst-icon-flash;animation-duration:0.25s;animation-timing-function:ease-in-out;animation-iteration-count:2;';
+
+      // ③ Flash完了後：サイレン音 + Spin + アイテム放出
+      setTimeout(() => {
+        playMergeSE('siren');
+        // 3回転して停止（fill:forwardsで最終状態を維持）
+        centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;animation-name:burst-icon-spin;animation-duration:0.45s;animation-timing-function:linear;animation-iteration-count:3;animation-fill-mode:forwards;';
+
+        const items = generateBurstItems(BURST_RELEASE_COUNT);
+        items.forEach((item, i) => {
+          setTimeout(() => {
+            const emptyIdx = eventState.board.findIndex(c => c === null);
+            const imgSrc   = getBurstItemImgSrc(item);
+            if (emptyIdx !== -1) {
+              eventState.board[emptyIdx] = item;
+              flyFromElementToCell(centerIcon, emptyIdx, imgSrc, true);
+              setTimeout(() => renderEventBoard(), 390);
+            } else {
+              addToBurstStock(item);
+            }
+          }, i * 110);
+        });
+
+        // 放出完了後：アイコン0.5秒表示 → フェードアウト → フリーズ解除
+        const totalMs = BURST_RELEASE_COUNT * 110 + 400 + 1000;
+        setTimeout(() => {
+          // スピン停止・静止表示（0.5s）
+          centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;opacity:1;transform:scale(1.05);filter:drop-shadow(0 0 16px rgba(255,200,0,0.9));';
+          // 0.5秒後にフェードアウト（0.35s）
+          setTimeout(() => {
+            centerIcon.style.cssText = 'width:160px;height:160px;object-fit:contain;pointer-events:none;animation:burst-icon-fadeout 0.35s ease-in forwards;';
+            setTimeout(() => {
+              freeze.remove();
+              burstStyle.remove();
+              fillEventRequests();
+              renderEventRequest();
+              const newBadges = [...document.querySelectorAll('#event-req-panel .req-burst-badge')];
+              newBadges.forEach(b => { b.style.visibility = 'hidden'; });
+              if (newBadges.length > 0) {
+                flyBadgesToRequests('#burst-slot-btn', 'img/UI/image_merge_burst_badge_p1.png',
+                  () => { newBadges.forEach(b => { b.style.visibility = ''; }); },
+                  (i) => { if (newBadges[i]) newBadges[i].style.visibility = ''; }
+                );
+              }
+            }, 350); // フェードアウト完了待ち
+          }, 500);   // 静止表示 0.5s
+        }, totalMs);
+      }, 500);   // Flash: 0.25s × 2
+    }, 800);     // Spin-in: 0.8s
+  }, 500);       // 0.5秒待機
 }
 
 // ========================================
@@ -13601,19 +13813,22 @@ function onEventFireGenTap(tappedCellIdx = null) {
 
   const slot = animFrom !== -1 ? findNearestEmptyEventCell(animFrom) : eventState.board.findIndex(c => c === null);
   if (slot !== -1) {
-    eventState.board[slot] = { chainId: SEIZO_CHAIN_ID, stage: finalStage };
-    playMergeSE('spawn');
-    discoverSeizoItem(finalStage); // 生成時に発見登録
     const imgSrc = chain.stageImages?.[finalStage - 1];
-    flyEventItemAnimation(animFrom !== -1 ? animFrom : slot, slot, imgSrc || chain.stages[finalStage - 1]);
+    _spawnReserved.add(slot);
+    playMergeSE('spawn');
+    flyEventItemAnimation(animFrom !== -1 ? animFrom : slot, slot, imgSrc || chain.stages[finalStage - 1], () => {
+      _spawnReserved.delete(slot);
+      eventState.board[slot] = { chainId: SEIZO_CHAIN_ID, stage: finalStage };
+      discoverSeizoItem(finalStage);
+      renderEventBoard();
+      renderEventRequest();
+    });
   }
   const genShowIdx = animFrom !== -1 ? animFrom : (slot !== -1 ? slot : 0);
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // 第三章ジェネレーター（鑑定台）タップ → KANTEITA_CHAINアイテムを生成
@@ -13662,19 +13877,22 @@ function onEventKanteGenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
-  eventState.board[emptyIdx] = { chainId: KANTEITA_CHAIN_ID, stage: finalStage };
-  playMergeSE('spawn');
-  discoverKanteItem(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
-  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { chainId: KANTEITA_CHAIN_ID, stage: finalStage };
+    discoverKanteItem(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // ========================================
@@ -13846,19 +14064,22 @@ function onEventKeikakuGenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
-  eventState.board[emptyIdx] = { chainId: KEIKAKU_CHAIN_ID, stage: finalStage };
-  playMergeSE('spawn');
-  discoverKeikakuItem(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
-  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { chainId: KEIKAKU_CHAIN_ID, stage: finalStage };
+    discoverKeikakuItem(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // ========================================
@@ -13939,20 +14160,23 @@ function onEventSnsGenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
-  eventState.board[emptyIdx] = { chainId: SNS_CHAIN_ID, stage: finalStage };
-  playMergeSE('spawn');
-  discoverSnsItem(finalStage);
   checkSnsGenLevelUp(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
-  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { chainId: SNS_CHAIN_ID, stage: finalStage };
+    discoverSnsItem(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // ========================================
@@ -14033,20 +14257,23 @@ function onEventClockGenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
-  eventState.board[emptyIdx] = { chainId: CLOCK_CHAIN_ID, stage: finalStage };
-  playMergeSE('spawn');
-  discoverClockItem(finalStage);
   checkClockGenLevelUp(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
-  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { chainId: CLOCK_CHAIN_ID, stage: finalStage };
+    discoverClockItem(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // ========================================
@@ -14127,20 +14354,23 @@ function onEventCh7GenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
-  eventState.board[emptyIdx] = { chainId: CH7_CHAIN_ID, stage: finalStage };
-  playMergeSE('spawn');
-  discoverCh7Item(finalStage);
   checkCh7GenLevelUp(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
-  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { chainId: CH7_CHAIN_ID, stage: finalStage };
+    discoverCh7Item(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // ========================================
@@ -14221,20 +14451,23 @@ function onEventCh8GenTap(tappedCellIdx = null) {
   }
 
   if (!debugState.infiniteEnergy) state.energy -= energyCost;
-  eventState.board[emptyIdx] = { chainId: CH8_CHAIN_ID, stage: finalStage };
-  playMergeSE('spawn');
-  discoverCh8Item(finalStage);
   checkCh8GenLevelUp(finalStage);
 
   const genShowIdx = animFrom !== -1 ? animFrom : emptyIdx;
   const imgSrc = chain.stageImages?.[finalStage - 1] || chain.stages[finalStage - 1];
-  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc);
+  _spawnReserved.add(emptyIdx);
+  playMergeSE('spawn');
+  flyEventItemAnimation(genShowIdx, emptyIdx, imgSrc, () => {
+    _spawnReserved.delete(emptyIdx);
+    eventState.board[emptyIdx] = { chainId: CH8_CHAIN_ID, stage: finalStage };
+    discoverCh8Item(finalStage);
+    renderEventBoard();
+    renderEventRequest();
+  });
   if (isPower) showPowerOnCell(genShowIdx, 'event-board');
   else if (isLucky) showLuckyOnCell(genShowIdx, 'event-board');
 
   renderEventHeader();
-  renderEventBoard();
-  renderEventRequest();
 }
 
 // ========================================
@@ -14262,7 +14495,8 @@ function startEvDrag(e, fromIdx) {
     if (step.type === 'request_focus') return;
     if (step.type === 'gen_focus') {
       // gen_focus: ジェネレーターはタップ扱い、アイテムはブロック
-      if (item.isEventGen) { onEventGenTap(fromIdx); return; }
+      // tapHandled=trueで後続clickイベントの二重発火を防ぐ
+      if (item.isEventGen) { evDrag.tapHandled = true; onEventGenTap(fromIdx); return; }
       return;
     }
     if (step.type === 'merge_focus' && item.isEventGen) return;
@@ -14913,9 +15147,38 @@ function requestAppFullscreen() {
 // タイトル画面スタートボタン
 document.getElementById('title-start-btn').addEventListener('click', () => {
   requestAppFullscreen();
+  playMergeSE('complete');
   const ts = document.getElementById('title-screen');
-  ts.classList.add('title-fade-out');
-  setTimeout(() => ts.classList.add('hidden'), 600);
+  // 0.5秒後：全画面ブラックを表示しつつタイトルフェードアウト開始
+  setTimeout(() => {
+    // ブラックオーバーレイを先に置く（フェードアウト中は黒画面になる）
+    const blackOverlay = document.createElement('div');
+    blackOverlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#000;opacity:1;pointer-events:none;transition:opacity 0.4s ease;';
+    document.body.appendChild(blackOverlay);
+
+    ts.classList.add('title-fade-out');
+
+    // フェードアウト完了後にゲーム画面を初期描画
+    setTimeout(() => {
+      ts.classList.add('hidden');
+
+      document.getElementById('event-screen').classList.remove('hidden');
+      document.getElementById('navi-hint-char-wrap').classList.remove('stock-hidden');
+      renderEventBoard();
+      renderEventGenerators();
+      renderEventHeader();
+      renderEventRequest();
+      renderTutorialPanel();
+      requestAnimationFrame(() => requestAnimationFrame(updateStickyHeights));
+      setTimeout(updateStickyHeights, 300);
+
+      // 描画完了を待ってからブラックをフェードアウト
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        blackOverlay.style.opacity = '0';
+        setTimeout(() => blackOverlay.remove(), 420);
+      }));
+    }, 600);
+  }, 500);
 });
 
 // ===== 画像プリロード =====
@@ -15059,45 +15322,38 @@ document.getElementById('title-start-btn').addEventListener('click', () => {
   const total    = PRELOAD_PATHS.length;
   let   loaded   = 0;
   const barEl    = document.getElementById('title-loading-bar');
-  const textEl   = document.getElementById('title-loading-text');
+  const textEl    = document.getElementById('title-loading-text');
   const loadingEl = document.getElementById('title-loading');
-  const startBtn = document.getElementById('title-start-btn');
+  const startBtn  = document.getElementById('title-start-btn');
+  const startTime = Date.now();
+  const MIN_MS    = 1800; // キャッシュ読み込み時もローディングを最低1.8秒表示
 
   function onProgress() {
     loaded++;
     const pct = Math.round((loaded / total) * 100);
     if (barEl) barEl.style.width = pct + '%';
     if (textEl) textEl.textContent = `読み込み中... ${pct}%`;
-    if (loaded >= total) onComplete();
+    if (loaded >= total) {
+      const elapsed   = Date.now() - startTime;
+      const remaining = Math.max(0, MIN_MS - elapsed);
+      setTimeout(onComplete, remaining);
+    }
   }
 
   function onComplete() {
     if (loadingEl) loadingEl.classList.add('hidden');
-    if (startBtn) {
-      startBtn.style.display = '';
-    }
+    if (startBtn) startBtn.style.display = '';
   }
 
   PRELOAD_PATHS.forEach(src => {
     const img = new Image();
     img.onload  = onProgress;
     img.onerror = onProgress; // エラーでも進める
-    img.src     = src;
+    // キャッシュバスティング：常にサーバーから再取得させる
+    img.src = src + '?v=' + Date.now();
   });
 })();
 
-// 起動時にイベントマップ①を最初に表示
-document.getElementById('event-screen').classList.remove('hidden');
-document.getElementById('navi-hint-char-wrap').classList.remove('stock-hidden');
-renderEventBoard();
-renderEventGenerators();
-renderEventHeader();
-renderEventRequest();
-renderTutorialPanel();
-
-// DOM描画完了後にヘッダー高さを計測（2段RFAで確実にレイアウト後に実行）
-requestAnimationFrame(() => requestAnimationFrame(updateStickyHeights));
-setTimeout(updateStickyHeights, 300);
 
 // しゃぼん玉 → コイン変換タイマー（5秒ごとにチェック、60秒経過でLv1コインに変換）
 setInterval(() => {
@@ -15123,9 +15379,11 @@ setInterval(() => {
 
 // 依頼バーストポップアップを開く
 function openBurstPopup() {
-  const count = eventState.burstCount;
+  const count   = eventState.burstCount;
+  const isClear = count >= BURST_MAX;
   document.getElementById('burst-popup-count-label').textContent = `${count}/${BURST_MAX}`;
   document.getElementById('burst-popup-bar-fill').style.width = `${(count / BURST_MAX) * 100}%`;
+  document.getElementById('burst-popup-icon').classList.toggle('burst-clear-attention', isClear);
   document.getElementById('burst-popup-overlay').classList.remove('hidden');
 }
 
@@ -15314,15 +15572,16 @@ document.getElementById('burst-popup-overlay').addEventListener('click', e => {
     document.getElementById('burst-popup-overlay').classList.add('hidden');
   }
 });
+document.getElementById('burst-popup-icon').addEventListener('click', () => {
+  if (eventState.burstCount < BURST_MAX) return;
+  document.getElementById('burst-popup-overlay').classList.add('hidden');
+  onBurstClear();
+});
 
-// 依頼バースト ボタン：CLEAR→アイテム放出 / それ以外→ポップアップ表示
+// 依頼バースト ボタン：常にポップアップを開く（CLEAR時は発動ボタンが出現）
 document.getElementById('burst-slot-btn').addEventListener('click', () => {
   if (!eventState.burstUnlocked) return;
-  if (eventState.burstCount >= BURST_MAX) {
-    onBurstClear();
-  } else {
-    openBurstPopup();
-  }
+  openBurstPopup();
 });
 
 // Vol1 スロットボタン → Vol1 画面を開く

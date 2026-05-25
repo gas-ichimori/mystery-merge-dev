@@ -2655,6 +2655,10 @@ body {
 /* ===== シャボン玉 ===== */
 .cell.has-bubble {
   position: relative;
+}
+/* セルの中身（アイテム画像）だけ浮く */
+.cell.has-bubble .item-img,
+.cell.has-bubble .item-emoji {
   animation: bubble-float 2.2s ease-in-out infinite;
 }
 @keyframes bubble-float {
@@ -2672,13 +2676,14 @@ body {
     transparent 70%
   );
   border: 2px solid rgba(150,200,255,0.65);
-  animation: bubble-shimmer 2s ease-in-out infinite;
+  /* shimmer は opacity のみ（transform を bubble-float と競合させない） */
+  animation: bubble-shimmer 2s ease-in-out infinite, bubble-float 2.2s ease-in-out infinite;
   pointer-events: none;
   z-index: 5;
 }
 @keyframes bubble-shimmer {
-  0%, 100% { opacity: 0.7; transform: scale(1); }
-  50%       { opacity: 1;   transform: scale(1.06); }
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
 }
 @keyframes bubble-pop {
   0%   { transform: scale(1);   opacity: 1; }
@@ -2777,7 +2782,9 @@ body {
   80%  { transform: scale(0.92); opacity: 1; }
   100% { transform: scale(1.0);  opacity: 1; }
 }
-.cell.has-bubble.bubble-appear {
+.cell.has-bubble.bubble-appear .item-img,
+.cell.has-bubble.bubble-appear .item-emoji,
+.cell.has-bubble.bubble-appear .bubble-overlay {
   animation: bubble-appear 0.45s ease-out forwards !important;
 }
 
@@ -3140,26 +3147,34 @@ body {
   border-radius: 20px;
   padding: 6px 10px;
   box-sizing: border-box;
-  margin-bottom: 42px;
+  margin-bottom: 12px;
 }
 #burst-popup-icon {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
   flex-shrink: 0;
+  transition: transform 0.2s;
+}
+#burst-popup-icon.burst-clear-attention {
+  animation: burst-icon-attention 0.8s ease-in-out infinite;
+}
+@keyframes burst-icon-attention {
+  0%,100% { transform: scale(1);    filter: drop-shadow(0 0 4px rgba(255,200,0,0.5)); }
+  50%      { transform: scale(1.25); filter: drop-shadow(0 0 14px rgba(255,200,0,1)); }
 }
 #burst-popup-bar-wrap {
   flex: 1;
-  height: 14px;
+  height: 8px;
   background: rgba(255,255,255,0.18);
-  border-radius: 7px;
+  border-radius: 4px;
   overflow: hidden;
 }
 #burst-popup-bar-fill {
   height: 100%;
   width: 0%;
   background: linear-gradient(to right, #e8920a, #f9dc40);
-  border-radius: 7px;
+  border-radius: 4px;
   transition: width 0.4s ease;
 }
 #burst-popup-count-label {
@@ -3171,6 +3186,8 @@ body {
   text-align: right;
   text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
+
+#burst-popup-icon.burst-clear-attention { cursor: pointer; }
 
 #burst-popup-close {
   position: absolute;
@@ -4411,4 +4428,190 @@ body {
   font-weight: bold;
   min-width: 20px;
   text-align: left;
+}
+
+/* ========================================
+   アニメーション確認 デバッグUI
+   ======================================== */
+.debug-anim-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.debug-anim-preview-box {
+  width: 110px;
+  height: 110px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#debug-anim-item {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#debug-anim-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.debug-anim-label-text {
+  font-size: 11px;
+  color: #aaa;
+  text-align: center;
+}
+.debug-anim-cat-label {
+  font-size: 11px;
+  color: #c9a66b;
+  font-weight: bold;
+  padding: 2px 0 0;
+}
+.debug-anim-btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.debug-anim-btn {
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  color: #ddd;
+  cursor: pointer;
+  min-height: 26px;
+  font-family: inherit;
+}
+.debug-anim-btn.active {
+  background: rgba(255,200,80,0.35);
+  border-color: #f9c846;
+  color: #f9c846;
+}
+
+/* 出現 */
+@keyframes dbg-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.3); opacity: 1; }
+  80%  { transform: scale(0.9); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes dbg-bounce {
+  0%   { transform: translateY(-150px) scale(0.5); opacity: 0; }
+  45%  { transform: translateY(0) scale(1.08) scaleX(0.92); opacity: 1; }
+  62%  { transform: translateY(-22px) scale(0.97); }
+  75%  { transform: translateY(0) scale(1.04) scaleX(0.96); }
+  87%  { transform: translateY(-8px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes dbg-elastic {
+  0%   { transform: scale(0); opacity: 0; }
+  28%  { transform: scale(1.45); opacity: 1; }
+  45%  { transform: scale(0.72); }
+  62%  { transform: scale(1.18); }
+  78%  { transform: scale(0.93); }
+  90%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+@keyframes dbg-float-in {
+  0%   { transform: translateY(28px); opacity: 0; }
+  60%  { transform: translateY(-4px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+@keyframes dbg-spin-in {
+  0%   { transform: rotate(200deg) scale(0); opacity: 0; }
+  65%  { transform: rotate(-15deg) scale(1.1); opacity: 1; }
+  82%  { transform: rotate(6deg) scale(0.97); }
+  100% { transform: rotate(0deg) scale(1); opacity: 1; }
+}
+@keyframes dbg-flip-in {
+  0%   { transform: perspective(300px) rotateY(90deg) scale(0.6); opacity: 0; }
+  55%  { transform: perspective(300px) rotateY(-8deg) scale(1.05); opacity: 1; }
+  100% { transform: perspective(300px) rotateY(0deg) scale(1); opacity: 1; }
+}
+
+/* マージ後出現 */
+@keyframes dbg-zoom-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  65%  { transform: scale(1.28); opacity: 1; }
+  82%  { transform: scale(0.92); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes dbg-flash-pop {
+  0%   { transform: scale(0.1); filter: brightness(4); opacity: 0.3; }
+  25%  { transform: scale(1.22); filter: brightness(2.5); opacity: 1; }
+  55%  { transform: scale(0.94); filter: brightness(1.3); }
+  100% { transform: scale(1); filter: brightness(1); opacity: 1; }
+}
+@keyframes dbg-slam-in {
+  0%   { transform: scaleX(2.8) scaleY(0.08); opacity: 0.4; }
+  35%  { transform: scaleX(0.75) scaleY(1.35); opacity: 1; }
+  55%  { transform: scaleX(1.12) scaleY(0.88); }
+  72%  { transform: scaleX(0.95) scaleY(1.05); }
+  88%  { transform: scaleX(1.03) scaleY(0.97); }
+  100% { transform: scale(1); }
+}
+@keyframes dbg-drop-bounce {
+  0%   { transform: translateY(-200px) scaleY(0.8); opacity: 0; }
+  38%  { transform: translateY(0) scaleY(1.12) scaleX(0.88); opacity: 1; }
+  52%  { transform: translateY(-38px) scaleY(0.95); }
+  63%  { transform: translateY(0) scaleY(1.06); }
+  73%  { transform: translateY(-16px) scaleY(0.98); }
+  82%  { transform: translateY(0) scaleY(1.02); }
+  90%  { transform: translateY(-6px); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* 待機（ループ） */
+@keyframes dbg-idle-bob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+@keyframes dbg-idle-pulse {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.15); }
+}
+@keyframes dbg-idle-glow {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 0px rgba(255,220,100,0)); }
+  50%       { filter: brightness(1.5) drop-shadow(0 0 14px rgba(255,220,100,0.9)); }
+}
+@keyframes dbg-idle-swing {
+  0%, 100% { transform: rotate(-8deg); transform-origin: bottom center; }
+  50%       { transform: rotate(8deg);  transform-origin: bottom center; }
+}
+
+/* タップ反応 */
+@keyframes dbg-tap-squish {
+  0%   { transform: scale(1); }
+  18%  { transform: scaleX(1.55) scaleY(0.55); }
+  42%  { transform: scaleX(0.82) scaleY(1.28); }
+  65%  { transform: scaleX(1.06) scaleY(0.94); }
+  82%  { transform: scaleX(0.98) scaleY(1.02); }
+  100% { transform: scale(1); }
+}
+@keyframes dbg-tap-jump {
+  0%   { transform: translateY(0) scale(1); }
+  28%  { transform: translateY(-44px) scale(1.1); }
+  55%  { transform: translateY(-2px) scale(1.02); }
+  72%  { transform: translateY(-18px) scale(1.05); }
+  88%  { transform: translateY(0) scale(1.01); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes dbg-tap-spin {
+  0%   { transform: rotate(0deg) scale(1); }
+  45%  { transform: rotate(200deg) scale(1.12); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+@keyframes dbg-tap-rubber {
+  0%   { transform: scale(1); }
+  22%  { transform: scaleX(1.6) scaleY(0.45); }
+  48%  { transform: scaleX(0.68) scaleY(1.45); }
+  70%  { transform: scaleX(1.18) scaleY(0.82); }
+  85%  { transform: scaleX(0.94) scaleY(1.06); }
+  100% { transform: scale(1); }
 }
