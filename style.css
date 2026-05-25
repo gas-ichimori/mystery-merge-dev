@@ -3357,6 +3357,19 @@ body {
   position: relative;
 }
 .burst-stock-item:active { opacity: 0.65; }
+.burst-stock-item--new {
+  animation: stock-item-attention 0.65s ease-in-out infinite;
+}
+@keyframes stock-item-attention {
+  0%, 100% {
+    border-color: rgba(200, 155, 35, 0.45);
+    box-shadow: none;
+  }
+  50% {
+    border-color: rgba(255, 225, 60, 1);
+    box-shadow: 0 0 7px rgba(255, 220, 60, 1), 0 0 16px rgba(255, 200, 0, 0.6);
+  }
+}
 .burst-stock-item img {
   width: 32px;
   height: 32px;
