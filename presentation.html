@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>繋がる事件簿 マージパズル — 提案資料</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #f0d070;
+    --dark: #0d0d1a;
+    --dark2: #161628;
+    --dark3: #1e1e35;
+    --text: #e8e0d0;
+    --text-dim: #a09880;
+    --accent: #e84040;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ── Slide Container ── */
+  #deck {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 40px 100px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateX(60px);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* ── Navigation ── */
+  #nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 100;
+    background: rgba(13,13,26,0.85);
+    padding: 10px 28px;
+    border-radius: 40px;
+    border: 1px solid rgba(201,168,76,0.3);
+    backdrop-filter: blur(8px);
+  }
+  #nav button {
+    background: none;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #nav button:hover { background: rgba(201,168,76,0.2); }
+  #nav button:disabled { opacity: 0.25; cursor: default; }
+  #slide-counter { color: var(--text-dim); font-size: 13px; letter-spacing: 2px; min-width: 60px; text-align: center; }
+  #dots { display: flex; gap: 8px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(201,168,76,0.3);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot.active { background: var(--gold); transform: scale(1.3); }
+
+  /* ── Slide Number Badge ── */
+  .slide-num {
+    position: absolute;
+    top: 24px; right: 32px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  /* ── Common Parts ── */
+  .gold-line {
+    width: 80px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 12px auto;
+  }
+  .tag {
+    display: inline-block;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 10px;
+    letter-spacing: 3px;
+    padding: 3px 14px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+  h2.slide-title {
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 900;
+    color: var(--gold-light);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .sub-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 1 — COVER
+  ───────────────────────────────*/
+  #slide1 {
+    background: radial-gradient(ellipse at 30% 50%, #1a1a3a 0%, var(--dark) 70%);
+  }
+  #slide1::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(201,168,76,0.04) 60px),
+      repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(201,168,76,0.04) 60px);
+    pointer-events: none;
+  }
+  .cover-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    z-index: 1;
+    text-align: center;
+  }
+  .cover-game-title {
+    font-family: 'Noto Serif JP', serif;
+    font-size: clamp(22px, 4vw, 50px);
+    font-weight: 700;
+    color: var(--gold-light);
+    text-shadow: 0 0 40px rgba(201,168,76,0.5);
+    letter-spacing: 4px;
+    line-height: 1.3;
+  }
+  .cover-sub {
+    font-size: clamp(12px, 1.4vw, 16px);
+    color: var(--text-dim);
+    letter-spacing: 5px;
+  }
+  .cover-desc {
+    font-size: clamp(11px, 1.2vw, 14px);
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+  .cover-logo {
+    max-width: min(260px, 38vw);
+    max-height: min(28vh, 220px);
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.4));
+  }
+  .cover-tagline {
+    font-size: clamp(12px, 1.3vw, 15px);
+    color: var(--text);
+    max-width: 580px;
+    line-height: 1.8;
+  }
+  .cover-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+  }
+  .cover-badge {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold);
+    padding: 4px 12px;
+    border-radius: 40px;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+  .cover-creator {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 2 — MARKET
+  ───────────────────────────────*/
+  #slide2 {
+    background: linear-gradient(135deg, #0d0d20 0%, #0d1a2a 100%);
+    padding: 36px 48px;
+  }
+  .market-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    width: 100%;
+    max-width: 1100px;
+    margin-top: 24px;
+  }
+  .market-col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Benchmark Cards */
+  .bench-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bench-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .bench-card.bench-a::after { background: linear-gradient(90deg, #c9a84c, #f0d070); }
+  .bench-card.bench-b::after { background: linear-gradient(90deg, #4a8fc9, #70c0f0); }
+  .bench-game-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 14px;
+  }
+  .bench-card.bench-b .bench-game-name { color: #70c0f0; }
+  .bench-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .bench-stat {
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .bench-stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .bench-stat-val {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .bench-stat-note { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+  /* Market Total */
+  .market-total {
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.03));
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 18px 24px;
+    text-align: center;
+  }
+  .market-total-num {
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 900;
+    color: var(--gold-light);
+  }
+  .market-total-label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  /* Target Personas */
+  .target-section { display: flex; flex-direction: column; gap: 14px; }
+  .target-title { font-size: 13px; color: var(--gold); letter-spacing: 2px; font-weight: 700; }
+  .persona-cards { display: flex; flex-direction: column; gap: 10px; }
+  .persona-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 12px 16px;
+  }
+  .persona-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .persona-icon.primary { background: rgba(201,168,76,0.15); border: 1.5px solid rgba(201,168,76,0.4); }
+  .persona-icon.secondary { background: rgba(80,160,255,0.1); border: 1.5px solid rgba(80,160,255,0.3); }
+  .persona-info { flex: 1; }
+  .persona-type { font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-bottom: 3px; }
+  .persona-type.sec { color: #70b0ff; }
+  .persona-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .persona-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; line-height: 1.5; }
+  .persona-likes { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .like-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.25);
+    color: var(--gold);
+  }
+  .like-tag.blue {
+    background: rgba(80,160,255,0.1);
+    border-color: rgba(80,160,255,0.25);
+    color: #70b0ff;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 3 — GAME OVERVIEW
+  ───────────────────────────────*/
+  #slide3 {
+    background: linear-gradient(135deg, #0d1a0d 0%, #0d0d1a 100%);
+    padding: 32px 48px;
+  }
+  .overview-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 32px;
+    width: 100%;
+    max-width: 1100px;
+    margin-top: 24px;
+    align-items: start;
+  }
+  .overview-screens {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+  }
+  .screen-frame {
+    background: var(--dark3);
+    border: 2px solid rgba(201,168,76,0.3);
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .screen-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .screen-frame.wide {
+    grid-column: 1 / -1;
+    aspect-ratio: 16/9;
+  }
+  .screen-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 20px 10px 8px;
+    font-size: 10px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  .screen-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+  }
+  .overview-features { display: flex; flex-direction: column; gap: 14px; }
+  .feature-block {
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 18px;
+  }
+  .feature-block.green { border-left-color: #4caf50; }
+  .feature-block.blue  { border-left-color: #4080ff; }
+  .feature-block.red   { border-left-color: #e84040; }
+  .feature-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+  }
+  .feature-block.green .feature-title { color: #80d880; }
+  .feature-block.blue  .feature-title { color: #80aaff; }
+  .feature-block.red   .feature-title { color: #ff8080; }
+  .feature-text {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .item-flow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .item-flow img {
+    width: 32px; height: 32px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+  }
+  .item-flow-arrow { color: var(--gold); font-size: 14px; font-weight: bold; }
+
+  /* ─────────────────────────────
+     SLIDE 4 — AI AUTOMATION
+  ───────────────────────────────*/
+  #slide4 {
+    background: radial-gradient(ellipse at 70% 30%, #1a0d2a 0%, var(--dark) 60%);
+    padding: 32px 48px;
+  }
+  .ai-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    width: 100%;
+    max-width: 1000px;
+    margin-top: 20px;
+  }
+  .ai-flow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .ai-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 110px;
+    max-width: 130px;
+  }
+  .ai-node-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    position: relative;
+  }
+  .ai-node-icon.human {
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05));
+    border: 2px solid var(--gold);
+  }
+  .ai-node-icon.ai-core {
+    width: 90px; height: 90px;
+    font-size: 36px;
+    background: linear-gradient(135deg, rgba(100,50,200,0.3), rgba(50,100,255,0.2));
+    border: 2px solid #8060ff;
+    box-shadow: 0 0 30px rgba(120,80,255,0.4);
+    animation: ai-pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes ai-pulse {
+    0%,100% { box-shadow: 0 0 20px rgba(120,80,255,0.3); }
+    50%      { box-shadow: 0 0 50px rgba(120,80,255,0.7); }
+  }
+  .ai-node-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .ai-node-sub { font-size: 10px; color: var(--text-dim); text-align: center; }
+  .ai-arrow {
+    color: var(--gold);
+    font-size: 24px;
+    opacity: 0.7;
+  }
+  .ai-outputs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    width: 100%;
+  }
+  .ai-output-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 16px 14px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .ai-output-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+  }
+  .ai-output-card:nth-child(1)::before { background: #c9a84c; }
+  .ai-output-card:nth-child(2)::before { background: #4caf50; }
+  .ai-output-card:nth-child(3)::before { background: #4080ff; }
+  .ai-output-card:nth-child(4)::before { background: #e84040; }
+  .ai-output-icon-row {
+    display: flex; justify-content: center; align-items: center; gap: 4px;
+    min-height: 52px;
+    margin-bottom: 8px;
+  }
+  .ai-output-icon-row img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+  }
+  .ai-output-title {
+    font-size: 13px; font-weight: 700; color: var(--text);
+    margin-bottom: 4px;
+  }
+  .ai-output-desc { font-size: 10px; color: var(--text-dim); line-height: 1.6; }
+  .ai-infinite-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(201,168,76,0.2), rgba(201,168,76,0.05));
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 11px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 2px;
+    margin-top: 16px;
+  }
+
+  /* ─────────────────────────────
+     SLIDE 5 — MONETIZATION
+  ───────────────────────────────*/
+  #slide5 {
+    background: linear-gradient(135deg, #1a0d0d 0%, #0d0d1a 100%);
+    padding: 32px 48px;
+  }
+  .mono-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 1100px;
+    margin-top: 24px;
+  }
+  .mono-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .mono-card:hover { border-color: rgba(201,168,76,0.5); }
+  .mono-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0; height: 3px;
+  }
+  .mono-card:nth-child(1)::after { background: linear-gradient(90deg, #c9a84c, #f0d070); }
+  .mono-card:nth-child(2)::after { background: linear-gradient(90deg, #4caf50, #80ff80); }
+  .mono-card:nth-child(3)::after { background: linear-gradient(90deg, #e84040, #ff8080); }
+  .mono-icon { font-size: 36px; }
+  .mono-title { font-size: 18px; font-weight: 700; color: var(--gold-light); }
+  .mono-card:nth-child(2) .mono-title { color: #80d880; }
+  .mono-card:nth-child(3) .mono-title { color: #ff8080; }
+  .mono-points { display: flex; flex-direction: column; gap: 8px; }
+  .mono-point {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: var(--text-dim); line-height: 1.6;
+  }
+  .mono-point::before {
+    content: '▶';
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 8px;
+  }
+  .mono-card:nth-child(2) .mono-point::before { color: #4caf50; }
+  .mono-card:nth-child(3) .mono-point::before { color: #e84040; }
+  .mono-potential {
+    margin-top: auto;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+  .mono-potential strong { color: var(--gold-light); display: block; font-size: 13px; margin-bottom: 3px; }
+  .mono-card:nth-child(2) .mono-potential strong { color: #80d880; }
+  .mono-card:nth-child(3) .mono-potential strong { color: #ff8080; }
+
+  .mono-bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 1100px;
+    margin-top: 16px;
+  }
+  .mono-summary {
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .mono-sum-title { font-size: 13px; color: var(--gold); letter-spacing: 2px; margin-bottom: 12px; font-weight: 700; }
+  .mono-benchmarks { display: flex; flex-direction: column; gap: 8px; }
+  .mono-bm-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .mono-bm-name { font-size: 12px; color: var(--text-dim); }
+  .mono-bm-val { font-size: 13px; font-weight: 700; color: var(--text); }
+  .mono-roadmap {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .roadmap-title { font-size: 13px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 12px; font-weight: 700; }
+  .roadmap-items { display: flex; flex-direction: column; gap: 8px; }
+  .roadmap-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 12px; color: var(--text-dim);
+  }
+  .roadmap-phase {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Decorative Elements ── */
+  .deco-corner {
+    position: absolute;
+    width: 60px; height: 60px;
+    opacity: 0.2;
+  }
+  .deco-corner.tl { top: 20px; left: 20px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+  .deco-corner.br { bottom: 80px; right: 20px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 1 — COVER
+  ═══════════════════════════════════════ -->
+  <div class="slide active" id="slide1">
+    <div class="deco-corner tl"></div>
+    <div class="deco-corner br"></div>
+    <span class="slide-num">01 / 05</span>
+
+    <div class="cover-inner">
+      <div class="tag">BUSINESS PROPOSAL 2026</div>
+
+      <img class="cover-logo" src="img/UI/image_merge_title_main_01.png"
+           alt="繋がる事件簿 マージパズル"
+           onerror="this.style.display='none'; document.getElementById('cover-title-fallback').style.display='block'">
+      <h1 class="cover-game-title" id="cover-title-fallback" style="display:none">
+        繋がる事件簿<br>マージパズル
+      </h1>
+
+      <div class="gold-line"></div>
+
+      <p class="cover-sub">販売パートナーシップ 提案資料</p>
+      <p class="cover-tagline">
+        探偵ストーリー × マージパズルを融合した、<br>
+        完全AI自動生成対応の次世代モバイルゲーム
+      </p>
+
+      <div class="cover-badges">
+        <span class="cover-badge">🔍 探偵ミステリー</span>
+        <span class="cover-badge">🎮 マージパズル</span>
+        <span class="cover-badge">🤖 AI全自動制作</span>
+        <span class="cover-badge">♾️ 無限章制作</span>
+        <span class="cover-badge">📱 HTML5 / モバイル対応</span>
+      </div>
+
+      <p class="cover-creator">制作 : 一森昌輝 ／ GA-S Inc.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 2 — MARKET
+  ═══════════════════════════════════════ -->
+  <div class="slide" id="slide2">
+    <div class="deco-corner tl"></div>
+    <div class="deco-corner br"></div>
+    <span class="slide-num">02 / 05</span>
+
+    <div class="tag">MARKET ANALYSIS</div>
+    <h2 class="slide-title">マージパズルゲームの市場感</h2>
+    <div class="gold-line"></div>
+
+    <div class="market-layout">
+      <!-- 左列：ベンチマーク -->
+      <div class="market-col">
+        <div class="bench-card bench-a">
+          <div class="bench-game-name">🏠 Merge Mansion</div>
+          <div class="bench-stats">
+            <div class="bench-stat">
+              <div class="bench-stat-label">月間売上（推定）</div>
+              <div class="bench-stat-val">約20億円+</div>
+              <div class="bench-stat-note">グローバル / 2023〜2024年</div>
+            </div>
+            <div class="bench-stat">
+              <div class="bench-stat-label">累計DL数</div>
+              <div class="bench-stat-val">6,000万+</div>
+              <div class="bench-stat-note">iOS + Android</div>
+            </div>
+            <div class="bench-stat">
+              <div class="bench-stat-label">メインユーザー</div>
+              <div class="bench-stat-val">女性25〜45歳</div>
+              <div class="bench-stat-note">主婦・OL層</div>
+            </div>
+            <div class="bench-stat">
+              <div class="bench-stat-label">継続要因</div>
+              <div class="bench-stat-val">謎めいたストーリー</div>
+              <div class="bench-stat-note">ドラマ性・キャラへの共感</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bench-card bench-b">
+          <div class="bench-game-name">⚓ Gossip Harbor</div>
+          <div class="bench-stats">
+            <div class="bench-stat">
+              <div class="bench-stat-label">月間売上（推定）</div>
+              <div class="bench-stat-val">約8億円+</div>
+              <div class="bench-stat-note">グローバル / 2023年</div>
+            </div>
+            <div class="bench-stat">
+              <div class="bench-stat-label">累計DL数</div>
+              <div class="bench-stat-val">2,000万+</div>
+              <div class="bench-stat-note">iOS + Android</div>
+            </div>
+            <div class="bench-stat">
+              <div class="bench-stat-label">コアループ</div>
+              <div class="bench-stat-val">ドラマ×マージ</div>
+              <div class="bench-stat-note">感情移入型ストーリー</div>
+            </div>
+            <div class="bench-stat">
+              <div class="bench-stat-label">継続要因</div>
+              <div class="bench-stat-val">話題性・人間関係</div>
+              <div class="bench-stat-note">SNS拡散しやすい展開</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="market-total">
+          <div class="bench-stat-label" style="margin-bottom:6px;">マージゲーム市場規模（グローバル）</div>
+          <div class="market-total-num">約3,000億円 / 年</div>
+          <div class="market-total-label">継続成長中 — 女性向けカジュアル市場の主力ジャンル</div>
+        </div>
+      </div>
+
+      <!-- 右列：ターゲット -->
+      <div class="market-col">
+        <div class="target-section">
+          <div class="target-title">▶ TARGET AUDIENCE</div>
+          <div class="persona-cards">
+
+            <div class="persona-card">
+              <div class="persona-icon primary" style="overflow:hidden; padding:0;">
+                <img src="img/Presentation/target_female.png" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+              </div>
+              <div class="persona-info">
+                <div class="persona-type">PRIMARY TARGET</div>
+                <div class="persona-name">主婦・OL層 女性 25〜45歳</div>
+                <div class="persona-sub">漢字が読めるミステリー好き。火曜サスペンス・コナン視聴者。</div>
+                <div class="persona-likes">
+                  <span class="like-tag">🔍 探偵もの</span>
+                  <span class="like-tag">🌸 火曜サスペンス</span>
+                  <span class="like-tag">🕵️ 名探偵コナン</span>
+                  <span class="like-tag">📱 スマホゲーム</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-icon primary">👧</div>
+              <div class="persona-info">
+                <div class="persona-type">PRIMARY TARGET</div>
+                <div class="persona-name">女子学生〜若手女性 13〜24歳</div>
+                <div class="persona-sub">アニメ・漫画好き。コナン世代。SNSで拡散しやすい属性。</div>
+                <div class="persona-likes">
+                  <span class="like-tag">📚 漫画・アニメ</span>
+                  <span class="like-tag">🕵️ 名探偵コナン</span>
+                  <span class="like-tag">💬 SNS共有</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="persona-card">
+              <div class="persona-icon secondary" style="overflow:hidden; padding:0;">
+                <img src="img/Presentation/target_male.png" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+              </div>
+              <div class="persona-info">
+                <div class="persona-type sec">SECONDARY TARGET</div>
+                <div class="persona-name">探偵もの好き 男性 20〜40歳</div>
+                <div class="persona-sub">ミステリー小説・推理ゲーム愛好家。謎解き・伏線回収が好き。</div>
+                <div class="persona-likes">
+                  <span class="like-tag blue">📖 ミステリー</span>
+                  <span class="like-tag blue">🎯 謎解き</span>
+                  <span class="like-tag blue">🎮 推理ゲーム</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.2); border-radius: 10px; padding: 14px 18px; margin-top: 4px;">
+          <div style="font-size:11px; color: var(--gold); letter-spacing:2px; font-weight:700; margin-bottom:8px;">JAPAN POTENTIAL</div>
+          <div style="font-size:12px; color: var(--text-dim); line-height:1.8;">
+            国内ミステリードラマ視聴者 <strong style="color:var(--text);">2,000万人超</strong>　/　名探偵コナン国内ファン <strong style="color:var(--text);">1,500万人超</strong><br>
+            マージゲーム国内MAU成長率 <strong style="color:var(--gold-light);">年間+35%</strong>（2023年→2024年推計）
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 3 — GAME OVERVIEW
+  ═══════════════════════════════════════ -->
+  <div class="slide" id="slide3">
+    <div class="deco-corner tl"></div>
+    <div class="deco-corner br"></div>
+    <span class="slide-num">03 / 05</span>
+
+    <div class="tag">GAME OVERVIEW</div>
+    <h2 class="slide-title">ゲーム概要</h2>
+    <div class="gold-line"></div>
+
+    <div class="overview-layout">
+      <!-- 左：ゲーム画面モックアップ -->
+      <div class="overview-screens" style="display:flex; flex-direction:column; gap:10px;">
+
+        <!-- ① メインゲームボード -->
+        <div class="screen-frame" style="aspect-ratio:unset; flex:1; min-height:0; border-radius:14px; overflow:hidden; position:relative;">
+          <!-- 背景 -->
+          <img src="img/bg/image_merge_bg.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.7;">
+          <!-- 擬似ゲームUI -->
+          <div style="position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column;">
+            <!-- ヘッダーバー -->
+            <div style="background:rgba(50,30,10,0.9);padding:5px 10px;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(201,168,76,0.3);">
+              <img src="img/UI/image_merge_navi_hp.png" style="height:20px;object-fit:contain;" onerror="this.style.display='none'">
+              <span style="font-size:10px;color:#fff;background:rgba(80,160,255,0.5);border-radius:10px;padding:1px 8px;">25</span>
+              <img src="img/UI/image_merge_icon_coin01.png" style="height:20px;object-fit:contain;" onerror="this.style.display:'none'">
+              <span style="font-size:10px;color:#fff;background:rgba(80,160,255,0.5);border-radius:10px;padding:1px 8px;">12,400</span>
+              <img src="img/UI/image_merge_navi_daiya.png" style="height:20px;object-fit:contain;" onerror="this.style.display='none'">
+              <span style="font-size:10px;color:#fff;background:rgba(80,160,255,0.5);border-radius:10px;padding:1px 8px;">5</span>
+            </div>
+            <!-- マージボード（7×4グリッド） -->
+            <div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:6px;align-content:start;">
+              <!-- ジェネレーターセル -->
+              <div style="background:rgba(90,50,20,0.85);border:1px solid rgba(201,168,76,0.5);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_gene1_03.png" style="width:85%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <!-- アイテムセル各種 -->
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_05.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_05.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_08.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_03.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_07.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_10.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <!-- 2行目 -->
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_02.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_06.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.85);border:2px solid #c9a84c;border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(201,168,76,0.5);">
+                <img src="img/Chapter1/Icon/image_merge_icon1_09.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.85);border:2px solid #c9a84c;border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(201,168,76,0.5);">
+                <img src="img/Chapter1/Icon/image_merge_icon1_09.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.4);border:1px dashed rgba(201,168,76,0.2);border-radius:6px;aspect-ratio:1;"></div>
+              <div style="background:rgba(90,50,20,0.4);border:1px dashed rgba(201,168,76,0.2);border-radius:6px;aspect-ratio:1;"></div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_04.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <!-- 3行目 -->
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_01.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_01.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.4);border:1px dashed rgba(201,168,76,0.2);border-radius:6px;aspect-ratio:1;"></div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_11.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_03.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+              <div style="background:rgba(90,50,20,0.4);border:1px dashed rgba(201,168,76,0.2);border-radius:6px;aspect-ratio:1;"></div>
+              <div style="background:rgba(90,50,20,0.7);border:1px solid rgba(201,168,76,0.25);border-radius:6px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;">
+                <img src="img/Chapter1/Icon/image_merge_icon1_07.png" style="width:80%;object-fit:contain;" onerror="this.style.display='none'">
+              </div>
+            </div>
+            <!-- 依頼パネル（底部） -->
+            <div style="background:rgba(60,35,10,0.95);border-top:1px solid rgba(201,168,76,0.3);padding:5px 8px;display:flex;gap:6px;align-items:center;">
+              <div style="background:rgba(201,168,76,0.15);border:1.5px solid rgba(201,168,76,0.5);border-radius:8px;padding:4px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px;">
+                <img src="img/Chapter1/Chara/image_merge_order_chara_01.png" style="height:26px;object-fit:contain;" onerror="this.style.display:'none'">
+                <div style="display:flex;gap:2px;align-items:center;">
+                  <img src="img/Chapter1/Icon/image_merge_icon1_09.png" style="width:14px;object-fit:contain;" onerror="">
+                  <span style="font-size:8px;color:#c9a84c;">×2</span>
+                </div>
+              </div>
+              <div style="background:rgba(80,160,80,0.15);border:1.5px solid rgba(80,160,80,0.4);border-radius:8px;padding:4px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:56px;">
+                <img src="img/Chapter1/Chara/image_merge_order_chara_02.png" style="height:26px;object-fit:contain;" onerror="this.style.display:'none'">
+                <div style="display:flex;gap:2px;align-items:center;">
+                  <img src="img/Chapter1/Icon/image_merge_icon1_05.png" style="width:14px;object-fit:contain;" onerror="">
+                  <span style="font-size:8px;color:#80d880;">×1</span>
+                </div>
+              </div>
+              <div style="flex:1;text-align:right;font-size:9px;color:rgba(201,168,76,0.6);">依頼を解決→コイン獲得</div>
+            </div>
+          </div>
+          <div class="screen-label">メインゲーム画面（パズルボード）</div>
+        </div>
+
+        <!-- ② キャラ＋ジェネレーター横帯 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="screen-frame" style="aspect-ratio:unset;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;background:linear-gradient(135deg,#1a1a2e,#16213e);">
+            <div style="display:flex;gap:4px;justify-content:center;align-items:flex-end;">
+              <img src="img/Chapter1/Chara/image_merge_order_chara_00.png" style="height:52px;object-fit:contain;" onerror="this.style.display='none'">
+              <img src="img/Chapter1/Chara/image_merge_order_chara_01.png" style="height:52px;object-fit:contain;" onerror="this.style.display='none'">
+              <img src="img/Chapter2/Chara/image_merge_order_chara_07.png" style="height:52px;object-fit:contain;" onerror="this.style.display='none'">
+            </div>
+            <div style="font-size:9px;color:var(--gold);letter-spacing:1px;">個性豊かなキャラクターたち</div>
+          </div>
+          <div class="screen-frame" style="aspect-ratio:unset;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;background:linear-gradient(135deg,#1a0d0d,#2a1a0d);">
+            <div style="display:flex;gap:4px;align-items:center;">
+              <img src="img/Chapter1/Icon/image_merge_gene1_01.png" style="height:28px;object-fit:contain;" onerror="this.style.display='none'">
+              <span style="color:var(--gold);font-size:12px;">→</span>
+              <img src="img/Chapter1/Icon/image_merge_gene1_02.png" style="height:28px;object-fit:contain;" onerror="this.style.display='none'">
+              <span style="color:var(--gold);font-size:12px;">→</span>
+              <img src="img/Chapter2/Icon/image_merge_gene2_04.png" style="height:28px;object-fit:contain;" onerror="this.style.display='none'">
+              <span style="color:var(--gold);font-size:12px;">→</span>
+              <img src="img/Chapter2/Icon/image_merge_gene2_07.png" style="height:28px;object-fit:contain;" onerror="this.style.display='none'">
+            </div>
+            <div style="font-size:9px;color:#70c0f0;letter-spacing:1px;">ジェネレーターが章ごとに解放</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：フィーチャー -->
+      <div class="overview-features">
+        <div class="feature-block">
+          <div class="feature-title">🔍 探偵事務所ストーリー</div>
+          <div class="feature-text">
+            都心の探偵事務所を舞台に、新米探偵として様々な依頼を解決。<br>
+            猫探しから不倫証拠収集まで幅広い依頼が届く。<br>
+            <strong style="color:var(--text);">助手・ヤス</strong>の存在が物語に深みを与え…<br>
+            <span style="color:var(--text-dim); font-style:italic;">全てが繋がる時、プレイヤーは驚愕する。</span>
+          </div>
+        </div>
+
+        <div class="feature-block green">
+          <div class="feature-title">🎮 マージパズル × 報酬システム</div>
+          <div class="feature-text">
+            盤面のアイテムをマージしてLvアップ。<br>
+            依頼人の要求アイテムを揃えると<strong style="color:#a0e080;">コイン報酬</strong>を獲得。<br>
+            報酬でストーリーを購入し、探偵物語を体験。<br>
+            現在 <strong style="color:#a0e080;">全8章・累計180話以上</strong> 実装済み。
+          </div>
+        </div>
+
+        <div class="feature-block blue">
+          <div class="feature-title">🌟 イベント＆相関図</div>
+          <div class="feature-text">
+            突発イベント「蜘蛛の巣迷宮」などのサブストーリーを随時開催。<br>
+            登場人物の<strong style="color:#80aaff;">相関図</strong>で関係性を把握しながら謎に迫る。<br>
+            バーストシステム・デイリーミッションで毎日の遊びを確保。
+          </div>
+        </div>
+
+        <div class="feature-block red">
+          <div class="feature-title">🏆 プレイヤー成長システム</div>
+          <div class="feature-text">
+            プレイヤーLvが上がるほど体力・コインが増え、より多くのストーリーへアクセス可能。<br>
+            <strong style="color:#ff8080;">「章解放」</strong>の達成感がリテンションを支える。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 4 — AI AUTOMATION
+  ═══════════════════════════════════════ -->
+  <div class="slide" id="slide4">
+    <div class="deco-corner tl"></div>
+    <div class="deco-corner br"></div>
+    <span class="slide-num">04 / 05</span>
+
+    <div class="tag">PRODUCTION SYSTEM</div>
+    <h2 class="slide-title">AIで全自動 — 無限の章制作</h2>
+    <div class="gold-line"></div>
+
+    <div class="ai-layout">
+      <!-- フローチャート -->
+      <div class="ai-flow">
+
+        <div class="ai-node">
+          <div class="ai-node-icon human" style="overflow:hidden; padding:0;">
+            <img src="img/Presentation/creator_ichimori.jpg" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+          </div>
+          <div class="ai-node-label">一森昌輝</div>
+          <div class="ai-node-sub">ディレクター<br>一人制作</div>
+        </div>
+
+        <div class="ai-arrow">→</div>
+
+        <div class="ai-node">
+          <div class="ai-node-icon ai-core">🤖</div>
+          <div class="ai-node-label">AI エンジン</div>
+          <div class="ai-node-sub">Claude / 画像生成AI<br>全自動パイプライン</div>
+        </div>
+
+        <div class="ai-arrow">→</div>
+
+        <div style="display:flex; flex-direction:column; gap:10px; align-items:center;">
+          <div style="font-size:11px; color:var(--gold); letter-spacing:2px;">OUTPUTS</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div style="background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.25); border-radius:8px; padding:8px 12px; text-align:center; font-size:11px; color:var(--text-dim);">📖 ストーリー</div>
+            <div style="background:rgba(76,175,80,0.08); border:1px solid rgba(76,175,80,0.25); border-radius:8px; padding:8px 12px; text-align:center; font-size:11px; color:var(--text-dim);">⚙️ ジェネレーター</div>
+            <div style="background:rgba(64,128,255,0.08); border:1px solid rgba(64,128,255,0.25); border-radius:8px; padding:8px 12px; text-align:center; font-size:11px; color:var(--text-dim);">🎴 マージアイテム</div>
+            <div style="background:rgba(232,64,64,0.08); border:1px solid rgba(232,64,64,0.25); border-radius:8px; padding:8px 12px; text-align:center; font-size:11px; color:var(--text-dim);">🖼️ キャラ・背景</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 4枚詳細カード -->
+      <div class="ai-outputs">
+        <div class="ai-output-card">
+          <div class="ai-output-icon-row">
+            <span style="font-size:36px;">📖</span>
+          </div>
+          <div class="ai-output-title">ストーリー全自動生成</div>
+          <div class="ai-output-desc">
+            章テーマを指示するだけで、依頼人・セリフ・伏線・謎解きまでAIが自動脚本。<br>
+            現在8章・180話以上を生成済み。
+          </div>
+        </div>
+
+        <div class="ai-output-card">
+          <div class="ai-output-icon-row">
+            <img src="img/Chapter1/Icon/image_merge_gene1_02.png" onerror="this.style.display='none'">
+            <img src="img/Chapter2/Icon/image_merge_gene2_02.png" onerror="this.style.display='none'">
+            <img src="img/Chapter2/Icon/image_merge_gene2_04.png" onerror="this.style.display='none'">
+          </div>
+          <div class="ai-output-title">ジェネレーター自動設計</div>
+          <div class="ai-output-desc">
+            章のテーマに合わせたジェネレーターのLv体系・解放条件・外観をAIが設計・提案。
+          </div>
+        </div>
+
+        <div class="ai-output-card">
+          <div class="ai-output-icon-row">
+            <img src="img/Chapter1/Icon/image_merge_icon1_04.png" onerror="this.style.display='none'">
+            <img src="img/Chapter1/Icon/image_merge_icon1_07.png" onerror="this.style.display='none'">
+            <img src="img/Chapter1/Icon/image_merge_icon1_10.png" onerror="this.style.display='none'">
+          </div>
+          <div class="ai-output-title">マージアイテム生成</div>
+          <div class="ai-output-desc">
+            各章テーマに連動したアイテム画像・名称・段階を画像生成AIで自動作成。Lv1〜最大20段階。
+          </div>
+        </div>
+
+        <div class="ai-output-card">
+          <div class="ai-output-icon-row">
+            <img src="img/Chapter1/Chara/image_merge_order_chara_00.png" style="height:44px; width:auto;" onerror="this.style.display='none'">
+            <img src="img/Chapter1/Chara/image_merge_order_chara_02.png" style="height:44px; width:auto;" onerror="this.style.display='none'">
+          </div>
+          <div class="ai-output-title">キャラ・背景画像生成</div>
+          <div class="ai-output-desc">
+            登場人物の立ち絵・表情差分・背景画像を統一スタイルで全自動生成。新章追加のたびに量産。
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-infinite-badge">♾️ 章の制作に上限なし — 理論上、無限にコンテンツを追加可能</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       SLIDE 5 — MONETIZATION
+  ═══════════════════════════════════════ -->
+  <div class="slide" id="slide5">
+    <div class="deco-corner tl"></div>
+    <div class="deco-corner br"></div>
+    <span class="slide-num">05 / 05</span>
+
+    <div class="tag">MONETIZATION</div>
+    <h2 class="slide-title">マネタイズ戦略</h2>
+    <div class="gold-line"></div>
+
+    <div class="mono-layout">
+      <div class="mono-card">
+        <div class="mono-icon">💎</div>
+        <div class="mono-title">IAP 課金</div>
+        <div class="mono-points">
+          <div class="mono-point">ダイヤアイテムの購入（100〜3,000円パック）</div>
+          <div class="mono-point">体力・コインの課金補填</div>
+          <div class="mono-point">スターターパック・特別オファー</div>
+          <div class="mono-point">シンプルで分かりやすい課金構造</div>
+        </div>
+        <div class="mono-potential">
+          <strong>ベンチマーク比較</strong>
+          Merge Mansion 課金ユーザー比率 約3〜5%<br>
+          ARPU（平均課金額）月約1,500〜3,000円
+        </div>
+      </div>
+
+      <div class="mono-card">
+        <div class="mono-icon">📺</div>
+        <div class="mono-title">ゲーム内広告</div>
+        <div class="mono-points">
+          <div class="mono-point">リワード広告（体力・コイン回復と交換）</div>
+          <div class="mono-point">インタースティシャル広告（章完了時）</div>
+          <div class="mono-point">バナー広告（ショップ画面）</div>
+          <div class="mono-point">非課金ユーザーからも安定収益</div>
+        </div>
+        <div class="mono-potential">
+          <strong>広告収益ポテンシャル</strong>
+          MAU 10万人でも月間広告収益<br>
+          推定 500〜2,000万円 / 月
+        </div>
+      </div>
+
+      <div class="mono-card">
+        <div class="mono-icon">🤝</div>
+        <div class="mono-title">IPコラボ</div>
+        <div class="mono-points">
+          <div class="mono-point">
+            <strong style="color:#ff8080;">名探偵コナン</strong>コラボ — 探偵ジャンル完全一致で高親和性
+          </div>
+          <div class="mono-point">コラボキャラ・限定アイテム・限定章を追加</div>
+          <div class="mono-point">コラボ期間中の課金率・DAU 大幅増が見込める</div>
+          <div class="mono-point">他ミステリー・刑事ドラマIPとも相性良好</div>
+        </div>
+        <div class="mono-potential">
+          <strong>IPコラボの可能性</strong>
+          コラボ期間の課金売上 通常期比<br>
+          3〜10倍の事例多数（他社実績より）
+        </div>
+      </div>
+    </div>
+
+    <div class="mono-bottom">
+      <div class="mono-summary">
+        <div class="mono-sum-title">▶ BENCHMARK REVENUE</div>
+        <div class="mono-benchmarks">
+          <div class="mono-bm-row">
+            <span class="mono-bm-name">Merge Mansion（月間）</span>
+            <span class="mono-bm-val">約20億円以上</span>
+          </div>
+          <div class="mono-bm-row">
+            <span class="mono-bm-name">Gossip Harbor（月間）</span>
+            <span class="mono-bm-val">約8億円以上</span>
+          </div>
+          <div class="mono-bm-row">
+            <span class="mono-bm-name">類似ジャンル 中堅タイトル</span>
+            <span class="mono-bm-val">2〜5億円 / 月</span>
+          </div>
+          <div class="mono-bm-row" style="border:none;">
+            <span class="mono-bm-name" style="color:var(--gold);">本作 初年度目標</span>
+            <span class="mono-bm-val" style="color:var(--gold-light);">市場参入〜</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mono-roadmap">
+        <div class="roadmap-title">▶ 展開ロードマップ</div>
+        <div class="roadmap-items">
+          <div class="roadmap-item">
+            <span class="roadmap-phase">Phase 1</span>
+            <span>iOS / Android リリース、1〜8章・基本マネタイズ稼働</span>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-phase">Phase 2</span>
+            <span>AI自動生成で章を継続追加、イベント定期開催・リテンション強化</span>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-phase">Phase 3</span>
+            <span>IPコラボ実施（名探偵コナン等）、限定コンテンツ・ガチャ課金展開</span>
+          </div>
+          <div class="roadmap-item">
+            <span class="roadmap-phase">Phase 4</span>
+            <span>海外展開（英語・韓国語対応）、グローバルマーケティング</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div id="nav">
+  <button id="prev-btn" onclick="changeSlide(-1)" disabled>‹</button>
+  <div id="dots"></div>
+  <span id="slide-counter">1 / 5</span>
+  <button id="next-btn" onclick="changeSlide(1)">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const totalSlides = slides.length;
+  let current = 0;
+
+  // Build dots
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= totalSlides) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('prev');
+
+    // Remove prev after transition
+    const prevIdx = current;
+    setTimeout(() => slides[prevIdx].classList.remove('prev'), 500);
+
+    current = idx;
+    slides[current].classList.add('active');
+
+    // Update UI
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+    document.getElementById('slide-counter').textContent = `${current + 1} / ${totalSlides}`;
+    document.getElementById('prev-btn').disabled = current === 0;
+    document.getElementById('next-btn').disabled = current === totalSlides - 1;
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault(); changeSlide(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault(); changeSlide(-1);
+    }
+  });
+</script>
+</body>
+</html>
