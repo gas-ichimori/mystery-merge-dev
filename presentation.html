@@ -692,6 +692,120 @@
   }
   .deco-corner.tl { top: 20px; left: 20px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
   .deco-corner.br { bottom: 80px; right: 20px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+
+  /* ─────────────────────────────
+     MOBILE RESPONSIVE
+  ───────────────────────────────*/
+  @media (max-width: 768px) {
+    /* Slide basics — scrollable on mobile */
+    .slide, #slide2, #slide3, #slide4, #slide5 {
+      padding: 14px 14px 90px;
+      justify-content: flex-start;
+      align-items: center;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .slide-num {
+      top: 12px;
+      right: 14px;
+      font-size: 9px;
+    }
+
+    .tag {
+      font-size: 9px;
+      letter-spacing: 2px;
+      margin-top: 28px;
+    }
+
+    h2.slide-title { font-size: clamp(16px, 5vw, 24px); }
+
+    .deco-corner { width: 36px; height: 36px; }
+    .deco-corner.tl { top: 10px; left: 10px; }
+    .deco-corner.br { bottom: 90px; right: 10px; }
+
+    /* Nav bar — compact */
+    #nav {
+      gap: 10px;
+      padding: 8px 16px;
+      bottom: 14px;
+    }
+    #nav button { width: 34px; height: 34px; font-size: 15px; }
+    #slide-counter { font-size: 11px; min-width: 40px; }
+    #dots { gap: 5px; }
+    .dot { width: 6px; height: 6px; }
+
+    /* ── SLIDE 1: COVER ── */
+    .cover-inner {
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      padding-top: 4px;
+    }
+    .cover-logo {
+      width: min(180px, 55vw);
+      max-height: 28vh;
+    }
+    .cover-text-block {
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+    .cover-text-block .gold-line { margin: 0 auto; }
+    .cover-game-title { font-size: clamp(18px, 6vw, 30px); letter-spacing: 2px; }
+    .cover-sub { font-size: 12px; letter-spacing: 3px; }
+    .cover-tagline { font-size: 13px; }
+    .cover-badges { justify-content: center; }
+    .cover-badge { font-size: 11px; padding: 5px 10px; }
+    .cover-creator { font-size: 12px; }
+
+    /* ── SLIDE 2: MARKET ── */
+    .market-layout {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    /* ── SLIDE 3: OVERVIEW ── */
+    .overview-layout {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .overview-screens { max-height: none; }
+
+    /* ── SLIDE 4: AI ── */
+    .ai-layout { gap: 14px; margin-top: 10px; }
+    .ai-flow { gap: 10px; }
+    .ai-node { min-width: 72px; max-width: 90px; }
+    .ai-node-icon { width: 52px; height: 52px; font-size: 20px; }
+    .ai-node-icon.ai-core { width: 64px; height: 64px; font-size: 24px; }
+    .ai-arrow { font-size: 18px; }
+    .ai-outputs {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* ── SLIDE 5: MONO ── */
+    .mono-layout {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .mono-bottom {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .mono-card { padding: 16px 14px; }
+    .mono-icon { font-size: 28px; }
+    .mono-title { font-size: 15px; }
+  }
+
+  @media (max-width: 480px) {
+    .ai-outputs { grid-template-columns: 1fr; }
+    .bench-stats { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -1329,6 +1443,25 @@
       e.preventDefault(); changeSlide(-1);
     }
   });
+
+  // Touch swipe
+  let touchStartX = 0;
+  let touchStartY = 0;
+  const deck = document.getElementById('deck');
+
+  deck.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  deck.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.8) {
+      if (dx < 0) changeSlide(1);
+      else changeSlide(-1);
+    }
+  }, { passive: true });
 </script>
 </body>
 </html>
